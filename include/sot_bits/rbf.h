@@ -21,6 +21,53 @@
 #include "approximant.h"
 
 namespace sot {
+    class CubicKernel {
+    public:
+        int phi_zero = 0;
+        inline double eval(double dist) const { return dist * dist * dist; }
+        inline double deriv(double dist) const { return 3 * dist * dist; }
+        inline mat eval(const mat &dists) const { return dists % dists % dists; }
+        inline mat deriv(const mat &dists) const { return 3 * dists % dists; }
+    };
+    
+    class ThinPlateKernel {
+    public:
+        int phi_zero = 0;
+        inline double eval(double dist) const { return dist * dist * log(dist + 1e-10);}
+        inline double deriv(double dist) const { return dist * (1.0 + 2.0 * log(dist + 1e-10)); }
+        inline mat eval(const mat &dists) const { return dists % dists % arma::log(dists + 1e-10); }
+        inline mat deriv(const mat &dists) const { return dists % (1 + 2.0 * arma::log(dists + 1e-10)); }
+    };
+    
+    class LinearKernel {
+    public:
+        int phi_zero = 0;
+        inline double eval(double dist) const { return dist; }
+        inline double deriv(double dist) const { return 1.0; }
+        inline mat eval(const mat &dists) const { return dists; }
+        inline mat deriv(const mat &dists) const { return arma::ones<mat>(dists.n_rows, dists.n_cols); }
+    };
+    
+    class LinearTail {
+    public:
+        inline mat eval(const mat &x) const { return arma::join_vert(arma::ones<mat>(1, x.n_cols), x); }
+        inline vec eval(const vec &x) const {
+            vec tail = arma::zeros<vec>(x.n_rows + 1);
+            tail(0) = 1;
+            tail.tail(x.n_rows) = x;
+            return tail;
+        }
+        inline mat deriv(const mat &x) const { return arma::join_vert(arma::zeros<mat>(1, x.n_rows), arma::eye<mat>(x.n_rows, x.n_rows)); }
+        inline int n_tail(int d) const { return 1 + d; }
+    };
+    
+    class ConstantTail {
+    public:
+        inline mat eval(const mat &x) const { return arma::ones<mat>(x.n_rows, 1); }
+        inline vec eval(const vec &x) const { return arma::ones<mat>(1, 1); }
+        inline mat deriv(const mat &x) const { return arma::zeros<mat>(x.n_rows, 1); }
+        inline int n_tail(int d) const { return 1; }
+    };
     
     template<class Kernel, class Tail>
     class RBFInterpolant {
