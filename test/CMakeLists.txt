@@ -1,15 +1,9 @@
 # Dependencies
-find_package(BLAS REQUIRED)
-find_package(Armadillo REQUIRED)
+find_package(armadillo REQUIRED)
 
-set(LIBRARIES
-    ${ARMADILLO_LIBRARIES}
-    ${BLAS_LIBRARIES}
-)
+set(LIBRARIES ${ARMADILLO_LIBRARIES})
 
 include_directories(${ARMADILLO_INCLUDE_DIRS})
-include_directories(${BLAS_INCLUDE_DIRS})
-message(STATUS BLAS found: ${BLAS_LIBRARIES})
 
 # Enable C++11 support
 include(CheckCXXCompilerFlag)
@@ -26,6 +20,6 @@ endif()
 # Build tests
 include_directories("../include")
 add_executable (test_dycors "test_dycors.cpp") 
-target_link_libraries(test_dycors Armadillo BLAS)
+target_link_libraries(test_dycors armadillo)
 add_executable (test_rbf "test_rbf.cpp") 
-target_link_libraries(test_rbf Armadillo BLAS)
+target_link_libraries(test_rbf armadillo)
