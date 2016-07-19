@@ -1,5 +1,5 @@
 # Dependencies
-find_package(armadillo REQUIRED)
+find_package(Armadillo REQUIRED)
 
 set(LIBRARIES ${ARMADILLO_LIBRARIES})
 
