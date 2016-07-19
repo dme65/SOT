@@ -91,6 +91,12 @@ namespace sot {
         
     public:
         
+        RBFInterpolant(Kernel kernel, Tail tail, int max_points, int d, vec xlow, vec xup, double eta) :
+            RBFInterpolant(kernel, tail, max_points, d, xlow, xup)
+        {
+            this->eta = eta;
+        }
+        
         RBFInterpolant(Kernel kernel, Tail tail,int max_points, int d, vec xlow, vec xup) {
             this->kernel = kernel;
             this->tail = tail;

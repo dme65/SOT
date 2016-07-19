@@ -1,0 +1,31 @@
+# Dependencies
+find_package(BLAS REQUIRED)
+find_package(Armadillo REQUIRED)
+
+set(LIBRARIES
+    ${ARMADILLO_LIBRARIES}
+    ${BLAS_LIBRARIES}
+)
+
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+include_directories(${BLAS_INCLUDE_DIRS})
+message(STATUS BLAS found: ${BLAS_LIBRARIES})
+
+# Enable C++11 support
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Ofast -msse4")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Ofast -msse4")
+else()
+        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
+
+# Build tests
+include_directories("../include")
+add_executable (test_dycors "test_dycors.cpp") 
+target_link_libraries(test_dycors Armadillo BLAS)
+add_executable (test_rbf "test_rbf.cpp") 
+target_link_libraries(test_rbf Armadillo BLAS)
