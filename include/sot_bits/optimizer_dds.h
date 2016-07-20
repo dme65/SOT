@@ -17,7 +17,6 @@
 #include <cassert>
 #include <thread>
 #include <atomic>
-#include "genetic_algorithm.h"
 #include "common.h"
 #include "optimizer.h"
 

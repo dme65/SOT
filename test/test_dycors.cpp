@@ -23,16 +23,19 @@ void test_dycors() {
     int dim = 10;
     int maxeval = 500;
     
-    Problem *data = new Ackley(dim);
-    ExpDesign *slhd = new SymmetricLatinHypercube(2*(dim+1), dim);
-    OptimizerDYCORS opt(data, slhd, maxeval);
+    std::shared_ptr<Problem> data(new Ackley(dim));
+    std::shared_ptr<ExpDesign> slhd(new SLHD(2*(dim+1), dim));
+    std::shared_ptr<Surrogate> rbf(new CubicRBF(maxeval, dim, data->lbound(), data->rbound()));
+    std::shared_ptr<Sampling> dycors(new DYCORS<>(data, rbf, 100*dim, maxeval - slhd->num_points));
     
+    Optimizer opt(data, slhd, rbf, dycors, maxeval);
     Result res = opt.run();
     
     // Check that we made enough progress and that we are feasible
     assert(res.fbest <= -20.0);
     assert(arma::all(res.xbest >= data->lbound()));
     assert(arma::all(res.xbest <= data->rbound()));
+    std::cout << res.fbest << std::endl;
 }
 
 int main(int argc, char** argv) {

@@ -18,12 +18,12 @@
 #include <assert.h>
 #include "utils.h"
 #include "common.h"
-#include "approximant.h"
+#include "surrogate.h"
 
 namespace sot {
     class CubicKernel {
     public:
-        int phi_zero = 0;
+        const int phi_zero = 0;
         inline double eval(double dist) const { return dist * dist * dist; }
         inline double deriv(double dist) const { return 3 * dist * dist; }
         inline mat eval(const mat &dists) const { return dists % dists % dists; }
@@ -32,7 +32,7 @@ namespace sot {
     
     class ThinPlateKernel {
     public:
-        int phi_zero = 0;
+        const int phi_zero = 0;
         inline double eval(double dist) const { return dist * dist * log(dist + 1e-10);}
         inline double deriv(double dist) const { return dist * (1.0 + 2.0 * log(dist + 1e-10)); }
         inline mat eval(const mat &dists) const { return dists % dists % arma::log(dists + 1e-10); }
@@ -41,7 +41,7 @@ namespace sot {
     
     class LinearKernel {
     public:
-        int phi_zero = 0;
+        const int phi_zero = 0;
         inline double eval(double dist) const { return dist; }
         inline double deriv(double dist) const { return 1.0; }
         inline mat eval(const mat &dists) const { return dists; }
@@ -70,7 +70,7 @@ namespace sot {
     };
     
     template<class Kernel, class Tail>
-    class RBFInterpolant {
+    class RBFInterpolant : public Surrogate {
         
     protected:
         Kernel kernel;
@@ -91,15 +91,13 @@ namespace sot {
         
     public:
         
-        RBFInterpolant(Kernel kernel, Tail tail, int max_points, int d, vec xlow, vec xup, double eta) :
-            RBFInterpolant(kernel, tail, max_points, d, xlow, xup)
+        RBFInterpolant(int max_points, int d, vec xlow, vec xup, double eta) :
+            RBFInterpolant(max_points, d, xlow, xup)
         {
             this->eta = eta;
         }
         
-        RBFInterpolant(Kernel kernel, Tail tail,int max_points, int d, vec xlow, vec xup) {
-            this->kernel = kernel;
-            this->tail = tail;
+        RBFInterpolant(int max_points, int d, vec xlow, vec xup) {
             this->max_points = max_points;
             this->d = d;
             this->ntail = tail.n_tail(d);
@@ -134,14 +132,19 @@ namespace sot {
             return FromUnitBox((mat)centers.cols(0, num_points - 1), xlow, xup);
         }
         
-        // Return centers
-        mat get_centers() const {
-            return FromUnitBox((mat)centers.cols(0, num_points - 1), xlow, xup);
+        // Return point
+        vec get_X(int i) const {
+            return FromUnitBox((mat)centers.col(i), xlow, xup);
         }
         
         // Return function values
-        vec get_F() const {
+        vec get_fX() const {
             return F.rows(ntail, ntail + num_points - 1);
+        }
+        
+        // Return function value
+        double get_fX(int i) const {
+            return F(ntail+i);
         }
         
         vec get_coeffs() {
@@ -230,10 +233,9 @@ namespace sot {
             dirty = true;
         }
         
-        void add_points(const mat &ppoints, vec fun_vals) {
+        void add_points(const mat &ppoints, const vec &fun_vals) {
             if(num_points == 0) {
-                std::cout << "You need to use set_points first" << std::endl;
-                abort();
+                return set_points(ppoints, fun_vals);
             }
             
             // Map point to be in the unit box
@@ -342,7 +344,7 @@ namespace sot {
         }
         
         // Gradient of the surface at the current point
-        mat deriv(const vec &ppoint) const {
+        vec deriv(const vec &ppoint) const {
             if(dirty) { throw std::logic_error("RBF not updated"); }       
 
             // Map point to be in the unit box

@@ -9,7 +9,7 @@
 #ifndef shepard_h
 #define shepard_h
 
-#include "approximant.h"
+#include "surrogate.h"
 #include <armadillo>
 #include "utils.h"
 #include "common.h"
