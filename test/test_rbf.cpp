@@ -31,10 +31,7 @@ int test_rbf() {
     mat y = arma::randu<mat>(dim, m);;
     mat dists = arma::sqrt(SquaredPairwiseDistance(x, y));
 
-    CubicKernel cubic;
-    LinearTail lintail;
-
-    RBFInterpolant<CubicKernel, LinearTail> rbf(cubic, lintail, n, dim, arma::zeros(dim), arma::ones(dim), 0.0);
+    CubicRBF rbf(n, dim, arma::zeros(dim), arma::ones(dim), 0.0);
     rbf.set_points(x, fx);
     rbf.fit();
 
