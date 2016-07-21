@@ -23,7 +23,9 @@ namespace sot {
         int tournament_size = 5;
         double p_cross = 0.9;
         double p_mutation;
-        
+        int dim;
+        vec xlow;
+        vec xup;
         int n_variables;
         int n_individuals;
         int n_generations;
@@ -38,27 +40,20 @@ namespace sot {
             this->n_individuals = n_individuals;
             this->n_generations = n_generations;
             this->random_init = true;
+            this->dim = data->dim();
+            this->xlow = data->lbound();
+            this->xup = data->rbound();
         }
         GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, int n_individuals, int n_generations) {
-            this->data = std::shared_ptr<Problem>(data);
             this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
-            this->n_variables = data->dim();
-            this->p_mutation = 1.0/data->dim();
-            this->n_individuals = n_individuals;
-            this->n_generations = n_generations;
             this->random_init = false;
+            GeneticAlgorithm(data, n_individuals, n_generations);
         }
 
         Result run() {
             arma::arma_rng::set_seed_random();
             int maxeval = n_individuals * n_generations;
-            Result res(n_individuals * n_generations, n_individuals, data->dim());
-            
-            // Setup random number generators
-            std::random_device rd;
-            std::default_random_engine e1(rd());
-            std::uniform_real_distribution<double> rand(0, 1);
-            std::normal_distribution<double> randn(0.0, sigma);
+            Result res(n_individuals * n_generations, n_individuals, dim);
             
             mat population;
             mat new_population = arma::zeros<mat>(n_variables, n_individuals);
@@ -68,7 +63,7 @@ namespace sot {
             else{
                 population = exp_des->generate_points();
             }
-            population = FromUnitBox(population, data->lbound(), data->rbound());
+            population = FromUnitBox(population, xlow, xup);
 
             //  Evaluate all individuals
             vec function_values = data->evals(population);
@@ -98,8 +93,8 @@ namespace sot {
                         }
                     }
                     
-                    double alpha = rand(e1);
-                    if( rand(e1) < p_cross) {
+                    double alpha = rand();
+                    if( rand() < p_cross) {
                         new_population.col(2*i) = alpha * population.col(ind1) + (1 - alpha) * population.col(ind2);
                         new_population.col(2*i + 1) = alpha * population.col(ind2) + (1 - alpha) * population.col(ind1);
                     }
@@ -112,13 +107,13 @@ namespace sot {
                 // Mutation
                 for(int i=0; i < n_individuals; i++) {
                     for(int j=0; j<n_variables; j++) {
-                        if(rand(e1) < p_mutation) {
-                            new_population(j, i) += (data->rbound()(j) - data->lbound()(j)) * randn(e1);
-                            if(new_population(j,i) > data->rbound()(j)) {
-                                new_population(j,i) = fmax(2*data->rbound()(j) - new_population(j,i), data->lbound()(j));
+                        if(rand() < p_mutation) {
+                            new_population(j, i) += (xup(j) - xlow(j)) * sigma * randn();
+                            if(new_population(j,i) > xup(j)) {
+                                new_population(j,i) = fmax(2*xup(j) - new_population(j,i), xlow(j));
                             }
-                            else if(new_population(j,i) < data->lbound()(j)) {
-                                new_population(j,i) = fmin(2*data->lbound()(j) - new_population(j,i), data->rbound()(j));
+                            else if(new_population(j,i) < xlow(j)) {
+                                new_population(j,i) = fmin(2*xlow(j) - new_population(j,i), xup(j));
                             }
                         }
                     }

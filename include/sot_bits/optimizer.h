@@ -28,10 +28,14 @@ namespace sot {
         int numeval;
         int initp;
         int dim;
+        vec xlow;
+        vec xup;
+        int numthreads = 1;
         std::string my_name;
     public:
         Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, 
-                std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, int maxeval) {
+                std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, 
+                int maxeval) {
             this->data = std::shared_ptr<Problem>(data);
             this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
             this->surf = std::shared_ptr<Surrogate>(surf);
@@ -40,11 +44,20 @@ namespace sot {
             numeval = 0;
             initp = exp_des->npts();
             dim = data->dim();
+            xlow = data->lbound();
+            xup = data->rbound();
             failtol = data->dim();
             succtol = 3;
             my_name = "DYCORS";
             
             assert(maxeval > initp);
+        }
+        
+        Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, 
+                std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, 
+                int maxeval, int numthreads) {
+            this->numthreads = numthreads;
+            Optimizer(data, exp_des, surf, sampling, maxeval);
         }
         
         Result run() {   
@@ -57,14 +70,14 @@ namespace sot {
             vec weights = {0.3, 0.5, 0.8, 0.95};
             vec weight = arma::zeros<vec>(1, 1);
             
-            double dtol = 1e-3*sqrt(arma::sum(arma::square(data->rbound() - data->lbound())));
+            double dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
             
         start:
             double sigma = sigma_max;
             int fail = 0;
             int succ = 0;
             
-            mat init_des = FromUnitBox(exp_des->generate_points(), data->lbound(), data->rbound());
+            mat init_des = FromUnitBox(exp_des->generate_points(), xlow, xup);
             
             ////////////////////////////// Evaluate the initial design //////////////////////////////
             int istart = numeval;
@@ -92,7 +105,7 @@ namespace sot {
                 // Find new points to evaluate
                 weight[0] = weights[numeval % weights.n_elem];
                 mat X = res.x.cols(istart, numeval - 1);
-                vec newx = sampling->make_points(res.xbest, X, sigma*(data->rbound()(0) - data->lbound()(0)), 1);
+                vec newx = sampling->make_points(res.xbest, X, sigma*(xup(0) - xlow(0)), 1);
                                 
                 // Evaluate
                 res.x.col(numeval) = newx;
@@ -121,7 +134,10 @@ namespace sot {
                     fail = 0;
                     succ = 0;
                     sigma /= 2.0;
-                    if (sigma < sigma_min) {
+                    int budget = maxeval - numeval - 1;
+                    // Restart if sigma is too small and the budget 
+                    // is larger than the initial design
+                    if (sigma < sigma_min and budget > initp) {
                         if (res.fbest < fbest_tot) {
                             xbest_tot = res.xbest;
                             fbest_tot = res.fbest;

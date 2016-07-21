@@ -1,8 +1,6 @@
 # Dependencies
 find_package(Armadillo REQUIRED)
-
 set(LIBRARIES ${ARMADILLO_LIBRARIES})
-
 include_directories(${ARMADILLO_INCLUDE_DIRS})
 
 # Enable C++11 support
@@ -21,5 +19,7 @@ endif()
 include_directories("../include")
 add_executable (test_dycors "test_dycors.cpp") 
 target_link_libraries(test_dycors armadillo)
+add_executable (test_srbf "test_srbf.cpp") 
+target_link_libraries(test_srbf armadillo)
 add_executable (test_rbf "test_rbf.cpp") 
 target_link_libraries(test_rbf armadillo)

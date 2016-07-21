@@ -24,6 +24,8 @@ namespace sot {
         int numeval;
         int initp;
         int dim;
+        vec xlow;
+        vec xup;
         std::string my_name;
     public:
         DDS(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, int maxeval) {
@@ -40,11 +42,11 @@ namespace sot {
         
         Result run() {
             arma::arma_rng::set_seed_random();
-            Result res(maxeval, exp_des->npts(), data->dim());
+            Result res(maxeval, initp, dim);
             numeval = 0;
             
-            double sigma = 0.2*(data->rbound()(0) - data->lbound()(0));
-            mat init_des = FromUnitBox(exp_des->generate_points(), data->lbound(), data->rbound());
+            double sigma = 0.2*(xup(0) - xlow(0));
+            mat init_des = FromUnitBox(exp_des->generate_points(), xlow, xup);
             
             for(int i=0; i < initp ; i++) {
                 res.x.col(i) = init_des.col(i);
@@ -68,16 +70,24 @@ namespace sot {
                     if(rand() < dds_prob) {
                         count++;
                         cand(j) += sigma * randn();
-                        if(cand(j) > data->rbound()(j)) { cand(j) = fmax(2*data->rbound()(j) - cand(j), data->lbound()(j)); }
-                        else if(cand(j) < data->lbound()(j)) { cand(j) = fmin(2*data->lbound()(j) - cand(j), data->rbound()(j)); }
+                        if(cand(j) > xup(j)) { 
+                            cand(j) = fmax(2*xup(j) - cand(j), xlow(j)); 
+                        }
+                        else if(cand(j) < xlow(j)) { 
+                            cand(j) = fmin(2*xlow(j) - cand(j), xup(j)); 
+                        }
                     }
                 }
                 // If no index was perturbed we force one
                 if(count == 0) {
                     int ind = randi(dim);
                     cand(ind) += sigma * randn();
-                    if(cand(ind) > data->rbound()(ind)) { cand(ind) = fmax(2*data->rbound()(ind) - cand(ind), data->lbound()(ind)); }
-                    else if(cand(ind) < data->lbound()(ind)) { cand(ind) = fmin(2*data->lbound()(ind) - cand(ind), data->rbound()(ind)); }
+                    if(cand(ind) > xup(ind)) { 
+                        cand(ind) = fmax(2*xup(ind) - cand(ind), xlow(ind)); 
+                    }
+                    else if(cand(ind) < xlow(ind)) { 
+                        cand(ind) = fmin(2*xlow(ind) - cand(ind), xup(ind)); 
+                    }
                 }
                 
                 /////////////////////// Evaluate ///////////////////////

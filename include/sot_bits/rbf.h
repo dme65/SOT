@@ -169,10 +169,12 @@ namespace sot {
             
             num_points = (int)points.n_cols;
             int n = num_points + ntail;
-            if(num_points < d + 1) { throw std::logic_error("Not enough points"); }
+            if(num_points < d + 1) { 
+                throw std::logic_error("Not enough points"); 
+            }
             mat px = tail.eval(points);
             mat phi = kernel.eval(arma::sqrt(SquaredPairwiseDistance(points, points)));
-            
+                    
             mat A = arma::zeros<mat>(n, n);
             A(arma::span(ntail, n - 1), arma::span(0, ntail - 1)) = px.t();
             A(arma::span(0, ntail - 1), arma::span(ntail, n - 1)) = px;
@@ -210,7 +212,9 @@ namespace sot {
             vec point = ToUnitBox(ppoint, xlow, xup);
             
             int nact = ntail + num_points;
-            if(num_points + 1 > max_points) { throw std::logic_error("Capacity exceeded"); }
+            if(num_points + 1 > max_points) { 
+                throw std::logic_error("Capacity exceeded"); 
+            }
       
             vec vx = arma::join_vert(tail.eval(point), kernel.eval(arma::sqrt(SquaredPointSetDistance(point, centers.cols(0, num_points - 1)))));
             vec u12 = arma::solve(arma::trimatl(L(arma::span(0, nact - 1), arma::span(0, nact - 1))), vx.rows(p.head(nact)));

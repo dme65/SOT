@@ -16,7 +16,7 @@
 namespace sot {
     
     class MeritWeightedDistance {
-    private:
+    protected:
         vec weights = {0.3, 0.5, 0.8, 0.95};
         int next_weight = 0;
     public:
@@ -74,6 +74,9 @@ namespace sot {
         std::shared_ptr<Problem> data;
         std::shared_ptr<Surrogate> surf;
         int ncand;
+        int dim;
+        vec xlow;
+        vec xup;
         MeritFunction merit;
     public:
         DYCORS(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
@@ -81,19 +84,22 @@ namespace sot {
             this->surf = std::shared_ptr<Surrogate>(surf);
             this->budget = budget;
             this->ncand = ncand;
-            this->dtol = 1e-3*sqrt(arma::sum(arma::square(data->rbound() - data->lbound())));
+            this->dim = data->dim();
+            this->xlow = data->lbound();
+            this->xup = data->rbound();
+            this->dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
         }
         void reset(int budget) {
             this->budget = budget;
             int numeval = 0;
         }
         mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {                
-            double dds_prob = fmin(20.0/data->dim(), 1.0) * (1.0 - (log(this->numeval + 1.0) / log(this->budget)));
+            double dds_prob = fmin(20.0/dim, 1.0) * (1.0 - (log(numeval + 1.0) / log(budget)));
             mat cand = arma::repmat(xbest, 1, ncand);
             for(int i=0; i < ncand; i++) {
 
                 int count = 0;
-                for(int j=0; j < data->dim(); j++) {
+                for(int j=0; j < dim; j++) {
                     if(rand() < dds_prob) {
                         count++;
                         cand(j, i) += sigma*randn();
@@ -101,14 +107,18 @@ namespace sot {
                 }
                 // If no index was perturbed we force one
                 if(count == 0) {
-                    int ind = randi(data->dim());
+                    int ind = randi(dim);
                     cand(ind, i) += sigma*randn();
                 }
 
                 // Make sure we are still in the domain
-                for(int j=0; j < data->dim(); j++) {
-                    if(cand(j, i) > data->rbound()(j)) { cand(j, i) = fmax(2*data->rbound()(j) - cand(j, i), data->lbound()(j)); }
-                    else if(cand(j, i) < data->lbound()(j)) { cand(j, i) = fmin(2*data->lbound()(j) - cand(j, i), data->rbound()(j)); }
+                for(int j=0; j < dim; j++) {
+                    if(cand(j, i) > xup(j)) { 
+                        cand(j, i) = fmax(2*xup(j) - cand(j, i), xlow(j)); 
+                    }
+                    else if(cand(j, i) < xlow(j)) { 
+                        cand(j, i) = fmin(2*xlow(j) - cand(j, i), xup(j)); 
+                    }
                 }
             }
             
@@ -126,6 +136,9 @@ namespace sot {
         std::shared_ptr<Problem> data;
         std::shared_ptr<Surrogate> surf;
         int ncand;
+        int dim;
+        vec xlow;
+        vec xup;
         MeritFunction merit;
     public:
         SRBF(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
@@ -133,7 +146,10 @@ namespace sot {
             this->surf = std::shared_ptr<Surrogate>(surf);
             this->budget = budget;
             this->ncand = ncand;
-            this->dtol = 1e-3*sqrt(arma::sum(arma::square(data->rbound() - data->lbound())));
+            this->dim = data->dim();
+            this->xlow = data->lbound();
+            this->xup = data->rbound();
+            this->dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
         }
         void reset(int budget) {
             this->budget = budget;
@@ -145,10 +161,14 @@ namespace sot {
 
             // Perturbs one randomly chosen coordinate
             for(int i=0; i < ncand; i++) {
-                for(int j=0; j < data->dim(); j++) {
+                for(int j=0; j < dim; j++) {
                     cand(j, i) += sigma * randn();
-                    if(cand(j, i) > data->rbound()(j)) { cand(j, i) = fmax(2*data->rbound()(j) - cand(j, i), data->lbound()(j)); }
-                    else if(cand(j, i) < data->lbound()(j)) { cand(j, i) = fmin(2*data->lbound()(j) - cand(j, i), data->rbound()(j)); }
+                    if(cand(j, i) > xup(j)) { 
+                        cand(j, i) = fmax(2*xup(j) - cand(j, i), xlow(j)); 
+                    }
+                    else if(cand(j, i) < xlow(j)) { 
+                        cand(j, i) = fmin(2*xlow(j) - cand(j, i), xup(j)); 
+                    }
                 }
             }
             
@@ -166,6 +186,9 @@ namespace sot {
         std::shared_ptr<Problem> data;
         std::shared_ptr<Surrogate> surf;
         int ncand;
+        int dim;
+        vec xlow;
+        vec xup;
         MeritFunction merit;
     public:
         Uniform(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
@@ -173,7 +196,10 @@ namespace sot {
             this->surf = std::shared_ptr<Surrogate>(surf);
             this->budget = budget;
             this->ncand = ncand;
-            this->dtol = 1e-3*sqrt(arma::sum(arma::square(data->rbound() - data->lbound())));
+            this->dim = data->dim();
+            this->xlow = data->lbound();
+            this->xup = data->rbound();
+            this->dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
         }
         void reset(int budget) {
             this->budget = budget;
@@ -181,9 +207,10 @@ namespace sot {
         }
         mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {
          
-            mat cand = arma::randu<mat>(data->dim(), ncand);
-            for(int j=0; j < data->dim(); j++) {
-                cand.row(j) = data->lbound()(j) + (data->rbound()(j) - data->lbound()(j)) * cand.row(j);
+            mat cand = arma::randu<mat>(dim, ncand);
+            for(int j=0; j < dim; j++) {
+                cand.row(j) = xlow(j) + 
+                        (xup(j) - xlow(j)) * cand.row(j);
             }
         
             // Update counter
