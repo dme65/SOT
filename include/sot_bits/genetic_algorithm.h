@@ -9,56 +9,48 @@
 #ifndef __Surrogate_Optimization__genetic_algorithm__
 #define __Surrogate_Optimization__genetic_algorithm__
 
-#include <stdio.h>
-#include "utils.h"
-#include "experimental_design.h"
 #include "common.h"
-#include "optimizer.h"
-#include "test_problems.h"
+#include "utils.h"
 
 namespace sot {
     
-    class GeneticAlgorithm : public Optimizer  {
+    class GeneticAlgorithm  {
     protected:
+        std::shared_ptr<Problem> data;
+        std::shared_ptr<ExpDesign> exp_des;
+        
         double sigma = 0.2;
         int tournament_size = 5;
         double p_cross = 0.9;
         double p_mutation;
-
-        vec xlow;
-        vec xup;
+        
         int n_variables;
         int n_individuals;
         int n_generations;
-        std::string start;
+        std::string my_name = "Genetic algorithm";
+        bool random_init;
     
     public:    
-        GeneticAlgorithm(Problem *data, vec &xlow, vec& xup, int n_individuals, 
-                int n_generations, std::string start) {
-            this->data = data;
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, int n_individuals, int n_generations) {
+            this->data = std::shared_ptr<Problem>(data);
             this->n_variables = data->dim();
             this->p_mutation = 1.0/data->dim();
             this->n_individuals = n_individuals;
             this->n_generations = n_generations;
-            this->start = start;
-            this->xlow = xlow;
-            this->xup = xup;
-            this->my_name = "Genetic algorithm";
+            this->random_init = true;
         }
-        GeneticAlgorithm(Problem *data, ExpDesign *exp_des, int maxeval) {
-            this->data = data;
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, int n_individuals, int n_generations) {
+            this->data = std::shared_ptr<Problem>(data);
+            this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
             this->n_variables = data->dim();
             this->p_mutation = 1.0/data->dim();
-            this->n_individuals = maxeval/100;
-            this->n_generations = 100;
-            this->start = "SLHD";
-            this->xlow = data->lbound();
-            this->xup = data->rbound();
-            this->my_name = "Genetic algorithm";
+            this->n_individuals = n_individuals;
+            this->n_generations = n_generations;
+            this->random_init = false;
         }
 
         Result run() {
-            
+            arma::arma_rng::set_seed_random();
             int maxeval = n_individuals * n_generations;
             Result res(n_individuals * n_generations, n_individuals, data->dim());
             
@@ -70,20 +62,13 @@ namespace sot {
             
             mat population;
             mat new_population = arma::zeros<mat>(n_variables, n_individuals);
-            if (start.compare("SLHD") == 0) {
-                // Use a symmetric latin hypercube to initialize the population
-                SymmetricLatinHypercube my_slhd(n_individuals, n_variables);
-                population =  my_slhd.generate_points();
-            }
-            else if (start.compare("Random") == 0) {
-                // Randomly initialize the population
+            if (random_init) {
                 population.randu(n_variables, n_individuals);
             }
-            else {
-                // Yeah...., dunno what you want
-                throw std::invalid_argument("Unkown argument");
+            else{
+                population = exp_des->generate_points();
             }
-            population = FromUnitBox(population, xlow, xup);
+            population = FromUnitBox(population, data->lbound(), data->rbound());
 
             //  Evaluate all individuals
             vec function_values = data->evals(population);
@@ -94,7 +79,7 @@ namespace sot {
             vec best_individual = population.col(ind);
             double best_value = function_values(ind);
 
-            for(int gen = 0; gen < n_generations-1; gen++) {
+            for(int gen = 0; gen < n_generations - 1; gen++) {
                 
                 ////////////////// Tournament selection and crossover ////////////////////
                 arma::imat tournament = arma::randi<arma::imat>(tournament_size, n_individuals, arma::distr_param(0, n_individuals - 1));
@@ -128,12 +113,12 @@ namespace sot {
                 for(int i=0; i < n_individuals; i++) {
                     for(int j=0; j<n_variables; j++) {
                         if(rand(e1) < p_mutation) {
-                            new_population(j, i) += (xup(j) - xlow(j)) * randn(e1);
-                            if(new_population(j,i) > xup(j)) {
-                                new_population(j,i) = fmax(2*xup(j) - new_population(j,i), xlow(j));
+                            new_population(j, i) += (data->rbound()(j) - data->lbound()(j)) * randn(e1);
+                            if(new_population(j,i) > data->rbound()(j)) {
+                                new_population(j,i) = fmax(2*data->rbound()(j) - new_population(j,i), data->lbound()(j));
                             }
-                            else if(new_population(j,i) < xlow(j)) {
-                                new_population(j,i) = fmin(2*xlow(j) - new_population(j,i), xup(j));
+                            else if(new_population(j,i) < data->lbound()(j)) {
+                                new_population(j,i) = fmin(2*data->lbound()(j) - new_population(j,i), data->rbound()(j));
                             }
                         }
                     }

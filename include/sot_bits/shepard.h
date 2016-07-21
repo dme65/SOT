@@ -9,14 +9,13 @@
 #ifndef shepard_h
 #define shepard_h
 
-#include "surrogate.h"
-#include <armadillo>
-#include "utils.h"
 #include "common.h"
+#include "utils.h"
+#include "surrogate.h"
 
 namespace sot {
     
-    class Shepard : Approximant {
+    class Shepard : public Surrogate {
     protected:
         double p;
     public:

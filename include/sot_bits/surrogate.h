@@ -14,7 +14,6 @@
 #ifndef SURROGATE_H
 #define SURROGATE_H
 
-#include <armadillo>
 #include "common.h"
 
 namespace sot {

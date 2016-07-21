@@ -92,28 +92,22 @@ namespace sot {
             this->budget = budget;
             int numeval = 0;
         }
-        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {
-            std::random_device rd;
-            std::default_random_engine e1(rd());
-            std::uniform_real_distribution<double> rand(0, 1);
-            std::uniform_int_distribution<int> randi(0, data->dim() - 1);
-            std::normal_distribution<double> randn(0.0, 1.0);
-            
+        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {                
             double dds_prob = fmin(20.0/data->dim(), 1.0) * (1.0 - (log(this->numeval + 1.0) / log(this->budget)));
             mat cand = arma::repmat(xbest, 1, ncand);
             for(int i=0; i < ncand; i++) {
 
                 int count = 0;
                 for(int j=0; j < data->dim(); j++) {
-                    if(rand(e1) < dds_prob) {
+                    if(rand() < dds_prob) {
                         count++;
-                        cand(j, i) += sigma*randn(e1);
+                        cand(j, i) += sigma*randn();
                     }
                 }
-                // If no index was pertrubed we force one
+                // If no index was perturbed we force one
                 if(count == 0) {
-                    int ind = randi(e1);
-                    cand(ind, i) += sigma*randn(e1);
+                    int ind = randi(data->dim());
+                    cand(ind, i) += sigma*randn();
                 }
 
                 // Make sure we are still in the domain
@@ -130,66 +124,79 @@ namespace sot {
         }
     };
 
-    /*
-    inline mat AllDim(const std::shared_ptr<Surrogate>& surf, const mat &points, const vec &xlow, const vec &xup, const vec &xbest, double sigma, int maxeval, int numeval, int initp, int dim, double dtol, vec weights, int ncand, int newpts) {
-        
-        assert(weights.n_elem == newpts);
+    // SRBF
+    template<class MeritFunction = MeritWeightedDistance>
+    class SRBF : public Sampling {
+    protected:
+        std::shared_ptr<Problem> data;
+        std::shared_ptr<Surrogate> surf;
+        int ncand;
+        MeritFunction merit;
+    public:
+        SRBF(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
+            this->data = std::shared_ptr<Problem>(data);
+            this->surf = std::shared_ptr<Surrogate>(surf);
+            this->budget = budget;
+            this->ncand = ncand;
+            this->dtol = 1e-3*sqrt(arma::sum(arma::square(data->rbound() - data->lbound())));
+        }
+        void reset(int budget) {
+            this->budget = budget;
+            int numeval = 0;
+        }
+        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {
 
-        std::random_device rd;
-        std::default_random_engine e1(rd());
-        std::normal_distribution<double> randn(0.0, sigma);
-        
-        mat cand = arma::repmat(xbest, 1, ncand);
-        
-        // Perturbs one randomly chosen coordinate
-        for(int i=0; i < ncand; i++) {
+            mat cand = arma::repmat(xbest, 1, ncand);
+
+            // Perturbs one randomly chosen coordinate
+            for(int i=0; i < ncand; i++) {
+                for(int j=0; j < data->dim(); j++) {
+                    cand(j, i) += sigma * randn();
+                    if(cand(j, i) > data->rbound()(j)) { cand(j, i) = fmax(2*data->rbound()(j) - cand(j, i), data->lbound()(j)); }
+                    else if(cand(j, i) < data->lbound()(j)) { cand(j, i) = fmin(2*data->lbound()(j) - cand(j, i), data->rbound()(j)); }
+                }
+            }
             
-            for(int j=0; j < dim; j++) {
-                cand(j, i) += randn(e1);
-                if(cand(j, i) > xup(j)) {
-                    cand(j, i) = fmax(2*xup(j) - cand(j, i), xlow(j));
-                }
-                else if(cand(j, i) < xlow(j)) {
-                    cand(j, i) = fmin(2*xlow(j) - cand(j, i), xup(j));
-                }
-            }
+            // Update counter
+            numeval = numeval + newpts;
+            
+            return merit.pick_points(cand, surf, points, newpts, dtol);
         }
-
-        return pick_points(cand, surf, points, dim, dtol, weights, newpts);
     };
     
-    inline mat Uniform(const std::shared_ptr<Surrogate>& surf, const mat &points, const vec &xlow, const vec &xup, const vec &xbest, double sigma, int maxeval, int numeval, int initp, int dim, double dtol, vec weights, int ncand, int newpts) {
-        
-        assert(weights.n_elem == newpts);
-        
-        mat cand = arma::randu<mat>(dim, ncand);
-        for(int j=0; j < dim; j++) {
-            cand.row(j) = xlow(j) + (xup(j) - xlow(j)) * cand.row(j);
+    // Uniform
+    template<class MeritFunction = MeritWeightedDistance>
+    class Uniform : public Sampling {
+    protected:
+        std::shared_ptr<Problem> data;
+        std::shared_ptr<Surrogate> surf;
+        int ncand;
+        MeritFunction merit;
+    public:
+        Uniform(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
+            this->data = std::shared_ptr<Problem>(data);
+            this->surf = std::shared_ptr<Surrogate>(surf);
+            this->budget = budget;
+            this->ncand = ncand;
+            this->dtol = 1e-3*sqrt(arma::sum(arma::square(data->rbound() - data->lbound())));
         }
-        
-        return pick_points(cand, surf, points, dim, dtol, weights, newpts);
-    };
-    
-    inline mat Gradient(const std::shared_ptr<Surrogate>& surf, const mat &points, const vec &xlow, const vec &xup, const vec &xbest, double sigma, int maxeval, int numeval, int initp, int dim, double dtol, vec weights, int ncand, int newpts) {
-        
-        assert(weights.n_elem == newpts);
-        
-        vec gradient = arma::normalise(surf->deriv(xbest));
-        mat cand = arma::repmat(xbest, 1, ncand) + sigma * sqrt(dim) * gradient * arma::randn<mat>(1, ncand);
-        for(int i=0; i < ncand; i++) {
-            for(int j=0; j < dim; j++) {
-                if(cand(j, i) > xup(j)) {
-                    cand(j, i) = fmax(2*xup(j) - cand(j, i), xlow(j));
-                }
-                else if(cand(j, i) < xlow(j)) {
-                    cand(j, i) = fmin(2*xlow(j) - cand(j, i), xup(j));
-                }
+        void reset(int budget) {
+            this->budget = budget;
+            int numeval = 0;
+        }
+        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {
+         
+            mat cand = arma::randu<mat>(data->dim(), ncand);
+            for(int j=0; j < data->dim(); j++) {
+                cand.row(j) = data->lbound()(j) + (data->rbound()(j) - data->lbound()(j)) * cand.row(j);
             }
-        }
         
-        return pick_points(cand, surf, points, dim, dtol, weights, newpts);
+            // Update counter
+            numeval = numeval + newpts;
+            
+            return merit.pick_points(cand, surf, points, newpts, dtol);
+        }
     };
-    **/
 }
 
 #endif /* defined(__Surrogate_Optimization__CandidatePoints__) */

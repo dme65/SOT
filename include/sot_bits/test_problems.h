@@ -9,11 +9,8 @@
 #ifndef __Surrogate_Optimization__test_problems__
 #define __Surrogate_Optimization__test_problems__
 
-#include <stdio.h>
-#include <armadillo>
 #include <cassert>
-#include <math.h>
-#include "utils.h"
+#include <cmath>
 #include "common.h"
 
 namespace sot {    

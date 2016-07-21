@@ -12,12 +12,10 @@
 #ifndef Surrogate_Optimization_rbf_h
 #define Surrogate_Optimization_rbf_h
 
-#include <stdio.h>
-#include <armadillo>
+#include <cassert>
 #include <iostream>
-#include <assert.h>
-#include "utils.h"
 #include "common.h"
+#include "utils.h"
 #include "surrogate.h"
 
 namespace sot {

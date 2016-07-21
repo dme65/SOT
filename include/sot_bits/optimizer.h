@@ -10,24 +10,20 @@
 #ifndef Surrogate_Optimization_optimizer_h
 #define Surrogate_Optimization_optimizer_h
 
-#include "rbf.h"
-#include <iostream>
-#include "utils.h"
-#include "candidate_points.h"
 #include <cassert>
+#include <iostream>
 #include "common.h"
-#include "test_problems.h"
+#include "utils.h"
 
 namespace sot {  
     class Optimizer {
-    private:
+    protected:
         std::shared_ptr<Problem> data;
         std::shared_ptr<ExpDesign> exp_des;
         std::shared_ptr<Surrogate> surf;
         std::shared_ptr<Sampling> sampling;
         double sigma_max = 0.2, sigma_min = 0.005;
         int failtol, succtol;
-        bool do_restart;
         int maxeval;
         int numeval;
         int initp;
@@ -42,7 +38,7 @@ namespace sot {
             this->sampling = std::shared_ptr<Sampling>(sampling);
             this->maxeval = maxeval;
             numeval = 0;
-            initp = exp_des->num_points;
+            initp = exp_des->npts();
             dim = data->dim();
             failtol = data->dim();
             succtol = 3;
@@ -51,8 +47,9 @@ namespace sot {
             assert(maxeval > initp);
         }
         
-        Result run() {            
-            Result res(maxeval, exp_des->num_points, data->dim());
+        Result run() {   
+            arma::arma_rng::set_seed_random();
+            Result res(maxeval, initp, dim);
             numeval = 0;
             
             double fbest_tot = std::numeric_limits<double>::max();

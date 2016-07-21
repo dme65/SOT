@@ -9,13 +9,13 @@
 #ifndef __Surrogate_Optimization__kNN__
 #define __Surrogate_Optimization__kNN__
 
-#include <armadillo>
-#include "utils.h"
 #include "common.h"
+#include "utils.h"
+#include "surrogate.h"
 
 namespace sot {
     
-    class kNN {
+    class kNN : public Surrogate {
     protected:
         int max_points;
         int num_points;

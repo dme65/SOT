@@ -9,12 +9,9 @@
 #ifndef __Surrogate_Optimization__utils__
 #define __Surrogate_Optimization__utils__
 
-#include <stdio.h>
-#include <armadillo>
-#include <assert.h>
+#include <cassert>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
-#include <iomanip>
 #include <iostream>
 #include "common.h"
 
@@ -154,24 +151,6 @@ namespace sot {
         }
     };
     
-    inline void readmat(mat &out, std::string fname, int n_rows, int n_cols) {
-        if(out.n_rows != n_rows or out.n_cols != n_cols) {
-            out = arma::zeros<mat>(n_rows, n_cols);
-        }
-        
-        std::ifstream in(fname);
-        std::string line;
-        for(int i=0; i < n_rows; i++) {
-            std::getline(in, line);
-            double value;
-            std::stringstream ss(line);
-            for(int j=0; j < n_cols; j++) {
-                ss >> value;
-                out(i,j) = value;
-            }
-        }
-    };
-    
     // Computes the Pareto front of x, y
     inline uvec pareto_front(const vec &x, const vec &y) {
         assert(x.n_rows == y.n_rows);
@@ -233,9 +212,20 @@ namespace sot {
         }
     };
     
-    vec gaussian_smoothing(mat X, vec f, double sigma) {
-        mat W = arma::exp(-SquaredPairwiseDistance(X, X)/(2.0*sigma*sigma));
-        return (W * f) / arma::sum(W, 2);
+    // Random integer in interval [0, i-1]
+    inline double randi(int i) { 
+        std::uniform_int_distribution<int> randi(0, i-1);
+        return randi(rng::mt);
+    }
+    
+    inline double randn() {
+        std::normal_distribution<double> randn(0.0, 1.0);
+        return randn(rng::mt);
+    }
+    
+    inline double rand() {
+        std::uniform_real_distribution<double> rand(0, 1);
+        return rand(rng::mt);
     }
 }
 
