@@ -10,6 +10,7 @@
 #define __Surrogate_Optimization__Common__
 
 #include <armadillo>
+#include <random>
 
 namespace sot {
     

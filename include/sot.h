@@ -15,7 +15,7 @@
 #define SOT_H
 
 #include "sot_bits/surrogate.h"
-#include "sot_bits/candidate_points.h"
+#include "sot_bits/adaptive_sampling.h"
 #include "sot_bits/common.h"
 #include "sot_bits/experimental_design.h"
 #include "sot_bits/genetic_algorithm.h"

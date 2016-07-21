@@ -9,14 +9,9 @@
 #ifndef __Surrogate_Optimization__CandidatePoints__
 #define __Surrogate_Optimization__CandidatePoints__
 
-#include <stdio.h>
-#include "candidate_points.h"
-#include "rbf.h"
-#include "utils.h"
-#include <math.h>
 #include "common.h"
-#include "test_problems.h"
-#include <random>
+#include "utils.h"
+#include "problem.h"
 
 namespace sot {
     
