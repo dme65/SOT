@@ -19,9 +19,11 @@
 #include "surrogate.h"
 
 namespace sot {
+
     class CubicKernel {
     public:
         const int phi_zero = 0;
+        const int order = 2;
         inline double eval(double dist) const { return dist * dist * dist; }
         inline double deriv(double dist) const { return 3 * dist * dist; }
         inline mat eval(const mat &dists) const { return dists % dists % dists; }
@@ -31,6 +33,7 @@ namespace sot {
     class ThinPlateKernel {
     public:
         const int phi_zero = 0;
+        const int order = 2;
         inline double eval(double dist) const { return dist * dist * log(dist + 1e-10);}
         inline double deriv(double dist) const { return dist * (1.0 + 2.0 * log(dist + 1e-10)); }
         inline mat eval(const mat &dists) const { return dists % dists % arma::log(dists + 1e-10); }
@@ -40,6 +43,7 @@ namespace sot {
     class LinearKernel {
     public:
         const int phi_zero = 0;
+        const int order = 1;
         inline double eval(double dist) const { return dist; }
         inline double deriv(double dist) const { return 1.0; }
         inline mat eval(const mat &dists) const { return dists; }
@@ -48,6 +52,7 @@ namespace sot {
     
     class LinearTail {
     public:
+        const int degree = 1;
         inline mat eval(const mat &x) const { return arma::join_vert(arma::ones<mat>(1, x.n_cols), x); }
         inline vec eval(const vec &x) const {
             vec tail = arma::zeros<vec>(x.n_rows + 1);
@@ -61,6 +66,7 @@ namespace sot {
     
     class ConstantTail {
     public:
+        const int degree = 0;
         inline mat eval(const mat &x) const { return arma::ones<mat>(x.n_rows, 1); }
         inline vec eval(const vec &x) const { return arma::ones<mat>(1, 1); }
         inline mat deriv(const mat &x) const { return arma::zeros<mat>(x.n_rows, 1); }
@@ -90,8 +96,7 @@ namespace sot {
     public:
         
         RBFInterpolant(int max_points, int d, vec xlow, vec xup, double eta) :
-            RBFInterpolant(max_points, d, xlow, xup)
-        {
+            RBFInterpolant(max_points, d, xlow, xup) {
             this->eta = eta;
         }
         
@@ -109,6 +114,10 @@ namespace sot {
             this->dirty = false;
             this->xlow = xlow;
             this->xup = xup;
+            
+            if (not (kernel.order-1 <= tail.degree)) {
+                throw std::logic_error("Kernel and tail mismatch");
+            }
         }
         
         int dim() const {

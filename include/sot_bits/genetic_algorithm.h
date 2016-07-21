@@ -44,10 +44,10 @@ namespace sot {
             this->xlow = data->lbound();
             this->xup = data->rbound();
         }
-        GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, int n_individuals, int n_generations) {
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, 
+        int n_individuals, int n_generations) : GeneticAlgorithm(data, n_individuals, n_generations) {
             this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
             this->random_init = false;
-            GeneticAlgorithm(data, n_individuals, n_generations);
         }
 
         Result run() {
