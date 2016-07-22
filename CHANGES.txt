@@ -3,3 +3,8 @@ v0.1 Experimental release
 v0.2
   - The Surrogate and Sampling are now inputs to the optimization algorithm
   - Many major changes in the code structure
+
+v0.3
+  - General code cleanup
+  - Added README.md
+  - Changed the installation directory of SOT 
