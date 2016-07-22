@@ -6,10 +6,6 @@
  */
 
 #include <sot.h>
-#include <armadillo>
-#include <stdlib.h>
-#include <iostream>
-#include <cassert>
 
 using namespace sot;
 

@@ -6,9 +6,6 @@
  */
 
 #include <sot.h>
-#include <armadillo>
-#include <stdlib.h>
-#include <iostream>
 
 using namespace sot;
 

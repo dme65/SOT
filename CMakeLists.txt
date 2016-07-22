@@ -8,15 +8,15 @@ add_subdirectory (test)
 
 # The version number.
 set (SOT_VERSION_MAJOR 0)
-set (SOT_VERSION_MINOR 2)
+set (SOT_VERSION_MINOR 3)
 
 include_directories(include)
 
 # Move header files
 file(GLOB MAIN_HEADER "include/sot.h")
-install(FILES ${MAIN_HEADER} DESTINATION include/SOT)
+install(FILES ${MAIN_HEADER} DESTINATION include)
 file(GLOB BITS_HEADERS "include/sot_bits/*.h")
-install(FILES ${BITS_HEADERS} DESTINATION include/SOT/sot_bits)
+install(FILES ${BITS_HEADERS} DESTINATION include/sot_bits)
 
 # Test
 enable_testing()
