@@ -21,9 +21,12 @@
 namespace sot {
 
     class CubicKernel {
+    private:
+        int mPhiZero = 0;
+        int mOrder = 2;
     public:
-        const int phi_zero = 0;
-        const int order = 2;
+        inline int order() const { return mOrder; }
+        inline int phiZero() const { return mPhiZero; }
         inline double eval(double dist) const { return dist * dist * dist; }
         inline double deriv(double dist) const { return 3 * dist * dist; }
         inline mat eval(const mat &dists) const { return dists % dists % dists; }
@@ -31,9 +34,12 @@ namespace sot {
     };
     
     class ThinPlateKernel {
+    private:
+        int mPhiZero = 0;
+        int mOrder = 2;
     public:
-        const int phi_zero = 0;
-        const int order = 2;
+        inline int order() const { return mOrder; }
+        inline int phiZero() const { return mPhiZero; }
         inline double eval(double dist) const { return dist * dist * log(dist + 1e-10);}
         inline double deriv(double dist) const { return dist * (1.0 + 2.0 * log(dist + 1e-10)); }
         inline mat eval(const mat &dists) const { return dists % dists % arma::log(dists + 1e-10); }
@@ -41,9 +47,12 @@ namespace sot {
     };
     
     class LinearKernel {
+    private:
+        int mPhiZero = 0;
+        int mOrder = 1;
     public:
-        const int phi_zero = 0;
-        const int order = 1;
+        inline int order() const { return mOrder; }
+        inline int phiZero() const { return mPhiZero; }
         inline double eval(double dist) const { return dist; }
         inline double deriv(double dist) const { return 1.0; }
         inline mat eval(const mat &dists) const { return dists; }
@@ -51,8 +60,10 @@ namespace sot {
     };
     
     class LinearTail {
+    private:
+        int mDegree = 1;
     public:
-        const int degree = 1;
+        inline int degree() const { return mDegree; }
         inline mat eval(const mat &x) const { return arma::join_vert(arma::ones<mat>(1, x.n_cols), x); }
         inline vec eval(const vec &x) const {
             vec tail = arma::zeros<vec>(x.n_rows + 1);
@@ -61,215 +72,216 @@ namespace sot {
             return tail;
         }
         inline mat deriv(const mat &x) const { return arma::join_vert(arma::zeros<mat>(1, x.n_rows), arma::eye<mat>(x.n_rows, x.n_rows)); }
-        inline int n_tail(int d) const { return 1 + d; }
+        inline int nTail(int d) const { return 1 + d; }
     };
     
     class ConstantTail {
+    private:
+        int mDegree = 0;
     public:
-        const int degree = 0;
+        inline int degree() const { return mDegree; }
         inline mat eval(const mat &x) const { return arma::ones<mat>(x.n_rows, 1); }
         inline vec eval(const vec &x) const { return arma::ones<mat>(1, 1); }
         inline mat deriv(const mat &x) const { return arma::zeros<mat>(x.n_rows, 1); }
-        inline int n_tail(int d) const { return 1; }
+        inline int nTail(int d) const { return 1; }
     };
     
     template<class Kernel, class Tail>
     class RBFInterpolant : public Surrogate {
         
     protected:
-        Kernel kernel;
-        Tail tail;
-        mat L, U;
-        uvec p;
-        vec coeffs;
-        vec F;
-        mat centers;
-        int max_points;
-        int ntail;
-        int num_points;
-        bool dirty;
-        vec xlow, xup;
-        double eta = 1e-6;
-        int d;
-        double norm_budget = 0;
+        Kernel mKernel;
+        Tail mTail;
+        mat mL, mU;
+        uvec mp;
+        vec mCoeffs;
+        vec mfX;
+        mat mCenters;
+        int mMaxPoints;
+        int mnTail;
+        int mNumPoints;
+        bool mDirty;
+        vec mxLow, mxUp;
+        double mEta = 1e-6;
+        int mDim;
         
     public:
         
         RBFInterpolant(int max_points, int d, vec xlow, vec xup, double eta) :
             RBFInterpolant(max_points, d, xlow, xup) {
-            this->eta = eta;
+            this->mEta = eta;
         }
         
-        RBFInterpolant(int max_points, int d, vec xlow, vec xup) {
-            this->max_points = max_points;
-            this->d = d;
-            this->ntail = tail.n_tail(d);
-            this->num_points = 0;
-            this->centers = arma::zeros<mat>(d, max_points);
-            this->L = arma::zeros<mat>(max_points + ntail, max_points + ntail);
-            this->U = arma::zeros<mat>(max_points + ntail, max_points + ntail);
-            this->p = arma::zeros<uvec>(max_points + ntail);
-            this->F = arma::zeros<vec>(max_points + ntail);
-            this->coeffs = vec(max_points + ntail);
-            this->dirty = false;
-            this->xlow = xlow;
-            this->xup = xup;
+        RBFInterpolant(int maxPoints, int dim, vec xLow, vec xUp) {
+            this->mMaxPoints = maxPoints;
+            this->mDim = dim;
+            this->mnTail = mTail.nTail(dim);
+            this->mNumPoints = 0;
+            this->mCenters = arma::zeros<mat>(dim, maxPoints);
+            this->mL = arma::zeros<mat>(maxPoints + mnTail, maxPoints + mnTail);
+            this->mU = arma::zeros<mat>(maxPoints + mnTail, maxPoints + mnTail);
+            this->mp = arma::zeros<uvec>(maxPoints + mnTail);
+            this->mfX = arma::zeros<vec>(maxPoints + mnTail);
+            this->mCoeffs = vec(maxPoints + mnTail);
+            this->mDirty = false;
+            this->mxLow = xLow;
+            this->mxUp = xUp;
             
-            if (not (kernel.order-1 <= tail.degree)) {
+            if (not (mKernel.order() - 1 <= mTail.degree())) {
                 throw std::logic_error("Kernel and tail mismatch");
             }
         }
         
         int dim() const {
-            return this->d;
+            return mDim;
         }
         
         // Reset RBF
         void reset() {
-            num_points = 0;
+            mNumPoints = 0;
         }
         
         // Number of points
-        int npts() {
-            return this->num_points;
+        int numPoints() const {
+            return mNumPoints;
         }
         
         // Return points
-        mat get_X() const {
-            return FromUnitBox((mat)centers.cols(0, num_points - 1), xlow, xup);
+        mat X() const {
+            return fromUnitBox((mat)mCenters.cols(0, mNumPoints - 1), mxLow, mxUp);
         }
         
         // Return point
-        vec get_X(int i) const {
-            return FromUnitBox((mat)centers.col(i), xlow, xup);
+        vec X(int i) const {
+            return fromUnitBox((mat)mCenters.col(i), mxLow, mxUp);
         }
         
         // Return function values
-        vec get_fX() const {
-            return F.rows(ntail, ntail + num_points - 1);
+        vec fX() const {
+            return mfX.rows(mnTail, mnTail + mNumPoints - 1);
         }
         
         // Return function value
-        double get_fX(int i) const {
-            return F(ntail+i);
+        double fX(int i) const {
+            return mfX(mnTail + i);
         }
         
-        vec get_coeffs() {
-            if(dirty) { throw std::logic_error("RBF not updated"); }
-            return coeffs;
+        vec coeffs() {
+            if(mDirty) { throw std::logic_error("RBF not updated"); }
+            return mCoeffs;
         }
        
         // Fit the RBF
         void fit() {
-            if(num_points < ntail) { throw std::logic_error("Not enough points"); }       
-            if (dirty) {
-                int n = num_points + ntail;
-                coeffs = arma::solve(arma::trimatl(L(arma::span(0, n - 1), arma::span(0, n - 1))), F(p(arma::span(0, n - 1))));
-                coeffs = arma::solve(arma::trimatu(U(arma::span(0, n - 1), arma::span(0, n - 1))), coeffs);
-                dirty = false;
+            if(mNumPoints < mnTail) { throw std::logic_error("Not enough points"); }       
+            if (mDirty) {
+                int n = mNumPoints + mnTail;
+                mCoeffs = arma::solve(arma::trimatl(mL(arma::span(0, n - 1), arma::span(0, n - 1))), mfX(mp(arma::span(0, n - 1))));
+                mCoeffs = arma::solve(arma::trimatu(mU(arma::span(0, n - 1), arma::span(0, n - 1))), mCoeffs);
+                mDirty = false;
             }
         }
         
         // Set points
-        void set_points(const mat &ppoints, const vec &fun_vals) {
+        void setPoints(const mat &ppoints, const vec &funVals) {
             
             // Map point to be in the unit box
-            mat points = ToUnitBox(ppoints, xlow, xup);
+            mat points = toUnitBox(ppoints, mxLow, mxUp);
             
-            num_points = (int)points.n_cols;
-            int n = num_points + ntail;
-            if(num_points < d + 1) { 
+            mNumPoints = (int)points.n_cols;
+            int n = mNumPoints + mnTail;
+            if(mNumPoints < mDim + 1) { 
                 throw std::logic_error("Not enough points"); 
             }
-            mat px = tail.eval(points);
-            mat phi = kernel.eval(arma::sqrt(SquaredPairwiseDistance(points, points)));
+            mat px = mTail.eval(points);
+            mat phi = mKernel.eval(arma::sqrt(squaredPairwiseDistance(points, points)));
                     
             mat A = arma::zeros<mat>(n, n);
-            A(arma::span(ntail, n - 1), arma::span(0, ntail - 1)) = px.t();
-            A(arma::span(0, ntail - 1), arma::span(ntail, n - 1)) = px;
-            A(arma::span(ntail, n - 1), arma::span(ntail, n - 1)) = phi;
-            F.rows(ntail, n - 1) = fun_vals;
+            A(arma::span(mnTail, n - 1), arma::span(0, mnTail - 1)) = px.t();
+            A(arma::span(0, mnTail - 1), arma::span(mnTail, n - 1)) = px;
+            A(arma::span(mnTail, n - 1), arma::span(mnTail, n - 1)) = phi;
+            mfX.rows(mnTail, n - 1) = funVals;
             
             // REGULARIZATION
-            A += eta*arma::eye(n, n);
+            A += mEta*arma::eye(n, n);
             
             // Compute the initial LU factorization of A
-            mat LL, UU, P;
-            arma::lu(LL, UU, P, A);
+            mat L, U, P;
+            arma::lu(L, U, P, A);
             
-            L(arma::span(0, n - 1), arma::span(0, n - 1)) = LL;
-            U(arma::span(0, n - 1), arma::span(0, n - 1)) = UU;
+            mL(arma::span(0, n - 1), arma::span(0, n - 1)) = L;
+            mU(arma::span(0, n - 1), arma::span(0, n - 1)) = U;
             
             // Convert P to a permutation vector
             for(int i = 0; i < n; i++) {
                 uvec temp = find(P.row(i) > 0.5);
-                p(i) = temp(0);
+                mp(i) = temp(0);
             }
             
-            centers.cols(0, num_points - 1) = points;
-            dirty = true;
+            mCenters.cols(0, mNumPoints - 1) = points;
+            mDirty = true;
         }
         
         // Add one point
-        void add_point(const vec &ppoint, double fun_val) {
-            if(num_points == 0) {
+        void addPoint(const vec &ppoint, double funVal) {
+            if(mNumPoints == 0) {
                 std::cout << "You need to use set_points first" << std::endl;
                 abort();
             }
 
             // Map point to be in the unit box
-            vec point = ToUnitBox(ppoint, xlow, xup);
+            vec point = toUnitBox(ppoint, mxLow, mxUp);
             
-            int nact = ntail + num_points;
-            if(num_points + 1 > max_points) { 
+            int nAct = mnTail + mNumPoints;
+            if(mNumPoints + 1 > mMaxPoints) { 
                 throw std::logic_error("Capacity exceeded"); 
             }
       
-            vec vx = arma::join_vert(tail.eval(point), kernel.eval(arma::sqrt(SquaredPointSetDistance(point, centers.cols(0, num_points - 1)))));
-            vec u12 = arma::solve(arma::trimatl(L(arma::span(0, nact - 1), arma::span(0, nact - 1))), vx.rows(p.head(nact)));
-            vec l21 = (arma::solve(arma::trimatl(U(arma::span(0, nact - 1), arma::span(0, nact - 1)).t()), vx));
-            double u22 = kernel.phi_zero + eta - arma::dot(u12, l21);
+            vec vx = arma::join_vert(mTail.eval(point), 
+                    mKernel.eval(arma::sqrt(squaredPointSetDistance(point, mCenters.cols(0, mNumPoints - 1)))));
+            vec u12 = arma::solve(arma::trimatl(mL(arma::span(0, nAct - 1), arma::span(0, nAct - 1))), vx.rows(mp.head(nAct)));
+            vec l21 = (arma::solve(arma::trimatl(mU(arma::span(0, nAct - 1), arma::span(0, nAct - 1)).t()), vx));
+            double u22 = mKernel.phiZero() + mEta - arma::dot(u12, l21);
 
-            L(nact, arma::span(0, nact - 1)) = l21.t();
-            L(nact, nact) = 1;
-            U(arma::span(0, nact - 1), nact) = u12;
-            U(nact, nact) = u22;
-            p(nact) = nact;
+            mL(nAct, arma::span(0, nAct - 1)) = l21.t();
+            mL(nAct, nAct) = 1;
+            mU(arma::span(0, nAct - 1), nAct) = u12;
+            mU(nAct, nAct) = u22;
+            mp(nAct) = nAct;
 
             // Update F and add the centers
-            F(nact) = fun_val;
-            centers.col(num_points) = point;
-            num_points++;
+            mfX(nAct) = funVal;
+            mCenters.col(mNumPoints) = point;
+            mNumPoints++;
             
-            dirty = true;
+            mDirty = true;
         }
         
-        void add_points(const mat &ppoints, const vec &fun_vals) {
-            if(num_points == 0) {
-                return set_points(ppoints, fun_vals);
+        void addPoints(const mat &ppoints, const vec &funVals) {
+            if(mNumPoints == 0) {
+                return setPoints(ppoints, funVals);
             }
             
             // Map point to be in the unit box
-            mat points = ToUnitBox(ppoints, xlow, xup);
+            mat points = toUnitBox(ppoints, mxLow, mxUp);
             
-            int nact = ntail + num_points;
-            int n_pts = (int)fun_vals.n_rows;
-            if(n_pts < 2) { throw std::logic_error("Use add_point instead"); }
-            if(num_points + n_pts > max_points) { throw std::logic_error("Capacity exceeded"); }
+            int nAct = mnTail + mNumPoints;
+            int n = (int)funVals.n_rows;
+            if(n < 2) { throw std::logic_error("Use add_point instead"); }
+            if(mNumPoints + n > mMaxPoints) { throw std::logic_error("Capacity exceeded"); }
             
-            auto px = tail.eval(points);
-            
-            mat B = arma::zeros(nact, n_pts);
-            B.rows(arma::span(0, d)) = px;
-            B.rows(ntail, nact - 1) = kernel.eval(arma::sqrt(SquaredPairwiseDistance<mat>(centers.cols(0, num_points - 1), points)));
-            mat K = kernel.eval(arma::sqrt(SquaredPairwiseDistance<mat>(points, points)));
+            auto px = mTail.eval(points);
+            mat B = arma::zeros(nAct, n);
+            B.rows(arma::span(0, mDim)) = px;
+            B.rows(mnTail, nAct - 1) = mKernel.eval(arma::sqrt(squaredPairwiseDistance<mat>(mCenters.cols(0, mNumPoints - 1), points)));
+            mat K = mKernel.eval(arma::sqrt(squaredPairwiseDistance<mat>(points, points)));
             
             // REGULARIZATION
-            K += eta*arma::eye(n_pts, n_pts);
+            K += mEta*arma::eye(n, n);
 
             // Update the LU factorization
-            mat U12 = arma::solve(arma::trimatl(L(arma::span(0, nact - 1), arma::span(0, nact - 1))), B.rows(p.head(nact)));
-            mat L21 = (arma::solve(arma::trimatl(U(arma::span(0, nact - 1), arma::span(0, nact - 1)).t()), B)).t();
+            mat U12 = arma::solve(arma::trimatl(mL(arma::span(0, nAct - 1), arma::span(0, nAct - 1))), B.rows(mp.head(nAct)));
+            mat L21 = (arma::solve(arma::trimatl(mU(arma::span(0, nAct - 1), arma::span(0, nAct - 1)).t()), B)).t();
             mat C;
             try {
                 C = arma::chol(K - L21*U12, "lower");
@@ -277,99 +289,98 @@ namespace sot {
             catch (std::runtime_error) {
                 std::cout << "Warning: Cholesky factorization failed, computing new LU from scratch..." << std::endl;
                 // Add new points
-                F.rows(nact, nact + n_pts - 1) = fun_vals;
-                centers.cols(num_points, num_points + n_pts - 1) = points;
-                num_points += n_pts;
+                mfX.rows(nAct, nAct + n - 1) = funVals;
+                mCenters.cols(mNumPoints, mNumPoints + n - 1) = points;
+                mNumPoints += n;
                 // Build LU from scratch
-                set_points(get_X(), F.rows(ntail, nact + n_pts - 1));
+                setPoints(X(), mfX.rows(mnTail, nAct + n - 1));
                 return;
             }
-            L(arma::span(nact, nact + n_pts - 1), arma::span(0, nact - 1)) = L21;
-            L(arma::span(nact, nact + n_pts - 1), arma::span(nact, nact + n_pts - 1)) = C;
-            U(arma::span(0, nact - 1), arma::span(nact, nact + n_pts - 1)) = U12;
-            U(arma::span(nact, nact + n_pts - 1), arma::span(nact, nact + n_pts - 1)) = C.t();
-            p.rows(arma::span(nact, nact + n_pts - 1)) = arma::linspace<uvec>(nact, nact + n_pts - 1, n_pts);
+            mL(arma::span(nAct, nAct + n - 1), arma::span(0, nAct - 1)) = L21;
+            mL(arma::span(nAct, nAct + n - 1), arma::span(nAct, nAct + n - 1)) = C;
+            mU(arma::span(0, nAct - 1), arma::span(nAct, nAct + n - 1)) = U12;
+            mU(arma::span(nAct, nAct + n - 1), arma::span(nAct, nAct + n - 1)) = C.t();
+            mp.rows(arma::span(nAct, nAct + n - 1)) = arma::linspace<uvec>(nAct, nAct + n - 1, n);
             
             // Update F and add the centers
-            F.rows(nact, nact + n_pts - 1) = fun_vals;
-            centers.cols(num_points, num_points + n_pts - 1) = points;
-            num_points += n_pts;
+            mfX.rows(nAct, nAct + n - 1) = funVals;
+            mCenters.cols(mNumPoints, mNumPoints + n - 1) = points;
+            mNumPoints += n;
             
-            dirty = true;
+            mDirty = true;
         }
         
         // Evaluate one point without provided distance
         double eval(const vec &ppoint) const {
-            if(dirty) { throw std::logic_error("RBF not updated"); }       
+            if(mDirty) { throw std::logic_error("RBF not updated"); }       
 
             // Map point to be in the unit box
-            vec point = ToUnitBox(ppoint, xlow, xup);
+            vec point = toUnitBox(ppoint, mxLow, mxUp);
             
-            assert(not dirty);
-            vec px = tail.eval(point);
-            vec phi = kernel.eval(arma::sqrt(SquaredPointSetDistance(point, (mat)centers.cols(0, num_points - 1))));
-            vec c = coeffs.head(num_points + ntail);
-            return arma::dot(c.head(ntail), px) + arma::dot(c.tail(num_points), phi);
+            vec px = mTail.eval(point);
+            vec phi = mKernel.eval(arma::sqrt(squaredPointSetDistance(point, (mat)mCenters.cols(0, mNumPoints - 1))));
+            vec c = mCoeffs.head(mNumPoints + mnTail);
+            return arma::dot(c.head(mnTail), px) + arma::dot(c.tail(mNumPoints), phi);
         }
         
         // Evaluate one point with provided distance
-        double eval(const vec &ppoint, const vec &dists) const {
-            if(dirty) { throw std::logic_error("RBF not updated"); }       
+        /*
+        double eval(const vec &point, const vec &dists) const {
+            if(mDirty) { throw std::logic_error("RBF not updated"); }       
 
             // Map point to be in the unit box
-            vec point = ToUnitBox(ppoint, xlow, xup);
+            point = toUnitBox(point, mxLow, mxUp);
             
-            assert(not dirty);
-            vec px = tail.eval(point);
-            vec phi = kernel.eval(dists);
-            vec c = coeffs.head(num_points + ntail);
-            return arma::dot(c.head(ntail), px) + arma::dot(c.tail(num_points), phi);
+            vec px = mTail.eval(point);
+            vec phi = mKernel.eval(dists);
+            vec c = mCoeffs.head(mNumPoints + mnTail);
+            return arma::dot(c.head(mnTail), px) + arma::dot(c.tail(mNumPoints), phi);
         }
+        */
         
         // Evaluate multiple points
         vec evals(const mat &ppoints) const {
-            if(dirty) { throw std::logic_error("RBF not updated"); }       
+            if(mDirty) { throw std::logic_error("RBF not updated"); }       
 
             // Map point to be in the unit box
-            mat points = ToUnitBox(ppoints, xlow, xup);
+            mat points = toUnitBox(ppoints, mxLow, mxUp);
             
-            assert(not dirty);
-            mat px = tail.eval(points);
-            mat phi = kernel.eval(arma::sqrt(SquaredPairwiseDistance((mat)centers.cols(0, num_points - 1), points)));
-            vec c = coeffs.head(num_points + ntail);
-            return px.t() * c.head(ntail) + phi.t() * c.tail(num_points);
+            mat px = mTail.eval(points);
+            mat phi = mKernel.eval(arma::sqrt(squaredPairwiseDistance((mat)mCenters.cols(0, mNumPoints - 1), points)));
+            vec c = mCoeffs.head(mNumPoints + mnTail);
+            return px.t() * c.head(mnTail) + phi.t() * c.tail(mNumPoints);
         }
         
         // Evaluate multiple points with provided distances
-        vec evals(const mat &ppoints, const mat &dists) const {
-            if(dirty) { throw std::logic_error("RBF not updated"); }       
+        /*
+        vec evals(const mat &points, const mat &dists) const {
+            if(mDirty) { throw std::logic_error("RBF not updated"); }       
 
             // Map point to be in the unit box
-            mat points = ToUnitBox(ppoints, xlow, xup);
+            points = toUnitBox(points, mxLow, mxUp);
             
-            assert(not dirty);
-            mat px = tail.eval(points);
-            mat phi = kernel.eval(dists);
-            vec c = coeffs.head(num_points + ntail);
-            return px.t() * c.head(ntail) + phi.t() * c.tail(num_points);
+            mat px = mTail.eval(points);
+            mat phi = mKernel.eval(dists);
+            vec c = mCoeffs.head(mNumPoints + mnTail);
+            return px.t() * c.head(mnTail) + phi.t() * c.tail(mNumPoints);
         }
+        */
         
         // Gradient of the surface at the current point
         vec deriv(const vec &ppoint) const {
-            if(dirty) { throw std::logic_error("RBF not updated"); }       
+            if(mDirty) { throw std::logic_error("RBF not updated"); }       
 
             // Map point to be in the unit box
-            vec point = ToUnitBox(ppoint, xlow, xup);
+            vec point = toUnitBox(ppoint, mxLow, mxUp);
             
-            assert(not dirty);
-            mat dpx = tail.deriv(point);
-            vec c = coeffs.head(num_points + ntail);
-            vec dists = arma::sqrt(SquaredPairwiseDistance<mat>(centers.cols(0, num_points - 1), point));
-            dists.elem(arma::find(dists < 1e-10)).fill(1e-10);
-            mat dsx = - centers.cols(0, num_points - 1);
+            mat dpx = mTail.deriv(point);
+            vec c = mCoeffs.head(mNumPoints + mnTail);
+            vec dists = arma::sqrt(squaredPairwiseDistance<mat>(mCenters.cols(0, mNumPoints - 1), point));
+            dists.elem(arma::find(dists < 1e-10)).fill(1e-10); // Better safe than sorry
+            mat dsx = - mCenters.cols(0, mNumPoints - 1);
             dsx.each_col() += point;
-            dsx.each_row() %= (kernel.deriv(dists) % c.tail(num_points)/dists).t();
-            return arma::sum(dsx, 1) + dpx.t() * c.head(ntail);
+            dsx.each_row() %= (mKernel.deriv(dists) % c.tail(mNumPoints)/dists).t();
+            return arma::sum(dsx, 1) + dpx.t() * c.head(mnTail);
         }
     };
 

@@ -52,7 +52,7 @@ namespace sot {
             num_points += npts;
         }
         double eval(const vec &point) const {
-            vec dists = SquaredPointSetDistance(point, X());
+            vec dists = squaredPointSetDistance(point, X());
             uvec indices = sort_index(dists);
             return arma::mean(fX(indices.rows(0, k-1)));
         }

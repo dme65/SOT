@@ -20,22 +20,16 @@ namespace sot {
     
     // Template
     class Surrogate {
-    protected:
-        int max_points;
-        int num_points;
-        mat Xmat;
-        vec fXvec;
-        int d;
     public:
-        int npts() { return num_points; }
-        int dim() const { return d; }
+        virtual int numPoints() const = 0;
+        virtual int dim() const = 0;
         virtual void reset() = 0;
-        virtual vec get_X(int i) const = 0;
-        virtual mat get_X() const = 0;
-        virtual double get_fX(int) const = 0;
-        virtual vec get_fX() const = 0;
-        virtual void add_point(const vec&, double) = 0;
-        virtual void add_points(const mat&, const vec&) = 0;
+        virtual vec X(int i) const = 0;
+        virtual mat X() const = 0;
+        virtual double fX(int) const = 0;
+        virtual vec fX() const = 0;
+        virtual void addPoint(const vec&, double) = 0;
+        virtual void addPoints(const mat&, const vec&) = 0;
         virtual double eval(const vec&) const = 0;
         virtual vec evals(const mat&) const = 0;
         virtual vec deriv(const vec&) const = 0;

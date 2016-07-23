@@ -17,38 +17,38 @@ namespace sot {
     
     class MeritWeightedDistance {
     protected:
-        vec weights = {0.3, 0.5, 0.8, 0.95};
-        int next_weight = 0;
+        vec mWeights = {0.3, 0.5, 0.8, 0.95};
+        int mNextWeight = 0;
     public:
-        inline mat pick_points(const mat &cand, const std::shared_ptr<Surrogate>& surf, const mat &points, int newpts, double dtol) {
+        inline mat pickPoints(const mat &cand, const std::shared_ptr<Surrogate>& surf, const mat &points, int newPoints, double distTol) {
             int dim = cand.n_rows; 
 
             // Evaluate the RBF at the candidate points
-            const mat dists = arma::sqrt(SquaredPairwiseDistance<mat>(points, cand));
-            vec surf_val = surf->evals(cand);
-            vec val_score = UnitRescale(surf_val);
-            vec min_dist = arma::min(dists).t();
-            vec dist_score = 1.0 - UnitRescale(min_dist);
+            const mat dists = arma::sqrt(squaredPairwiseDistance<mat>(points, cand));
+            vec surfVals = surf->evals(cand);
+            vec valScores = unitRescale(surfVals);
+            vec minDists = arma::min(dists).t();
+            vec distScores = 1.0 - unitRescale(minDists);
 
-            mat newx = arma::zeros<mat>(dim, newpts);
+            mat newx = arma::zeros<mat>(dim, newPoints);
 
             arma::uword winner;
-            for(int i=0; i < newpts; i++) {
-                double weight = weights[next_weight % weights.n_elem];
-                next_weight++;
+            for(int i=0; i < newPoints; i++) {
+                double weight = mWeights[mNextWeight % mWeights.n_elem];
+                mNextWeight++;
 
                 // Update distances if necessary
                 if (i > 0) {
-                    vec new_dist = arma::sqrt(SquaredPointSetDistance<mat,vec>((vec)newx.col(i-1), cand));
-                    min_dist = arma::min(min_dist, new_dist);
-                    val_score(winner) = std::numeric_limits<double>::max();
-                    dist_score = 1.0 - UnitRescale(min_dist);
+                    vec newDists = arma::sqrt(squaredPointSetDistance<mat,vec>((vec)newx.col(i-1), cand));
+                    minDists = arma::min(minDists, newDists);
+                    valScores(winner) = std::numeric_limits<double>::max();
+                    distScores = 1.0 - unitRescale(minDists);
                 }
 
                 // Pick a winner
-                vec merit = weight * val_score + (1.0 -  weight) * dist_score;
-                merit.elem(arma::find(min_dist < dtol)).fill(std::numeric_limits<double>::max());
-                double score = merit.min(winner);
+                vec merit = weight * valScores + (1.0 -  weight) * distScores;
+                merit.elem(arma::find(minDists < distTol)).fill(std::numeric_limits<double>::max());
+                double scores = merit.min(winner);
                 newx.col(i) = cand.col(winner);
             }
 
@@ -58,48 +58,47 @@ namespace sot {
     
     // Template for selecting the next evaluation
     class Sampling {
-    protected:
-        double dtol;
-        int numeval;
-        int budget;
     public:
         virtual void reset(int) = 0;
-        virtual mat make_points(vec &xbest, const mat &points, double sigma, int newpts) = 0;
+        virtual mat makePoints(vec &xBest, const mat &points, double sigma, int newPoints) = 0;
     };
     
     // DYCORS
     template<class MeritFunction = MeritWeightedDistance>
     class DYCORS : public Sampling {
     protected:
-        std::shared_ptr<Problem> data;
-        std::shared_ptr<Surrogate> surf;
-        int ncand;
-        int dim;
-        vec xlow;
-        vec xup;
-        MeritFunction merit;
+        std::shared_ptr<Problem> mData;
+        std::shared_ptr<Surrogate> mSurf;
+        int mNumCand;
+        int mDim;
+        vec mxLow;
+        vec mxUp;
+        double mDistTol;
+        int mNumEvals = 0;
+        int mBudget;
+        MeritFunction mMerit;
     public:
-        DYCORS(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
-            this->data = std::shared_ptr<Problem>(data);
-            this->surf = std::shared_ptr<Surrogate>(surf);
-            this->budget = budget;
-            this->ncand = ncand;
-            this->dim = data->dim();
-            this->xlow = data->lbound();
-            this->xup = data->rbound();
-            this->dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
+        DYCORS(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
+            mData = std::shared_ptr<Problem>(data);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mBudget = budget;
+            mNumCand = numCand;
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mDistTol = 1e-3*sqrt(arma::sum(arma::square(mxUp - mxLow)));
         }
         void reset(int budget) {
-            this->budget = budget;
-            int numeval = 0;
+            mBudget = budget;
+            mNumEvals = 0;
         }
-        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {                
-            double dds_prob = fmin(20.0/dim, 1.0) * (1.0 - (log(numeval + 1.0) / log(budget)));
-            mat cand = arma::repmat(xbest, 1, ncand);
-            for(int i=0; i < ncand; i++) {
+        mat makePoints(vec &xBest, const mat &points, double sigma, int newPoints) {                
+            double dds_prob = fmin(20.0/mDim, 1.0) * (1.0 - (log(mNumEvals + 1.0) / log(mBudget)));
+            mat cand = arma::repmat(xBest, 1, mNumCand);
+            for(int i=0; i < mNumCand; i++) {
 
                 int count = 0;
-                for(int j=0; j < dim; j++) {
+                for(int j=0; j < mDim; j++) {
                     if(rand() < dds_prob) {
                         count++;
                         cand(j, i) += sigma*randn();
@@ -107,25 +106,25 @@ namespace sot {
                 }
                 // If no index was perturbed we force one
                 if(count == 0) {
-                    int ind = randi(dim);
+                    int ind = randi(mDim);
                     cand(ind, i) += sigma*randn();
                 }
 
                 // Make sure we are still in the domain
-                for(int j=0; j < dim; j++) {
-                    if(cand(j, i) > xup(j)) { 
-                        cand(j, i) = fmax(2*xup(j) - cand(j, i), xlow(j)); 
+                for(int j=0; j < mDim; j++) {
+                    if(cand(j, i) > mxUp(j)) { 
+                        cand(j, i) = fmax(2*mxUp(j) - cand(j, i), mxLow(j)); 
                     }
-                    else if(cand(j, i) < xlow(j)) { 
-                        cand(j, i) = fmin(2*xlow(j) - cand(j, i), xup(j)); 
+                    else if(cand(j, i) < mxLow(j)) { 
+                        cand(j, i) = fmin(2*mxLow(j) - cand(j, i), mxUp(j)); 
                     }
                 }
             }
             
             // Update counter
-            numeval = numeval + newpts;
+            mNumEvals += newPoints;
             
-            return merit.pick_points(cand, surf, points, newpts, dtol);
+            return mMerit.pickPoints(cand, mSurf, points, newPoints, mDistTol);
         }
     };
 
@@ -133,49 +132,52 @@ namespace sot {
     template<class MeritFunction = MeritWeightedDistance>
     class SRBF : public Sampling {
     protected:
-        std::shared_ptr<Problem> data;
-        std::shared_ptr<Surrogate> surf;
-        int ncand;
-        int dim;
-        vec xlow;
-        vec xup;
-        MeritFunction merit;
+        std::shared_ptr<Problem> mData;
+        std::shared_ptr<Surrogate> mSurf;
+        int mNumCand;
+        int mDim;
+        vec mxLow;
+        vec mxUp;
+        double mDistTol;
+        int mNumEvals = 0;
+        int mBudget;
+        MeritFunction mMerit;
     public:
-        SRBF(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
-            this->data = std::shared_ptr<Problem>(data);
-            this->surf = std::shared_ptr<Surrogate>(surf);
-            this->budget = budget;
-            this->ncand = ncand;
-            this->dim = data->dim();
-            this->xlow = data->lbound();
-            this->xup = data->rbound();
-            this->dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
+        SRBF(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
+            mData = std::shared_ptr<Problem>(data);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mBudget = budget;
+            mNumCand = numCand;
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mDistTol = 1e-3*sqrt(arma::sum(arma::square(mxUp - mxLow)));
         }
         void reset(int budget) {
-            this->budget = budget;
-            int numeval = 0;
+            mBudget = budget;
+            mNumEvals = 0;
         }
-        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {
+        mat makePoints(vec &xBest, const mat &points, double sigma, int newPoints) {
 
-            mat cand = arma::repmat(xbest, 1, ncand);
+            mat cand = arma::repmat(xBest, 1, mNumCand);
 
             // Perturbs one randomly chosen coordinate
-            for(int i=0; i < ncand; i++) {
-                for(int j=0; j < dim; j++) {
+            for(int i=0; i < mNumCand; i++) {
+                for(int j=0; j < mDim; j++) {
                     cand(j, i) += sigma * randn();
-                    if(cand(j, i) > xup(j)) { 
-                        cand(j, i) = fmax(2*xup(j) - cand(j, i), xlow(j)); 
+                    if(cand(j, i) > mxUp(j)) { 
+                        cand(j, i) = fmax(2*mxUp(j) - cand(j, i), mxLow(j)); 
                     }
-                    else if(cand(j, i) < xlow(j)) { 
-                        cand(j, i) = fmin(2*xlow(j) - cand(j, i), xup(j)); 
+                    else if(cand(j, i) < mxLow(j)) { 
+                        cand(j, i) = fmin(2*mxLow(j) - cand(j, i), mxUp(j)); 
                     }
                 }
             }
             
             // Update counter
-            numeval = numeval + newpts;
+            mNumEvals += newPoints;
             
-            return merit.pick_points(cand, surf, points, newpts, dtol);
+            return mMerit.pickPoints(cand, mSurf, points, newPoints, mDistTol);
         }
     };
     
@@ -183,40 +185,42 @@ namespace sot {
     template<class MeritFunction = MeritWeightedDistance>
     class Uniform : public Sampling {
     protected:
-        std::shared_ptr<Problem> data;
-        std::shared_ptr<Surrogate> surf;
-        int ncand;
-        int dim;
-        vec xlow;
-        vec xup;
-        MeritFunction merit;
+        std::shared_ptr<Problem> mData;
+        std::shared_ptr<Surrogate> mSurf;
+        int mNumCand;
+        int mDim;
+        vec mxLow;
+        vec mxUp;
+        double mDistTol;
+        int mNumEvals = 0;
+        int mBudget;
+        MeritFunction mMerit;
     public:
-        Uniform(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int ncand, int budget) {
-            this->data = std::shared_ptr<Problem>(data);
-            this->surf = std::shared_ptr<Surrogate>(surf);
-            this->budget = budget;
-            this->ncand = ncand;
-            this->dim = data->dim();
-            this->xlow = data->lbound();
-            this->xup = data->rbound();
-            this->dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
+        Uniform(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
+            mData = std::shared_ptr<Problem>(data);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mBudget = budget;
+            mNumCand = numCand;
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mDistTol = 1e-3*sqrt(arma::sum(arma::square(mxUp - mxLow)));
         }
         void reset(int budget) {
-            this->budget = budget;
-            int numeval = 0;
+            mBudget = budget;
+            mNumEvals = 0;
         }
-        mat make_points(vec &xbest, const mat &points, double sigma, int newpts) {
+        mat makePoints(vec &xbest, const mat &points, double sigma, int newPoints) {
          
-            mat cand = arma::randu<mat>(dim, ncand);
-            for(int j=0; j < dim; j++) {
-                cand.row(j) = xlow(j) + 
-                        (xup(j) - xlow(j)) * cand.row(j);
+            mat cand = arma::randu<mat>(mDim, mNumCand);
+            for(int j=0; j < mDim; j++) {
+                cand.row(j) = mxLow(j) + (mxUp(j) - mxLow(j)) * cand.row(j);
             }
         
             // Update counter
-            numeval = numeval + newpts;
+            mNumEvals += newPoints;
             
-            return merit.pick_points(cand, surf, points, newpts, dtol);
+            return mMerit.pick_points(cand, mSurf, points, newPoints, mDistTol);
         }
     };
 }

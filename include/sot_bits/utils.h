@@ -30,7 +30,7 @@ namespace sot {
     //
     
     template <class MatType, class VecType>
-    inline VecType SquaredPointSetDistance(const VecType& x, const MatType& Y) {
+    inline VecType squaredPointSetDistance(const VecType& x, const MatType& Y) {
         return arma::abs(arma::repmat(arma::sum(x % x,0),Y.n_cols,1) + arma::sum(Y % Y,0).t() - 2*Y.t()*x);
     };
     
@@ -46,8 +46,7 @@ namespace sot {
     //       we take the absolute value of the result.
     //
     template <class MatType>
-    inline MatType SquaredPairwiseDistance(const MatType& X, const MatType& Y) {
-        //return arma::abs((arma::repmat(arma::sum(X % X, 0).t(),1,Y.n_cols) + arma::repmat(arma::sum(Y % Y,0), X.n_cols, 1) - 2*(X.t()*Y)));
+    inline MatType squaredPairwiseDistance(const MatType& X, const MatType& Y) {
         MatType dists = - 2*(X.t()*Y);
         dists.each_row() += arma::sum(Y % Y, 0);
         dists.each_col() += arma::sum(X % X, 0).t();
@@ -56,8 +55,7 @@ namespace sot {
     };
     
     template <class MatType>
-    inline void SquaredPairwiseDistance2(const MatType& X, const MatType& Y, MatType &dists) {
-        //return arma::abs((arma::repmat(arma::sum(X % X, 0).t(),1,Y.n_cols) + arma::repmat(arma::sum(Y % Y,0), X.n_cols, 1) - 2*(X.t()*Y)));
+    inline void squaredPairwiseDistance2(const MatType& X, const MatType& Y, MatType &dists) {
         dists = - 2*(X.t()*Y);
         dists.each_row() += arma::sum(Y % Y, 0);
         dists.each_col() += arma::sum(X % X, 0).t();
@@ -73,7 +71,7 @@ namespace sot {
     //  - Matrix of size d x n
     //
     
-    inline mat ToUnitBox(const mat& X, const vec& xlow, const vec& xup) {
+    inline mat toUnitBox(const mat& X, const vec& xlow, const vec& xup) {
         return (X - arma::repmat(xlow, 1, X.n_cols))/arma::repmat(xup - xlow, 1, X.n_cols);
     };
     
@@ -85,7 +83,7 @@ namespace sot {
     // Output:
     //  - Vector of size d x 1
     //
-    inline vec ToUnitBox(const vec& X, const vec& xlow, const vec& xup) {
+    inline vec toUnitBox(const vec& X, const vec& xlow, const vec& xup) {
         return (X - xlow)/(xup - xlow);
     };
     
@@ -97,7 +95,7 @@ namespace sot {
     // Output:
     //  - Matrix of size d x n
     //
-    inline mat FromUnitBox(const mat& X, const vec& xlow, const vec& xup) {
+    inline mat fromUnitBox(const mat& X, const vec& xlow, const vec& xup) {
         return arma::repmat(xlow, 1, X.n_cols) + arma::repmat(xup - xlow, 1, X.n_cols) % X;
     };
     
@@ -109,13 +107,13 @@ namespace sot {
     // Output:
     //  - Vector of size d x 1
     //
-    inline vec FromUnitBox(const vec& X, const vec& xlow, const vec& xup) {
+    inline vec fromUnitBox(const vec& X, const vec& xlow, const vec& xup) {
         return xlow + (xup - xlow) % X;
     };
     
     // Unit rescale
     template <class VecType>
-    inline VecType UnitRescale(const VecType& x) {
+    inline VecType unitRescale(const VecType& x) {
         double xmin = arma::min(x);
         double xmax = arma::max(x);
         if( xmin == xmax ) {
@@ -126,33 +124,50 @@ namespace sot {
     
     // Keeps track of function values and results
     class Result {
+    protected:
+        int mNumEvals = 0;
+        int mDim;
+        int mMaxEvals;
+        vec mfX;
+        mat mX;
+        double mfBest;
+        vec mxBest;
     public:
-        int dim;
-        int maxeval;
-        int exp_des_eval;
-        vec fx;
-        mat x;
-        double fbest;
-        vec xbest;
-        Result(int maxeval, int exp_des_eval, int dim) {
-            this->maxeval = maxeval;
-            this->exp_des_eval = exp_des_eval;
-            this->dim = dim;
-            fx = arma::datum::inf * arma::ones<vec>(maxeval);
-            fbest = arma::datum::inf;
-            x = arma::datum::inf * arma::ones<mat>(dim, maxeval);
-            xbest = arma::datum::inf * arma::ones<mat>(dim);
+        Result(int maxEvals, int dim) {
+            mMaxEvals = maxEvals;
+            mNumEvals = 0;
+            mDim = dim;
+            mfX = std::numeric_limits<double>::max() * arma::ones<vec>(mMaxEvals);
+            mfBest = std::numeric_limits<double>::max();
+            mX = std::numeric_limits<double>::max() * arma::ones<mat>(dim, maxEvals);
+            mxBest = std::numeric_limits<double>::max() * arma::ones<mat>(dim);
+        }
+        int dim() const { return mDim; }
+        int numPoints() const { return mNumEvals; }
+        vec fX() const { return mfX.rows(0, mNumEvals-1); }
+        mat X() const { return mX.cols(0, mNumEvals-1); }
+        vec xBest() const { return mxBest; }
+        double fBest() const { return mfBest; }
+        void addEval(vec &x, double fVal) { 
+            mX.col(mNumEvals) = x;
+            mfX(mNumEvals) = fVal;
+            if (fVal < mfBest) {
+                mfBest = fVal;
+                mxBest = x;
+            }
+            mNumEvals++;
         }
         void reset() {
-            x = arma::datum::inf * arma::ones<mat>(dim, maxeval);
-            xbest = arma::datum::inf * arma::ones<mat>(dim);
-            fx = arma::datum::inf * arma::ones<vec>(maxeval);
-            fbest = arma::datum::inf;
+            mNumEvals = 0;
+            mX = std::numeric_limits<double>::max() * arma::ones<mat>(mDim, mMaxEvals);
+            mxBest = std::numeric_limits<double>::max() * arma::ones<mat>(mDim);
+            mfX = std::numeric_limits<double>::max() * arma::ones<vec>(mMaxEvals);
+            mfBest = std::numeric_limits<double>::max();
         }
     };
     
     // Computes the Pareto front of x, y
-    inline uvec pareto_front(const vec &x, const vec &y) {
+    inline uvec paretoFront(const vec &x, const vec &y) {
         assert(x.n_rows == y.n_rows);
         double tol = 1e-10;
         uvec isort = sort_index(x);
@@ -176,39 +191,39 @@ namespace sot {
     
     // Cumulative minimum
     template <class VecType>
-    inline VecType cummin(const VecType& x) {
+    inline VecType cumMin(const VecType& x) {
         VecType out(x.n_elem);
-        auto minval = x(0);
-        out(0) = minval;
+        auto minVal = x(0);
+        out(0) = minVal;
         for(int i=1; i < x.n_elem; i++) {
-            if (x(i) < minval) {
-                minval = x(i);
+            if (x(i) < minVal) {
+                minVal = x(i);
             }
-            out(i) = minval;
+            out(i) = minVal;
         }
         return out;
     };
     
     class StopWatch {
     private:
-        std::chrono::time_point<std::chrono::system_clock> starttime, endtime;
-        bool started;
+        std::chrono::time_point<std::chrono::system_clock> mStartTime, mEndTime;
+        bool mStarted;
     public:
         StopWatch() {
-            this->started = false;
+            this->mStarted = false;
         }
         void start() {
-            assert(!this->started);
-            this->starttime = std::chrono::system_clock::now();
-            this->started = true;
+            assert(!this->mStarted);
+            this->mStartTime = std::chrono::system_clock::now();
+            this->mStarted = true;
         }
         double stop() {
-            assert(this->started);
-            this->endtime = std::chrono::system_clock::now();
-            this->started = false;
-            std::chrono::duration<double> elapsed_seconds = 
-                this->endtime - this->starttime;
-            return elapsed_seconds.count();
+            assert(this->mStarted);
+            this->mEndTime = std::chrono::system_clock::now();
+            this->mStarted = false;
+            std::chrono::duration<double> elapsedSeconds = 
+                this->mEndTime - this->mStartTime;
+            return elapsedSeconds.count();
         }
     };
     

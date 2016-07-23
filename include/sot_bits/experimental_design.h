@@ -17,158 +17,175 @@
 namespace sot {
     
     class ExpDesign {
-    protected:
-        int d;
-        int num_points;
     public:
-        int dim() const { return this->d; }
-        int npts() { return this->num_points; }
-        virtual mat generate_points() const = 0;
+        virtual int dim() const = 0;
+        virtual int numPoints() const = 0;
+        virtual mat generatePoints() const = 0;
     };
     
     class FixedDesign : public ExpDesign {
     protected:
-        mat points;
+        int mDim;
+        int mNumPoints;
+        mat mPoints;
     public:
         FixedDesign(mat& points) { 
-            this->points = points; 
-            d = points.n_rows; 
-            num_points = points.n_cols; 
+            mPoints = points; 
+            mDim = points.n_rows; 
+            mNumPoints = points.n_cols; 
         }
-        virtual mat generate_points() const { return points; }
+        int dim() const { return mDim; }
+        int numPoints() const { return mNumPoints; }
+        mat generatePoints() const { return mPoints; }
     };
     
     class SymmetricLatinHypercube : public ExpDesign {
     protected:
-        mat create_design() const {
-            mat points = arma::zeros<mat>(d, num_points);
-            points.row(0) = arma::linspace<vec>(1, num_points, num_points).t();
+        int mDim;
+        int mNumPoints;
+        mat createDesign() const {
+            mat points = arma::zeros<mat>(mDim, mNumPoints);
+            points.row(0) = arma::linspace<vec>(1, mNumPoints, mNumPoints).t();
 
-            int middleind = num_points/2;
+            int middleInd = mNumPoints/2;
 
-            if (num_points % 2 == 1) {
-                points.row(middleind).fill(middleind + 1);
+            if (mNumPoints % 2 == 1) {
+                points.row(middleInd).fill(middleInd + 1);
             }
 
             // Fill upper
-            for(int j=1; j < d; j++) {
-                for(int i=0; i < middleind;i++) {
+            for(int j=1; j < mDim; j++) {
+                for(int i=0; i < middleInd; i++) {
                     if (rand() < 0.5) {
-                        points(j, i) = num_points -i;
+                        points(j, i) = mNumPoints -i;
                     }
                     else {
                         points(j, i) = i + 1;
                     }
                 }
                 // Shuffle
-                points(j, arma::span(0, middleind-1)) = arma::shuffle(points(j, arma::span(0, middleind-1)));
+                points(j, arma::span(0, middleInd - 1)) = arma::shuffle(points(j, arma::span(0, middleInd - 1)));
             }
 
             // Fill bottom
-            for(int i=middleind; i < num_points; i++) {
-                points.col(i) = num_points + 1 - points.col(num_points - 1 - i);
+            for(int i=middleInd; i < mNumPoints; i++) {
+                points.col(i) = mNumPoints + 1 - points.col(mNumPoints - 1 - i);
             }
 
-            return points/double(num_points);
+            return points/double(mNumPoints);
         }
     public:
-        SymmetricLatinHypercube(int num_points, int d) {
-            this->num_points = num_points;
-            this->d = d;
+        SymmetricLatinHypercube(int numPoints, int dim) {
+            mNumPoints = numPoints;
+            mDim = dim;
             assert(num_points >= 2 * d);
         }
-        
-        mat generate_points() const {
-            arma::uword rank_pmat = 0;
-            mat pmat = arma::ones<mat>(d + 1, num_points);
-            mat xsample;
+        int dim() const { return mDim; }
+        int numPoints() const { return mNumPoints; }
+        mat generatePoints() const {
+            arma::uword rankPmat = 0;
+            mat pMat = arma::ones<mat>(mDim + 1, mNumPoints);
+            mat xSample;
             do {
-                xsample = create_design();
-                pmat.rows(1, d) = xsample;
-                rank_pmat = arma::rank(pmat);
-            } while(rank_pmat != d + 1);
-            return xsample;
+                xSample = createDesign();
+                pMat.rows(1, mDim) = xSample;
+                rankPmat = arma::rank(pMat);
+            } while(rankPmat != mDim + 1);
+            return xSample;
         }
     };
     
     class LatinHypercube : public ExpDesign {
+    protected:
+        int mDim;
+        int mNumPoints;
     public:
-        LatinHypercube(int num_points, int d) {
-            this->num_points = num_points;
-            this->d = d;
+        LatinHypercube(int numPoints, int dim) {
+            mNumPoints = numPoints;
+            mDim = dim;
             assert(num_points >= dim);
         }
-        
-        mat generate_points() const {
-            mat Xbest;
+        int dim() const { return mDim; }        
+        int numPoints() const { return mNumPoints; }
+        mat generatePoints() const {
+            mat XBest;
             mat X;
-            double bestscore = 0;
+            double bestScore = 0;
 
+            // Generate 100 LHD and pick the best one
             for(int iter=0; iter < 100; iter++) {
-                X = arma::zeros(d, num_points);
-                vec xvec = (arma::linspace<vec>(1, num_points, num_points) - 0.5) / num_points;
+                X = arma::zeros(mDim, mNumPoints);
+                vec xvec = (arma::linspace<vec>(1, mNumPoints, mNumPoints) - 0.5) / mNumPoints;
 
-                for(int j=0; j < d; j++) {
-                    X.row(j) = xvec(arma::shuffle(arma::linspace<uvec>(0, num_points - 1, num_points))).t();
+                for(int j=0; j < mDim; j++) {
+                    X.row(j) = xvec(arma::shuffle(arma::linspace<uvec>(0, mNumPoints - 1, mNumPoints))).t();
                 }
 
-                mat dists = sqrt(d)*arma::eye(num_points, num_points) + arma::sqrt(SquaredPairwiseDistance(X, X));
+                mat dists = sqrt(mDim)*arma::eye(mNumPoints, mNumPoints) + arma::sqrt(squaredPairwiseDistance(X, X));
                 double score = arma::min((vec)arma::min(dists).t());
 
-                if (score > bestscore) {
-                    Xbest = X;
-                    bestscore = score;
+                if (score > bestScore) {
+                    XBest = X;
+                    bestScore = score;
                 }
             }
 
-            return Xbest;
+            return XBest;
         }   
     };
     
     class TwoFactorial : public ExpDesign {
+    protected:
+        int mNumPoints;
+        int mDim;
     public:
-        TwoFactorial(int d) {
-            this->num_points = pow(2, d);
-            this->d = d;
-            assert(d <= 15);
+        TwoFactorial(int dim) {
+            mNumPoints = pow(2, dim);
+            mDim = dim;
+            assert(dim <= 15);
         }
-        
-        mat generate_points() const {
-            mat xsample = arma::zeros<mat>(d, num_points);
-            for(int i=0; i < d; i++) {
+        int dim() const { return mDim; }
+        int numPoints() const { return mNumPoints; }
+        mat generatePoints() const {
+            mat xSample = arma::zeros<mat>(mDim, mNumPoints);
+            for(int i=0; i < mDim; i++) {
                 int elem = 0;
-                int flip = pow(2,i);
-                for(int j=0; j < num_points; j++) {
-                    xsample(i, j) = elem;
+                int flip = pow(2, i);
+                for(int j=0; j < mNumPoints; j++) {
+                    xSample(i, j) = elem;
                     if((j+1) % flip == 0) { elem = (elem + 1) % 2; }
                 }
             }
-            return xsample;
+            return xSample;
         }
     };
     
     class CornersMid : public ExpDesign {
+    protected:
+        int mNumPoints;
+        int mDim;
     public:
-        CornersMid(int d) {
-            this->num_points = 1 + pow(2, d);
-            this->d = d;
-            assert(d <= 15);
+        CornersMid(int dim) {
+            mNumPoints = 1 + pow(2, dim);
+            mDim = dim;
+            assert(dim <= 15);
         }
-        
-        mat generate_points() const {
-            mat xsample = arma::zeros<mat>(d, num_points);
+        int dim() const { return mDim; }
+        int numPoints() const { return mNumPoints; }
+        mat generatePoints() const {
+            mat xSample = arma::zeros<mat>(mDim, mNumPoints);
 
-            for(int i=0; i < d; i++) {
+            for(int i=0; i < mDim; i++) {
                 int elem = 0;
                 int flip = pow(2, i);
-                for(int j = 0; j < num_points; j++) {
-                    xsample(i, j) = elem;
+                for(int j = 0; j < mNumPoints; j++) {
+                    xSample(i, j) = elem;
                     if((j + 1) % flip == 0) { elem = (elem + 1) % 2; }
                 }
             }
-            xsample.col(num_points - 1).fill(0.5);
+            xSample.col(mNumPoints - 1).fill(0.5);
 
-            return xsample;
+            return xSample;
         }
     };
 }

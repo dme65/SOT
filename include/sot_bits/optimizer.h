@@ -18,102 +18,100 @@
 namespace sot {  
     class Optimizer {
     protected:
-        std::shared_ptr<Problem> data;
-        std::shared_ptr<ExpDesign> exp_des;
-        std::shared_ptr<Surrogate> surf;
-        std::shared_ptr<Sampling> sampling;
-        double sigma_max = 0.2, sigma_min = 0.005;
-        int failtol, succtol;
-        int maxeval;
-        int numeval;
-        int initp;
-        int dim;
-        vec xlow;
-        vec xup;
-        int numthreads = 1;
-        std::string my_name;
+        std::shared_ptr<Problem> mData;
+        std::shared_ptr<ExpDesign> mExpDes;
+        std::shared_ptr<Surrogate> mSurf;
+        std::shared_ptr<Sampling> mSampling;
+        const double mSigmaMax = 0.2;
+        const double mSigmaMin = 0.005;
+        int mFailTol, mSuccTol;
+        int mMaxEvals;
+        int mNumEvals;
+        int mInitPoints;
+        int mDim;
+        vec mxLow;
+        vec mxUp;
+        std::string mName;
     public:
-        Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, 
+        Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
                 std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, 
-                int maxeval) {
-            this->data = std::shared_ptr<Problem>(data);
-            this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
-            this->surf = std::shared_ptr<Surrogate>(surf);
-            this->sampling = std::shared_ptr<Sampling>(sampling);
-            this->maxeval = maxeval;
-            numeval = 0;
-            initp = exp_des->npts();
-            dim = data->dim();
-            xlow = data->lbound();
-            xup = data->rbound();
-            failtol = data->dim();
-            succtol = 3;
-            my_name = "DYCORS";
+                int maxevals) {
+            mData = std::shared_ptr<Problem>(data);
+            mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mSampling = std::shared_ptr<Sampling>(sampling);
+            mMaxEvals = maxevals;
+            mNumEvals = 0;
+            mInitPoints = mExpDes->numPoints();
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mFailTol = data->dim();
+            mSuccTol = 3;
+            mName = "DYCORS";
             
-            assert(maxeval > initp);
+            assert(mMaxEvals > mInitPoints);
         }
         
+        /*
         Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, 
                 std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, 
                 int maxeval, int numthreads) {
             this->numthreads = numthreads;
             Optimizer(data, exp_des, surf, sampling, maxeval);
         }
+        */
         
         Result run() {   
             arma::arma_rng::set_seed_random();
-            Result res(maxeval, initp, dim);
-            numeval = 0;
+            Result res(mMaxEvals, mDim);
+            mNumEvals = 0;
             
-            double fbest_tot = std::numeric_limits<double>::max();
-            vec xbest_tot;
-            vec weights = {0.3, 0.5, 0.8, 0.95};
-            vec weight = arma::zeros<vec>(1, 1);
-            
-            double dtol = 1e-3*sqrt(arma::sum(arma::square(xup - xlow)));
-            
+            double fBestLoc = std::numeric_limits<double>::max();
+            vec xBestLoc;
+                        
         start:
-            double sigma = sigma_max;
+            double sigma = mSigmaMax;
             int fail = 0;
             int succ = 0;
             
-            mat init_des = FromUnitBox(exp_des->generate_points(), xlow, xup);
+            mat initDes = fromUnitBox(mExpDes->generatePoints(), mxLow, mxUp);
             
             ////////////////////////////// Evaluate the initial design //////////////////////////////
-            int istart = numeval;
-            int iend = fmin(numeval + initp - 1, maxeval - 1);
-            for(int i=numeval; i <= iend ; i++) {
-                res.x.col(i) = init_des.col(i-istart);
-                res.fx(i) = data->eval(res.x.col(i));
-                if(res.fx(i) < res.fbest) {
-                    res.fbest = res.fx(i);
-                    res.xbest = res.x.col(i);
+            int iStart = mNumEvals;
+            int iEnd = fmin(mNumEvals + mInitPoints - 1, mMaxEvals - 1);
+            for(int i=mNumEvals; i <= iEnd ; i++) {
+                vec x = initDes.col(i - iStart);
+                double fx = mData->eval(x);
+                res.addEval(x, fx);
+                if(fx < fBestLoc) {
+                    xBestLoc = x;
+                    fBestLoc = fx;
                 }
-                numeval++;
+                mNumEvals++;
             }
             
             ////////////////////////////// Add points to the rbf //////////////////////////////
-            if(istart < iend) {
-                surf->add_points(res.x.cols(istart, iend), res.fx.rows(istart, iend));
+            if(iStart < iEnd) {
+                mSurf->addPoints(res.X().cols(iStart, iEnd), res.fX().rows(iStart, iEnd));
             }
             ////////////////////////////// The fun starts now! //////////////////////////////////////
-            while (numeval < maxeval) {
-                
+            while (mNumEvals < mMaxEvals) {
                 // Fit the RBF
-                surf->fit();
+                mSurf->fit();
                 
                 // Find new points to evaluate
-                weight[0] = weights[numeval % weights.n_elem];
-                mat X = res.x.cols(istart, numeval - 1);
-                vec newx = sampling->make_points(res.xbest, X, sigma*(xup(0) - xlow(0)), 1);
+                mat X = res.X().cols(iStart, mNumEvals - 1);
+                vec newx = mSampling->makePoints(xBestLoc, X, sigma*(mxUp(0) - mxLow(0)), 1);
                                 
                 // Evaluate
-                res.x.col(numeval) = newx;
-                res.fx(numeval) = data->eval(newx);
-                
+                double fVal = mData->eval(newx);
+                res.addEval(newx, fVal);
+                mNumEvals++;
+              
                 // Process evaluation
-                if(res.fx(numeval) < res.fbest) {
-                    if(res.fx(numeval) < res.fbest - 1e-3 * fabs(res.fbest)) {
+                if(fVal < fBestLoc) {
+                    if(fVal < fBestLoc - 1e-3 * fabs(fBestLoc)) {
                         fail = 0;
                         succ++;
                     }
@@ -121,8 +119,8 @@ namespace sot {
                         fail++;
                         succ = 0;
                     }
-                    res.fbest = res.fx(numeval);
-                    res.xbest = res.x.col(numeval);
+                    fBestLoc= fVal;
+                    xBestLoc = newx;
                 }
                 else {
                     fail++;
@@ -130,38 +128,28 @@ namespace sot {
                 }
                 
                 // Update sigma if necessary
-                if(fail == failtol) {
+                if(fail == mFailTol) {
                     fail = 0;
                     succ = 0;
                     sigma /= 2.0;
-                    int budget = maxeval - numeval - 1;
+                    int budget = mMaxEvals - mNumEvals - 1;
                     // Restart if sigma is too small and the budget 
                     // is larger than the initial design
-                    if (sigma < sigma_min and budget > initp) {
-                        if (res.fbest < fbest_tot) {
-                            xbest_tot = res.xbest;
-                            fbest_tot = res.fbest;
-                        }
-                        res.fbest = std::numeric_limits<double>::max();
-                        surf->reset();
-                        sampling->reset(maxeval - numeval - initp);
+                    if (sigma < mSigmaMin and budget > mInitPoints) {
+                        fBestLoc = std::numeric_limits<double>::max();
+                        mSurf->reset();
+                        mSampling->reset(mMaxEvals - mNumEvals - mInitPoints);
                         goto start;
                     }
                 }
-                if(succ == succtol) {
+                if(succ == mSuccTol) {
                     fail = 0;
                     succ = 0;
-                    sigma = fmin(sigma * 2.0, sigma_max);
+                    sigma = fmin(sigma * 2.0, mSigmaMax);
                 }
                                 
                 // Add to surface
-                surf->add_point(newx, res.fx(numeval));
-                numeval++;
-            }
-            
-            if (fbest_tot < res.fbest) {
-                res.xbest = xbest_tot;
-                res.fbest = fbest_tot;
+                mSurf->addPoint(newx, fVal);
             }
             
             return res;

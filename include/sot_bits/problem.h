@@ -11,25 +11,19 @@
 namespace sot {
     
     class Problem {
-    protected:
-        int d;
-        vec xlow;
-        vec xup;
-        double global_min;
-        vec optimum;
-        std::string my_name;
     public:
-        vec lbound() const { return this->xlow; }
-        vec rbound() const { return this->xup; }
-        int dim() const { return this->d; }
-        double min() const { return this->global_min; }
-        vec minimum() const { return this->optimum; }
-        std::string name() const { return this->my_name; }
-        virtual double eval(vec) const = 0;
-        virtual vec evals(mat &x) const {
-            vec fvals = arma::zeros<vec>(x.n_cols);
-            for(int i=0; i < x.n_cols; i++) {
-                fvals(i) = eval(x.col(i));
+        virtual vec lBounds() const = 0;
+        virtual vec uBounds() const = 0;
+        virtual int dim() const = 0;
+        virtual double min() const = 0;
+        virtual vec optimum() const = 0;
+        virtual std::string name() const = 0;
+        virtual double eval(vec&) const = 0;
+        vec evals(mat &points) const {
+            vec fvals = arma::zeros<vec>(points.n_cols);
+            for(int i=0; i < points.n_cols; i++) {
+                vec x = points.col(i);
+                fvals(i) = eval(x);
             }
             return fvals;
         }

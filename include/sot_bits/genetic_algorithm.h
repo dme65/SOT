@@ -16,131 +16,131 @@ namespace sot {
     
     class GeneticAlgorithm  {
     protected:
-        std::shared_ptr<Problem> data;
-        std::shared_ptr<ExpDesign> exp_des;
+        std::shared_ptr<Problem> mData;
+        std::shared_ptr<ExpDesign> mExpDes;
         
-        double sigma = 0.2;
-        int tournament_size = 5;
-        double p_cross = 0.9;
-        double p_mutation;
-        int dim;
-        vec xlow;
-        vec xup;
-        int n_variables;
-        int n_individuals;
-        int n_generations;
-        std::string my_name = "Genetic algorithm";
-        bool random_init;
+        double mSigma = 0.2;
+        int mTournamentSize = 5;
+        double mpCross = 0.9;
+        double mpMutation;
+        int mDim;
+        vec mxLow;
+        vec mxUp;
+        int mNumVariables;
+        int mNumIndividuals;
+        int mNumGenerations;
+        std::string mName = "Genetic Algorithm";
+        bool mRandomInit;
     
     public:    
-        GeneticAlgorithm(std::shared_ptr<Problem>& data, int n_individuals, int n_generations) {
-            this->data = std::shared_ptr<Problem>(data);
-            this->n_variables = data->dim();
-            this->p_mutation = 1.0/data->dim();
-            this->n_individuals = n_individuals;
-            this->n_generations = n_generations;
-            this->random_init = true;
-            this->dim = data->dim();
-            this->xlow = data->lbound();
-            this->xup = data->rbound();
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, int numIndividuals, int numGenerations) {
+            mData = std::shared_ptr<Problem>(data);
+            mDim = data->dim();
+            mNumVariables = mDim;
+            mpMutation = 1.0/mDim;
+            mNumIndividuals = numIndividuals;
+            mNumGenerations = numGenerations;
+            mRandomInit = true;
+            mxLow = data->lBounds();
+            mxUp= data->uBounds();
         }
-        GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, 
-        int n_individuals, int n_generations) : GeneticAlgorithm(data, n_individuals, n_generations) {
-            this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
-            this->random_init = false;
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
+        int numIndividuals, int numGenerations) : GeneticAlgorithm(data, numIndividuals, numGenerations) {
+            mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            mRandomInit = false;
         }
 
         Result run() {
             arma::arma_rng::set_seed_random();
-            int maxeval = n_individuals * n_generations;
-            Result res(n_individuals * n_generations, n_individuals, dim);
+            int maxEvals = mNumIndividuals * mNumGenerations;
+            Result res(mNumIndividuals * mNumGenerations, mDim);
             
             mat population;
-            mat new_population = arma::zeros<mat>(n_variables, n_individuals);
-            if (random_init) {
-                population.randu(n_variables, n_individuals);
+            mat newPopulation = arma::zeros<mat>(mNumVariables, mNumIndividuals);
+            if (mRandomInit) {
+                population.randu(mNumVariables, mNumIndividuals);
             }
             else{
-                population = exp_des->generate_points();
+                population = mExpDes->generatePoints();
             }
-            population = FromUnitBox(population, xlow, xup);
+            population = fromUnitBox(population, mxLow, mxUp);
 
             //  Evaluate all individuals
-            vec function_values = data->evals(population);
+            vec functionValues = mData->evals(population);
             
             //Save the best individual
             arma::uword ind;
-            function_values.min(ind);
-            vec best_individual = population.col(ind);
-            double best_value = function_values(ind);
+            functionValues.min(ind);
+            vec bestIndividual = population.col(ind);
+            double bestValue = functionValues(ind);
 
-            for(int gen = 0; gen < n_generations - 1; gen++) {
+            for(int gen = 0; gen < mNumGenerations - 1; gen++) {
                 
                 ////////////////// Tournament selection and crossover ////////////////////
-                arma::imat tournament = arma::randi<arma::imat>(tournament_size, n_individuals, arma::distr_param(0, n_individuals - 1));
-                for(int i = 0; i < n_individuals/2; i++) {
+                arma::imat tournament = arma::randi<arma::imat>(mTournamentSize, mNumIndividuals, arma::distr_param(0, mNumIndividuals - 1));
+                for(int i = 0; i < mNumIndividuals/2; i++) {
                     double minval1 = std::numeric_limits<double>::max();
                     double minval2 = std::numeric_limits<double>::max();
                     int ind1, ind2;
-                    for(int j=0; j < tournament_size; j++) {
-                        if (function_values(tournament(j, 2*i)) < minval1) {
-                            minval1 = function_values(tournament(j, 2*i));
+                    for(int j=0; j < mTournamentSize; j++) {
+                        if (functionValues(tournament(j, 2*i)) < minval1) {
+                            minval1 = functionValues(tournament(j, 2*i));
                             ind1 = tournament(j, 2*i);
                         }
-                        if (function_values(tournament(j, 2*i + 1)) < minval2) {
-                            minval2 = function_values(tournament(j, 2*i + 1));
+                        if (functionValues(tournament(j, 2*i + 1)) < minval2) {
+                            minval2 = functionValues(tournament(j, 2*i + 1));
                             ind2 = tournament(j, 2*i + 1);
                         }
                     }
                     
                     double alpha = rand();
-                    if( rand() < p_cross) {
-                        new_population.col(2*i) = alpha * population.col(ind1) + (1 - alpha) * population.col(ind2);
-                        new_population.col(2*i + 1) = alpha * population.col(ind2) + (1 - alpha) * population.col(ind1);
+                    if( rand() < mpCross) {
+                        newPopulation.col(2*i) = alpha * population.col(ind1) + (1 - alpha) * population.col(ind2);
+                        newPopulation.col(2*i + 1) = alpha * population.col(ind2) + (1 - alpha) * population.col(ind1);
                     }
                     else {
-                        new_population.col(2*i) = population.col(ind1);
-                        new_population.col(2*i + 1) = population.col(ind2);
+                        newPopulation.col(2*i) = population.col(ind1);
+                        newPopulation.col(2*i + 1) = population.col(ind2);
                     }
                 }
 
                 // Mutation
-                for(int i=0; i < n_individuals; i++) {
-                    for(int j=0; j<n_variables; j++) {
-                        if(rand() < p_mutation) {
-                            new_population(j, i) += (xup(j) - xlow(j)) * sigma * randn();
-                            if(new_population(j,i) > xup(j)) {
-                                new_population(j,i) = fmax(2*xup(j) - new_population(j,i), xlow(j));
+                for(int i=0; i < mNumIndividuals; i++) {
+                    for(int j=0; j<mNumVariables; j++) {
+                        if(rand() < mpMutation) {
+                            newPopulation(j, i) += (mxUp(j) - mxLow(j)) * mSigma * randn();
+                            if(newPopulation(j,i) > mxUp(j)) {
+                                newPopulation(j,i) = fmax(2*mxUp(j) - newPopulation(j,i), mxLow(j));
                             }
-                            else if(new_population(j,i) < xlow(j)) {
-                                new_population(j,i) = fmin(2*xlow(j) - new_population(j,i), xup(j));
+                            else if(newPopulation(j,i) < mxLow(j)) {
+                                newPopulation(j,i) = fmin(2*mxLow(j) - newPopulation(j,i), mxUp(j));
                             }
                         }
                     }
                 }
                 
                 // Elitism
-                new_population.col(n_individuals - 1) = best_individual;
+                newPopulation.col(mNumIndividuals - 1) = bestIndividual;
                 
                 //  Evaluate all individuals
-                function_values = data->evals(new_population);
+                functionValues = mData->evals(newPopulation);
                 
                 // Save the results
-                res.x.cols( gen * n_individuals, gen * n_individuals + n_individuals - 1) = new_population;
-                res.fx.rows(gen * n_individuals, gen * n_individuals + n_individuals - 1) = function_values;
+                for(int i=0; i < mNumIndividuals; i++) {
+                    vec x = newPopulation.col(i);
+                    res.addEval(x, functionValues(i));
+                }
 
                 //Save the best individual
                 arma::uword ind;
-                function_values.min(ind);
-                best_individual = new_population.col(ind);
-                best_value = function_values(ind);
+                functionValues.min(ind);
+                bestIndividual = newPopulation.col(ind);
+                bestValue = functionValues(ind);
                 
                 // Kill the old population
-                population = new_population;
+                population = newPopulation;
             }
             
-            res.xbest = best_individual;
-            res.fbest = best_value;
             return res;
         }
     };

@@ -17,48 +17,55 @@ namespace sot {
     
     class Shepard : public Surrogate {
     protected:
-        double p;
-    public:
-        Shepard(int max_points, int d, double p) {
-            this->num_points = 0;
-            this->max_points = max_points;
-            this->p = p;
-            this->Xmat.resize(d, max_points);
-            this->fXvec.resize(max_points);
+        double mp;
+        int mMaxPoints;
+        int mNumPoints;
+        int mDim;
+        mat mX;
+        mat mfX;
+        vec computeWeights(const vec &point) const {
+            return 1/arma::pow(squaredPointSetDistance<mat,vec>(point, X()), mp/2);
         }
-        int npts() {
-            return num_points;
+    public:
+        Shepard(int maxPoints, int dim, double p) {
+            mNumPoints = 0;
+            mMaxPoints = maxPoints;
+            mp = p;
+            mDim = dim;
+            mX.resize(dim, maxPoints);
+            mfX.resize(maxPoints);
+        }
+        int numPoints() const {
+            return mNumPoints;
         }
         vec X(int i) const {
-            return Xmat.col(i);
+            return mX.col(i);
         }
         mat X() const {
-            return Xmat.cols(0, num_points-1);
+            return mX.cols(0, mNumPoints-1);
         }
         double fX(int i) const {
-            return fXvec(i);
+            return mfX(i);
         }
         vec fX() const {
-            return fXvec.rows(0, num_points-1);
+            return mfX.rows(0, mNumPoints-1);
         }
-        vec compute_weights(const vec &x) const {
-            return 1/arma::pow(SquaredPointSetDistance<mat,vec>(x, X()), p/2);
+        void addPoint(const vec &point, double funVal) {
+            mX.col(mNumPoints) = point;
+            mfX(mNumPoints) = funVal;
+            mNumPoints++;
         }
-        void add_point(const vec &point, double fun_val) {
-            Xmat.col(num_points) = point;
-            fXvec(num_points) = fun_val;
-            num_points++;
-        }
-        void add_points(const mat &points, const vec &fun_vals) {
-            int npts = points.n_cols;
-            Xmat.cols(num_points, num_points + npts - 1) = points;
-            fXvec.rows(num_points, num_points + npts - 1) = fun_vals;
-            num_points += npts;
+        void addPoints(const mat &points, const vec &funVals) {
+            int n = points.n_cols;
+            mX.cols(mNumPoints, mNumPoints + n - 1) = points;
+            mfX.rows(mNumPoints, mNumPoints + n - 1) = funVals;
+            mNumPoints += n;
         }
         double eval(const vec &point) const {
-            vec weights = compute_weights(point);
-            return arma::dot(compute_weights(point), this->fX())/arma::sum(weights);
+            vec weights = computeWeights(point);
+            return arma::dot(weights, fX())/arma::sum(weights);
         }
+        /*
         vec evals(const mat &points, const mat &dists) const {
             vec vals = arma::zeros<vec>(points.n_cols);
             for(int i=0; i < points.n_cols; i++) {
@@ -66,6 +73,7 @@ namespace sot {
             }
             return vals;
         }
+        */
         vec evals(const mat &points) const {
             vec vals = arma::zeros<vec>(points.n_cols);
             for(int i=0; i < points.n_cols; i++) {
@@ -78,7 +86,7 @@ namespace sot {
         }
         
         void reset() {
-            this->num_points = 0;
+            mNumPoints = 0;
         }
         
         void fit() {

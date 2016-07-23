@@ -16,21 +16,21 @@ int test_srbf() {
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
-    std::shared_ptr<Surrogate> rbf(std::make_shared<TPSRBF>(maxeval, dim, data->lbound(), data->rbound()));
-    std::shared_ptr<Sampling> dycors(std::make_shared<SRBF<>>(data, rbf, 100*dim, maxeval - slhd->npts()));
+    std::shared_ptr<Surrogate> rbf(std::make_shared<TPSRBF>(maxeval, dim, data->lBounds(), data->uBounds()));
+    std::shared_ptr<Sampling> dycors(std::make_shared<SRBF<>>(data, rbf, 100*dim, maxeval - slhd->numPoints()));
     
     Optimizer opt(data, slhd, rbf, dycors, maxeval);
     Result res = opt.run();
     
-    std::cout << res.fbest << std::endl;
+    std::cout << res.fBest() << std::endl;
     // Check that we made enough progress and that we are feasible
-    if (res.fbest > -20.0) {
+    if (res.fBest() > -20.0) {
         return (EXIT_FAILURE);
     }
-    if (not arma::all(res.xbest >= data->lbound())) {
+    if (not arma::all(res.xBest() >= data->lBounds())) {
         return (EXIT_FAILURE);
     }    
-    if (not arma::all(res.xbest <= data->rbound())) {
+    if (not arma::all(res.xBest() <= data->uBounds())) {
         return (EXIT_FAILURE);
     }
     

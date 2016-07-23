@@ -19,10 +19,9 @@ int test_rbf() {
         fx(i) = x(1, i) * sin(x(0, i)) + x(0, i) * cos(x(1, i));
     }
     mat y = arma::randu<mat>(dim, m);;
-    mat dists = arma::sqrt(SquaredPairwiseDistance(x, y));
 
     CubicRBF rbf(n, dim, arma::zeros(dim), arma::ones(dim), 0.0);
-    rbf.set_points(x, fx);
+    rbf.setPoints(x, fx);
     rbf.fit();
 
     // Evaluate at the center to see that we are interpolating
