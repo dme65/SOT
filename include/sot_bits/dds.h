@@ -27,10 +27,22 @@ namespace sot {
         vec mxUp;
         std::string mName;
     public:
-        DDS(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, int maxevals) {
+        DDS(Problem *data, ExpDesign *expDes, int maxEvals) {
             mData = std::shared_ptr<Problem>(data);
             mExpDes = std::shared_ptr<ExpDesign>(expDes);
-            mMaxEvals = maxevals;
+            mMaxEvals = maxEvals;
+            mNumEvals = 0;
+            mInitPoints = expDes->numPoints();
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mName = "DDS";
+            if(mMaxEvals < mInitPoints) { throw std::logic_error("Experimental design larger than evaluation budget"); }
+        }
+        DDS(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, int maxEvals) {
+            mData = std::shared_ptr<Problem>(data);
+            mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            mMaxEvals = maxEvals;
             mNumEvals = 0;
             mInitPoints = expDes->numPoints();
             mDim = data->dim();

@@ -32,7 +32,18 @@ namespace sot {
         std::string mName = "Genetic Algorithm";
         bool mRandomInit;
     
-    public:    
+    public:   
+        GeneticAlgorithm(Problem *data, int numIndividuals, int numGenerations) {
+            mData = std::shared_ptr<Problem>(data);
+            mDim = data->dim();
+            mNumVariables = mDim;
+            mpMutation = 1.0/mDim;
+            mNumIndividuals = numIndividuals;
+            mNumGenerations = numGenerations;
+            mRandomInit = true;
+            mxLow = data->lBounds();
+            mxUp= data->uBounds();
+        }
         GeneticAlgorithm(std::shared_ptr<Problem>& data, int numIndividuals, int numGenerations) {
             mData = std::shared_ptr<Problem>(data);
             mDim = data->dim();
@@ -46,6 +57,11 @@ namespace sot {
         }
         GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
         int numIndividuals, int numGenerations) : GeneticAlgorithm(data, numIndividuals, numGenerations) {
+            mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            mRandomInit = false;
+        }
+        GeneticAlgorithm(Problem *data, ExpDesign *expDes,  int numIndividuals, int numGenerations) : 
+        GeneticAlgorithm(data, numIndividuals, numGenerations) {
             mExpDes = std::shared_ptr<ExpDesign>(expDes);
             mRandomInit = false;
         }

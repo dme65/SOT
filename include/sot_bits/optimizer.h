@@ -32,14 +32,31 @@ namespace sot {
         vec mxUp;
         std::string mName;
     public:
-        Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
-                std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, 
-                int maxevals) {
+        Optimizer(Problem *data, ExpDesign *expDes, 
+                Surrogate *surf, Sampling *sampling, int maxEvals) {
             mData = std::shared_ptr<Problem>(data);
             mExpDes = std::shared_ptr<ExpDesign>(expDes);
             mSurf = std::shared_ptr<Surrogate>(surf);
             mSampling = std::shared_ptr<Sampling>(sampling);
-            mMaxEvals = maxevals;
+            mMaxEvals = maxEvals;
+            mNumEvals = 0;
+            mInitPoints = mExpDes->numPoints();
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mFailTol = data->dim();
+            mSuccTol = 3;
+            mName = "DYCORS";
+        }
+        
+        Optimizer(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
+                std::shared_ptr<Surrogate>& surf, std::shared_ptr<Sampling>& sampling, 
+                int maxEvals) {
+            mData = std::shared_ptr<Problem>(data);
+            mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mSampling = std::shared_ptr<Sampling>(sampling);
+            mMaxEvals = maxEvals;
             mNumEvals = 0;
             mInitPoints = mExpDes->numPoints();
             mDim = data->dim();

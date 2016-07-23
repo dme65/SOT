@@ -6,7 +6,6 @@
  */
 
 #include <sot.h>
-
 using namespace sot;
 
 int test_dycors() {
