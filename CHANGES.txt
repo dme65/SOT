@@ -7,4 +7,9 @@ v0.2
 v0.3
   - General code cleanup
   - Added README.md
-  - Changed the installation directory of SOT 
+  - Changed the installation directory of SOT
+
+v0.4
+  - Cleaned up member names and all members are no protected appropriately
+  - Added a DDS test
+  - Improved error handling
