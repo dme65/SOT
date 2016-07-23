@@ -1,5 +1,5 @@
 /* 
- * File:   test_srbf.cpp
+ * File:   test_dds.cpp
  * Author: David Eriksson
  *
  * Created on July 19, 2016, 12:44 PM
@@ -9,22 +9,20 @@
 
 using namespace sot;
 
-int test_srbf() {
+int test_dycors() {
 
     int dim = 10;
     int maxEvals = 500;
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
-    std::shared_ptr<Surrogate> rbf(std::make_shared<TPSRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
-    std::shared_ptr<Sampling> dycors(std::make_shared<SRBF<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
-    
-    Optimizer opt(data, slhd, rbf, dycors, maxEvals);
-    Result res = opt.run();
+
+    DDS opt(data, slhd, maxEvals);
+    Result res = opt.run();    
     
     std::cout << res.fBest() << std::endl;
     // Check that we made enough progress and that we are feasible
-    if (res.fBest() > -20.0) {
+    if (res.fBest() > -18.0) {
         return (EXIT_FAILURE);
     }
     if (not arma::all(res.xBest() >= data->lBounds())) {
@@ -38,6 +36,6 @@ int test_srbf() {
 }
 
 int main(int argc, char** argv) {
-    return test_srbf();
+    return test_dycors();
 }
 

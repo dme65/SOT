@@ -4,11 +4,11 @@ project(SOT)
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_MACOSX_RPATH 1)
 
-add_subdirectory (test) 
+add_subdirectory (test)
 
 # The version number.
 set (SOT_VERSION_MAJOR 0)
-set (SOT_VERSION_MINOR 3)
+set (SOT_VERSION_MINOR 4)
 
 include_directories(include)
 
@@ -23,3 +23,4 @@ enable_testing()
 add_test (NAME test_rbf COMMAND test_rbf)
 add_test (NAME test_srbf COMMAND test_srbf)
 add_test (NAME test_dycors COMMAND test_dycors)
+add_test (NAME test_dds COMMAND test_dds)

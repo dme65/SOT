@@ -6,10 +6,9 @@
 //  Copyright (c) 2015 David Eriksson. All rights reserved.
 //
 
-#ifndef Surrogate_Optimization_optimizer_dds_h
-#define Surrogate_Optimization_optimizer_dds_h
+#ifndef Surrogate_Optimization_dds_h
+#define Surrogate_Optimization_dds_h
 
-#include <cassert>
 #include <iostream>
 #include "common.h"
 #include "utils.h"
@@ -18,90 +17,79 @@ namespace sot {
 
     class DDS {
     protected:
-        std::shared_ptr<Problem> data;
-        std::shared_ptr<ExpDesign> exp_des;
-        int maxeval;
-        int numeval;
-        int initp;
-        int dim;
-        vec xlow;
-        vec xup;
-        std::string my_name;
+        std::shared_ptr<Problem> mData;
+        std::shared_ptr<ExpDesign> mExpDes;
+        int mMaxEvals;
+        int mNumEvals;
+        int mInitPoints;
+        int mDim;
+        vec mxLow;
+        vec mxUp;
+        std::string mName;
     public:
-        DDS(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& exp_des, int maxeval) {
-            this->data = std::shared_ptr<Problem>(data);
-            this->exp_des = std::shared_ptr<ExpDesign>(exp_des);
-            this->exp_des = exp_des;
-            this->maxeval = maxeval;
-            this->numeval = 0;
-            this->initp = exp_des->npts();
-            this->dim = data->dim();
-            my_name = "DDS";
-            assert(maxeval > initp);
+        DDS(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, int maxevals) {
+            mData = std::shared_ptr<Problem>(data);
+            mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            mMaxEvals = maxevals;
+            mNumEvals = 0;
+            mInitPoints = expDes->numPoints();
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mName = "DDS";
+            if(mMaxEvals < mInitPoints) { throw std::logic_error("Experimental design larger than evaluation budget"); }
         }
         
         Result run() {
             arma::arma_rng::set_seed_random();
-            Result res(maxeval, initp, dim);
-            numeval = 0;
+            Result res(mMaxEvals, mDim);
+            mNumEvals = 0;
             
-            double sigma = 0.2*(xup(0) - xlow(0));
-            mat init_des = FromUnitBox(exp_des->generate_points(), xlow, xup);
+            double sigma = 0.2*(mxUp(0) - mxLow(0));
+            mat init_des = fromUnitBox(mExpDes->generatePoints(), mxLow, mxUp);
             
-            for(int i=0; i < initp ; i++) {
-                res.x.col(i) = init_des.col(i);
-                res.fx(i) = data->eval(res.x.col(i));
-                if(res.fx(i) < res.fbest) {
-                    res.fbest = res.fx(i);
-                    res.xbest = res.x.col(i);
-                }
-                numeval++;
+            for(int i=0; i < mInitPoints ; i++) {
+                vec x = init_des.col(i);
+                res.addEval(x, mData->eval(x));
+                mNumEvals++;
             }
             
-            while (numeval < maxeval) {
+            while (mNumEvals < mMaxEvals) {
                 
                 ////////////////////////// Select a new evaluations //////////////////////////
-                double dds_prob = 1 - log(numeval - initp)/log(maxeval - initp);
-                dds_prob = fmax(dds_prob, 1.0/dim);
+                double ddsProb = 1 - log(mNumEvals - mInitPoints)/log(mMaxEvals - mInitPoints);
+                ddsProb = fmax(ddsProb, 1.0/mDim);
                 
-                vec cand = res.xbest;
+                vec cand = res.xBest();
                 int count = 0;
-                for(int j=0; j < dim; j++) {
-                    if(rand() < dds_prob) {
+                for(int j=0; j < mDim; j++) {
+                    if(rand() < ddsProb) {
                         count++;
                         cand(j) += sigma * randn();
-                        if(cand(j) > xup(j)) { 
-                            cand(j) = fmax(2*xup(j) - cand(j), xlow(j)); 
+                        if(cand(j) > mxUp(j)) { 
+                            cand(j) = fmax(2*mxUp(j) - cand(j), mxLow(j)); 
                         }
-                        else if(cand(j) < xlow(j)) { 
-                            cand(j) = fmin(2*xlow(j) - cand(j), xup(j)); 
+                        else if(cand(j) < mxLow(j)) { 
+                            cand(j) = fmin(2*mxLow(j) - cand(j), mxUp(j)); 
                         }
                     }
                 }
                 // If no index was perturbed we force one
                 if(count == 0) {
-                    int ind = randi(dim);
+                    int ind = randi(mDim);
                     cand(ind) += sigma * randn();
-                    if(cand(ind) > xup(ind)) { 
-                        cand(ind) = fmax(2*xup(ind) - cand(ind), xlow(ind)); 
+                    if(cand(ind) > mxUp(ind)) { 
+                        cand(ind) = fmax(2*mxUp(ind) - cand(ind), mxLow(ind)); 
                     }
-                    else if(cand(ind) < xlow(ind)) { 
-                        cand(ind) = fmin(2*xlow(ind) - cand(ind), xup(ind)); 
+                    else if(cand(ind) < mxLow(ind)) { 
+                        cand(ind) = fmin(2*mxLow(ind) - cand(ind), mxUp(ind)); 
                     }
                 }
                 
                 /////////////////////// Evaluate ///////////////////////
-                double fval = data->eval(cand);
+                res.addEval(cand, mData->eval(cand));
                 
-                res.x.col(numeval) = cand;
-                res.fx(numeval) = fval;
-                
-                if (fval < res.fbest) {
-                    res.xbest = cand;
-                    res.fbest = fval;
-                }
-                
-                numeval++;
+                mNumEvals++;
             }
                                 
             return res;

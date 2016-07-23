@@ -10,7 +10,7 @@ Surrogate optimization algorithms generally consist of four components:
 
 SOT provides abstract classes that describe how these components should be implemented and the SOT strategies expect the implementations to use these abstract classes as base classes. This is an easy way to guarantee that the necessary functionality exists.
 
-SOT currently supports serial versions of the algorithms given in [1], [2]. Paper [1] introduces the immensely popular stochastic optimization algorithm SRBF. Paper [2] introduces the DYCORS algorithm that is useful for high-dimensional problems.
+SOT currently supports serial versions of the algorithms given in [1], [2]. Paper [1] introduces the immensely popular stochastic optimization algorithm SRBF. Paper [2] introduces the DYCORS algorithm that is useful for high-dimensional problems. Paper [3] introduces DDS that is efficient for separable problems, which doesn't use any surrogate model.
 
 ## Installation
 
@@ -71,4 +71,4 @@ SOT expects shared pointers for the base class objects that point to implementat
 ## References
 
 [1] Rommel G Regis and Christine A Shoemaker. A stochastic radial basis function method for the global optimization of expensive functions. INFORMS Journal on Computing, 19(4): 497–509, 2007.
-[2] Rommel G Regis and Christine A Shoemaker. Combining radial basis function surrogates and dynamic coordinate search in high-dimensional expensive black-box optimization. Engineering Optimization, 45(5): 529–555, 2013.
+[2] Rommel G Regis and Christine A Shoemaker. Combining radial basis function surrogates and dynamic coordinate search in high-dimensional expensive black-box optimization. Engineering Optimization, 45(5): 529–555, 2013.[3] Tolson, Bryan A., and Christine A. Shoemaker. Dynamically dimensioned search algorithm for computationally efficient watershed model calibration. Water Resources Research 43.1 (2007).
