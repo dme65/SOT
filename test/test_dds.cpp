@@ -6,17 +6,16 @@
  */
 
 #include <sot.h>
-
 using namespace sot;
 
 int test_dycors() {
-
     int dim = 10;
     int maxEvals = 500;
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
 
+    set_seed_random();
     DDS opt(data, slhd, maxEvals);
     Result res = opt.run();    
     

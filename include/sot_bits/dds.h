@@ -53,7 +53,6 @@ namespace sot {
         }
         
         Result run() {
-            arma::arma_rng::set_seed_random();
             Result res(mMaxEvals, mDim);
             mNumEvals = 0;
             

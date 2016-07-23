@@ -27,8 +27,7 @@ namespace sot {
     
     // Set seeds
     namespace rng {
-        std::random_device rd;
-        std::mt19937 mt(rd());
+        std::mt19937 mt(0);                                     
     }
 }
 

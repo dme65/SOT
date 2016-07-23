@@ -18,6 +18,7 @@ int test_dycors() {
     std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
     std::shared_ptr<Sampling> dycors(std::make_shared<DYCORS<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
     
+    set_seed_random();
     Optimizer opt(data, slhd, rbf, dycors, maxEvals);
     Result res = opt.run();    
     

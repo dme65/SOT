@@ -240,6 +240,20 @@ namespace sot {
         std::uniform_real_distribution<double> rand(0, 1);
         return rand(rng::mt);
     }
+
+    inline void set_seed_random() {
+        // Set the armadillo seed randomly
+        arma::arma_rng::set_seed_random();
+        
+        // Set the SOT seed using chrono
+        std::chrono::high_resolution_clock::time_point beginning = 
+                std::chrono::high_resolution_clock::now();
+        std::chrono::high_resolution_clock::duration d = 
+                std::chrono::high_resolution_clock::now() - beginning;
+        unsigned newSeed = d.count();
+        rng::mt.seed(newSeed);
+    }
 }
+
 
 #endif

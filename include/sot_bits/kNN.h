@@ -32,17 +32,28 @@ namespace sot {
             mX.resize(dim, maxPoints);
             mfX.resize(maxPoints);
         }
+        int dim() const {
+            return mDim;
+        }
         
         int numPoints() const {
             return mNumPoints;
+        }
+        
+        mat X() const {
+            return mX.cols(0, mNumPoints-1);
         }
         
         vec X(int i) const {
             return mX.col(i);
         }
         
-        mat X() const {
-            return mX.cols(0, mNumPoints-1);
+        vec fX() const {
+            return mfX.rows(0, mNumPoints-1);
+        }
+        
+        double fX(int i) const {
+            return mfX(i);
         }
         
         void addPoint(const vec &point, double funVal) {
