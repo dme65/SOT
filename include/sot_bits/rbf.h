@@ -12,7 +12,6 @@
 #ifndef Surrogate_Optimization_rbf_h
 #define Surrogate_Optimization_rbf_h
 
-#include <iostream>
 #include "common.h"
 #include "utils.h"
 #include "surrogate.h"

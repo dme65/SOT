@@ -82,7 +82,7 @@ namespace sot {
             return vals;
         }
         vec deriv(const vec &point) const {
-            abort();
+            throw std::logic_error("No derivatives for Shepard");
         }
         
         void reset() {
