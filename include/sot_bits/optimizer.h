@@ -1,6 +1,6 @@
 
 //
-//  optimizer_dycors.h
+//  optimizer.h
 //  Surrogate Optimization
 //
 //  Created by David Eriksson on 8/12/15.
@@ -10,7 +10,6 @@
 #ifndef Surrogate_Optimization_optimizer_h
 #define Surrogate_Optimization_optimizer_h
 
-#include <cassert>
 #include <iostream>
 #include "common.h"
 #include "utils.h"
@@ -50,7 +49,7 @@ namespace sot {
             mSuccTol = 3;
             mName = "DYCORS";
             
-            assert(mMaxEvals > mInitPoints);
+            if(mMaxEvals < mInitPoints) { throw std::logic_error("Experimental design larger than evaluation budget"); }
         }
         
         /*

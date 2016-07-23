@@ -6,13 +6,11 @@
 //  Copyright (c) 2015 David Eriksson. All rights reserved.
 //
 
-#ifndef __Surrogate_Optimization__utils__
-#define __Surrogate_Optimization__utils__
+#ifndef Surrogate_Optimization_utils_h
+#define Surrogate_Optimization_utils_h
 
-#include <cassert>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
-#include <iostream>
 #include "common.h"
 
 namespace sot {
@@ -143,7 +141,7 @@ namespace sot {
             mxBest = std::numeric_limits<double>::max() * arma::ones<mat>(dim);
         }
         int dim() const { return mDim; }
-        int numPoints() const { return mNumEvals; }
+        int numEvals() const { return mNumEvals; }
         vec fX() const { return mfX.rows(0, mNumEvals-1); }
         mat X() const { return mX.cols(0, mNumEvals-1); }
         vec xBest() const { return mxBest; }
@@ -168,7 +166,7 @@ namespace sot {
     
     // Computes the Pareto front of x, y
     inline uvec paretoFront(const vec &x, const vec &y) {
-        assert(x.n_rows == y.n_rows);
+        if(x.n_rows != y.n_rows) { throw std::logic_error("paretoFront: x and y need to have the same length"); }
         double tol = 1e-10;
         uvec isort = sort_index(x);
         vec x2 = x(isort);
@@ -213,12 +211,12 @@ namespace sot {
             this->mStarted = false;
         }
         void start() {
-            assert(!this->mStarted);
+            if(mStarted) { throw std::logic_error("StopWatch: The StopWatch is already running, so can't start!"); }
             this->mStartTime = std::chrono::system_clock::now();
             this->mStarted = true;
         }
         double stop() {
-            assert(this->mStarted);
+            if(mStarted) { throw std::logic_error("StopWatch: The StopWatch is not running, so can't stop!"); }
             this->mEndTime = std::chrono::system_clock::now();
             this->mStarted = false;
             std::chrono::duration<double> elapsedSeconds = 
@@ -244,4 +242,4 @@ namespace sot {
     }
 }
 
-#endif /* defined(__Surrogate_Optimization__utils__) */
+#endif

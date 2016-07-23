@@ -5,8 +5,8 @@
  * Created on July 21, 2016, 1:36 AM
  */
 
-#ifndef PROBLEM_H
-#define PROBLEM_H
+#ifndef Surrogate_Optimization_problem_h
+#define Surrogate_Optimization_problem_h
 
 namespace sot {
     
@@ -30,5 +30,5 @@ namespace sot {
     };
 }
 
-#endif /* PROBLEM_H */
+#endif
 

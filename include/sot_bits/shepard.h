@@ -6,8 +6,8 @@
 //  Copyright © 2016 David Eriksson. All rights reserved.
 //
 
-#ifndef shepard_h
-#define shepard_h
+#ifndef Surrogate_Optimization_shepard_h
+#define Surrogate_Optimization_shepard_h
 
 #include "common.h"
 #include "utils.h"
@@ -95,4 +95,4 @@ namespace sot {
     };
 }
 
-#endif /* shepard_h */
+#endif

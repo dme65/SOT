@@ -1,15 +1,14 @@
 //
-//  ExperimentalDesign.h
+//  experimental_design.h
 //  Surrogate Optimization
 //
 //  Created by David Eriksson on 7/30/15.
 //  Copyright (c) 2015 David Eriksson. All rights reserved.
 //
 
-#ifndef __Surrogate_Optimization__ExperimentalDesign__
-#define __Surrogate_Optimization__ExperimentalDesign__
+#ifndef Surrogate_Optimization_experimental_design_h
+#define Surrogate_Optimization_experimental_design_h
 
-#include <cassert>
 #include <iostream>
 #include "common.h"
 #include "utils.h"
@@ -78,7 +77,6 @@ namespace sot {
         SymmetricLatinHypercube(int numPoints, int dim) {
             mNumPoints = numPoints;
             mDim = dim;
-            assert(num_points >= 2 * d);
         }
         int dim() const { return mDim; }
         int numPoints() const { return mNumPoints; }
@@ -103,7 +101,6 @@ namespace sot {
         LatinHypercube(int numPoints, int dim) {
             mNumPoints = numPoints;
             mDim = dim;
-            assert(num_points >= dim);
         }
         int dim() const { return mDim; }        
         int numPoints() const { return mNumPoints; }
@@ -142,7 +139,7 @@ namespace sot {
         TwoFactorial(int dim) {
             mNumPoints = pow(2, dim);
             mDim = dim;
-            assert(dim <= 15);
+            if(dim >= 15) {throw std::logic_error("Using 2-Factorial for dim >= 15 is a bad idea"); }
         }
         int dim() const { return mDim; }
         int numPoints() const { return mNumPoints; }
@@ -168,7 +165,7 @@ namespace sot {
         CornersMid(int dim) {
             mNumPoints = 1 + pow(2, dim);
             mDim = dim;
-            assert(dim <= 15);
+            if(dim >= 15) {throw std::logic_error("Using Corners + Mid for dim >= 15 is a bad idea"); }
         }
         int dim() const { return mDim; }
         int numPoints() const { return mNumPoints; }
@@ -189,4 +186,4 @@ namespace sot {
         }
     };
 }
-#endif /* defined(__Surrogate_Optimization__ExperimentalDesign__) */
+#endif

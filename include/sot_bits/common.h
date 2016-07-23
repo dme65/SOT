@@ -6,8 +6,8 @@
 //  Copyright © 2016 David Eriksson. All rights reserved.
 //
 
-#ifndef __Surrogate_Optimization__Common__
-#define __Surrogate_Optimization__Common__
+#ifndef Surrogate_Optimization_common_h
+#define Surrogate_Optimization_common_h
 
 #include <armadillo>
 #include <random>
@@ -32,4 +32,4 @@ namespace sot {
     }
 }
 
-#endif /* common_h */
+#endif

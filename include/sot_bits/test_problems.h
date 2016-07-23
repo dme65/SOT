@@ -6,10 +6,9 @@
 //  Copyright (c) 2015 David Eriksson. All rights reserved.
 //
 
-#ifndef __Surrogate_Optimization__test_problems__
-#define __Surrogate_Optimization__test_problems__
+#ifndef Surrogate_Optimization_test_problems_h
+#define Surrogate_Optimization_test_problems_h
 
-#include <cassert>
 #include <cmath>
 #include "common.h"
 #include "problem.h"
@@ -745,4 +744,4 @@ namespace sot {
     };
 }
 
-#endif /* defined(__Surrogate_Optimization__test_problems__) */
+#endif

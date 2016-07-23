@@ -6,10 +6,9 @@
 //  Copyright (c) 2015 David Eriksson. All rights reserved.
 //
 
-#ifndef Surrogate_Optimization_optimizer_dds_h
-#define Surrogate_Optimization_optimizer_dds_h
+#ifndef Surrogate_Optimization_dds_h
+#define Surrogate_Optimization_dds_h
 
-#include <cassert>
 #include <iostream>
 #include "common.h"
 #include "utils.h"
@@ -38,7 +37,7 @@ namespace sot {
             mxLow = data->lBounds();
             mxUp = data->uBounds();
             mName = "DDS";
-            assert(maxeval > initp);
+            if(mMaxEvals < mInitPoints) { throw std::logic_error("Experimental design larger than evaluation budget"); }
         }
         
         Result run() {

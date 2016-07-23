@@ -1,18 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
- * File:   approximant.h
- * Author: davideriksson
+ * File:   surrogate.h
+ * Author: David Eriksson
  *
  * Created on May 2, 2016, 12:13 PM
  */
 
-#ifndef SURROGATE_H
-#define SURROGATE_H
+#ifndef Surrogate_Optimization_surrogate_h
+#define Surrogate_Optimization_surrogate_h
 
 #include "common.h"
 
@@ -38,5 +32,5 @@ namespace sot {
 }
 
 
-#endif /* APPROXIMANT_H */
+#endif
 

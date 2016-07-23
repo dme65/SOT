@@ -1,13 +1,13 @@
 //
-//  CandidatePoints.h
+//  adaptive_sampling.h
 //  Surrogate Optimization
 //
 //  Created by David Eriksson on 7/30/15.
 //  Copyright (c) 2015 David Eriksson. All rights reserved.
 //
 
-#ifndef __Surrogate_Optimization__CandidatePoints__
-#define __Surrogate_Optimization__CandidatePoints__
+#ifndef Surrogate_Optimization_adaptive_sampling_h
+#define Surrogate_Optimization_adaptive_sampling_h
 
 #include "common.h"
 #include "utils.h"
@@ -225,4 +225,4 @@ namespace sot {
     };
 }
 
-#endif /* defined(__Surrogate_Optimization__CandidatePoints__) */
+#endif

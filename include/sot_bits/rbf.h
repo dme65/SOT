@@ -1,5 +1,5 @@
 //
-//  rbf2.h
+//  rbf.h
 //  Surrogate Optimization
 //
 //  Created by David Eriksson on 9/14/15.
@@ -12,7 +12,6 @@
 #ifndef Surrogate_Optimization_rbf_h
 #define Surrogate_Optimization_rbf_h
 
-#include <cassert>
 #include <iostream>
 #include "common.h"
 #include "utils.h"
@@ -190,7 +189,7 @@ namespace sot {
             
             mNumPoints = (int)points.n_cols;
             int n = mNumPoints + mnTail;
-            if(mNumPoints < mDim + 1) { 
+            if(mNumPoints < mnTail) { 
                 throw std::logic_error("Not enough points"); 
             }
             mat px = mTail.eval(points);
@@ -390,7 +389,6 @@ namespace sot {
         RBFInterpolantCap(Kernel kernel,Tail tail,int max_points, int d, vec xlow, vec xup) :
             RBFInterpolant<Kernel,Tail>(kernel, tail, max_points, d, xlow, xup) {}
         void fit() {
-            assert(this->num_points > this->d);
             if (this->dirty) {
                 int nact = this->num_points + this->ntail;
                 vec ff = this->F.head(nact);

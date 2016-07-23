@@ -6,8 +6,8 @@
 //  Copyright © 2016 David Eriksson. All rights reserved.
 //
 
-#ifndef __Surrogate_Optimization__kNN__
-#define __Surrogate_Optimization__kNN__
+#ifndef Surrogate_Optimization_kNN_h
+#define Surrogate_Optimization_kNN_h
 
 #include "common.h"
 #include "utils.h"
@@ -67,4 +67,4 @@ namespace sot {
 }
 
 
-#endif /* kNN_h */
+#endif
