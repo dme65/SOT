@@ -10,6 +10,6 @@ v0.3
   - Changed the installation directory of SOT
 
 v0.4
-  - Cleaned up member names and all members are no protected appropriately
+  - Cleaned up member names and all members are now protected/private
   - Added a DDS test
   - Improved error handling
