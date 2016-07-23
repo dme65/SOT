@@ -44,12 +44,12 @@ using namespace sot;
 
 int main(int argc, char** argv) {
     int dim = 10;
-    int maxeval = 500;
+    int maxEvals = 500;
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
-    std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxeval, dim, data->lbound(), data->rbound()));
-    std::shared_ptr<Sampling> dycors(std::make_shared<DYCORS<>>(data, rbf, 100*dim, maxeval - slhd->npts()));
+    std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
+    std::shared_ptr<Sampling> dycors(std::make_shared<DYCORS<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
     
     Optimizer opt(data, slhd, rbf, dycors, maxeval);
     Result res = opt.run();

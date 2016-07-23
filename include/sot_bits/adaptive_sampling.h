@@ -78,6 +78,16 @@ namespace sot {
         int mBudget;
         MeritFunction mMerit;
     public:
+        DYCORS(Problem* data, Surrogate* surf, int numCand, int budget) {
+            mData = std::shared_ptr<Problem>(data);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mBudget = budget;
+            mNumCand = numCand;
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mDistTol = 1e-3*sqrt(arma::sum(arma::square(mxUp - mxLow)));
+        }
         DYCORS(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
             mData = std::shared_ptr<Problem>(data);
             mSurf = std::shared_ptr<Surrogate>(surf);
@@ -143,6 +153,16 @@ namespace sot {
         int mBudget;
         MeritFunction mMerit;
     public:
+       SRBF(Problem* data, Surrogate* surf, int numCand, int budget) {
+            mData = std::shared_ptr<Problem>(data);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mBudget = budget;
+            mNumCand = numCand;
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mDistTol = 1e-3*sqrt(arma::sum(arma::square(mxUp - mxLow)));
+        }
         SRBF(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
             mData = std::shared_ptr<Problem>(data);
             mSurf = std::shared_ptr<Surrogate>(surf);
@@ -196,6 +216,16 @@ namespace sot {
         int mBudget;
         MeritFunction mMerit;
     public:
+       Uniform(Problem* data, Surrogate* surf, int numCand, int budget) {
+            mData = std::shared_ptr<Problem>(data);
+            mSurf = std::shared_ptr<Surrogate>(surf);
+            mBudget = budget;
+            mNumCand = numCand;
+            mDim = data->dim();
+            mxLow = data->lBounds();
+            mxUp = data->uBounds();
+            mDistTol = 1e-3*sqrt(arma::sum(arma::square(mxUp - mxLow)));
+        }
         Uniform(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
             mData = std::shared_ptr<Problem>(data);
             mSurf = std::shared_ptr<Surrogate>(surf);
