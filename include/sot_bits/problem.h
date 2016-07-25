@@ -18,8 +18,8 @@ namespace sot {
         virtual double min() const = 0;
         virtual vec optimum() const = 0;
         virtual std::string name() const = 0;
-        virtual double eval(vec&) const = 0;
-        vec evals(mat &points) const {
+        virtual double eval(const vec&) const = 0;
+        vec evals(const mat &points) const {
             vec fvals = arma::zeros<vec>(points.n_cols);
             for(int i=0; i < points.n_cols; i++) {
                 vec x = points.col(i);

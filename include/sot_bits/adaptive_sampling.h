@@ -60,7 +60,7 @@ namespace sot {
     class Sampling {
     public:
         virtual void reset(int) = 0;
-        virtual mat makePoints(vec &xBest, const mat &points, double sigma, int newPoints) = 0;
+        virtual mat makePoints(const vec &xBest, const mat &points, double sigma, int newPoints) = 0;
     };
     
     // DYCORS
@@ -102,7 +102,7 @@ namespace sot {
             mBudget = budget;
             mNumEvals = 0;
         }
-        mat makePoints(vec &xBest, const mat &points, double sigma, int newPoints) {                
+        mat makePoints(const vec &xBest, const mat &points, double sigma, int newPoints) {                
             double dds_prob = fmin(20.0/mDim, 1.0) * (1.0 - (log(mNumEvals + 1.0) / log(mBudget)));
             mat cand = arma::repmat(xBest, 1, mNumCand);
             for(int i=0; i < mNumCand; i++) {
@@ -177,7 +177,7 @@ namespace sot {
             mBudget = budget;
             mNumEvals = 0;
         }
-        mat makePoints(vec &xBest, const mat &points, double sigma, int newPoints) {
+        mat makePoints(const vec &xBest, const mat &points, double sigma, int newPoints) {
 
             mat cand = arma::repmat(xBest, 1, mNumCand);
 
@@ -240,7 +240,7 @@ namespace sot {
             mBudget = budget;
             mNumEvals = 0;
         }
-        mat makePoints(vec &xbest, const mat &points, double sigma, int newPoints) {
+        mat makePoints(const vec &xbest, const mat &points, double sigma, int newPoints) {
          
             mat cand = arma::randu<mat>(mDim, mNumCand);
             for(int j=0; j < mDim; j++) {
