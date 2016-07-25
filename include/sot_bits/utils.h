@@ -246,14 +246,18 @@ namespace sot {
         arma::arma_rng::set_seed_random();
         
         // Set the SOT seed using chrono
-        std::chrono::high_resolution_clock::time_point beginning = 
-                std::chrono::high_resolution_clock::now();
-        std::chrono::high_resolution_clock::duration d = 
-                std::chrono::high_resolution_clock::now() - beginning;
+        typedef std::chrono::high_resolution_clock myClock;
+        myClock::time_point beginning = myClock::now();
+        myClock::duration d = myClock::now() - beginning;
         unsigned newSeed = d.count();
+                
         rng::mt.seed(newSeed);
     }
+    
+    inline void set_seed(unsigned seed) {
+        arma::arma_rng::set_seed(seed);
+        rng::mt.seed(seed);
+    }
 }
-
 
 #endif
