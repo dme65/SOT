@@ -241,7 +241,7 @@ namespace sot {
         return rand(rng::mt);
     }
 
-    inline void set_seed_random() {
+    inline void setSeedRandom() {
         // Set the armadillo seed randomly
         arma::arma_rng::set_seed_random();
         
@@ -254,7 +254,7 @@ namespace sot {
         rng::mt.seed(newSeed);
     }
     
-    inline void set_seed(unsigned seed) {
+    inline void setSeed(unsigned seed) {
         arma::arma_rng::set_seed(seed);
         rng::mt.seed(seed);
     }
