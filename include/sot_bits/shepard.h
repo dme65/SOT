@@ -18,14 +18,12 @@ namespace sot {
     class Shepard : public Surrogate {
     protected:
         double mp;
+        double mDistTol = 1e-10;
         int mMaxPoints;
         int mNumPoints;
         int mDim;
         mat mX;
         mat mfX;
-        vec computeWeights(const vec &point) const {
-            return 1/arma::pow(squaredPointSetDistance<mat,vec>(point, X()), mp/2);
-        }
     public:
         Shepard(int maxPoints, int dim, double p) {
             mNumPoints = 0;
@@ -34,6 +32,9 @@ namespace sot {
             mDim = dim;
             mX.resize(dim, maxPoints);
             mfX.resize(maxPoints);
+        }
+        int dim() const {
+            return mDim;
         }
         int numPoints() const {
             return mNumPoints;
@@ -62,18 +63,17 @@ namespace sot {
             mNumPoints += n;
         }
         double eval(const vec &point) const {
-            vec weights = computeWeights(point);
-            return arma::dot(weights, fX())/arma::sum(weights);
-        }
-        /*
-        vec evals(const mat &points, const mat &dists) const {
-            vec vals = arma::zeros<vec>(points.n_cols);
-            for(int i=0; i < points.n_cols; i++) {
-                vals(i) = eval(points.col(i));
+            vec dists = squaredPointSetDistance<mat,vec>(point, X());
+            if (arma::min(dists) < mDistTol) { // Just return the closest point
+                arma::uword closest;
+                double scores = dists.min(closest);
+                return mfX(closest);
             }
-            return vals;
+            else {
+                vec weights = arma::pow(dists, -mp/2.0);
+                return arma::dot(weights, fX())/arma::sum(weights);
+            }
         }
-        */
         vec evals(const mat &points) const {
             vec vals = arma::zeros<vec>(points.n_cols);
             for(int i=0; i < points.n_cols; i++) {
@@ -82,7 +82,7 @@ namespace sot {
             return vals;
         }
         vec deriv(const vec &point) const {
-            abort();
+            throw std::logic_error("No derivatives for Shepard");
         }
         
         void reset() {

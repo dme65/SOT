@@ -17,51 +17,82 @@ namespace sot {
     
     class kNN : public Surrogate {
     protected:
-        int max_points;
-        int num_points;
-        int k;
-        mat Xmat;
-        vec fX;
+        int mDim;
+        int mMaxPoints;
+        int mNumPoints;
+        int mk;
+        mat mX;
+        vec mfX;
     public:
-        int dim;
-        kNN(int max_points, int dim, int k) {
-            this->num_points = 0;
-            this->max_points = max_points;
-            this->k = k;
-            this->Xmat.resize(dim, max_points);
-            this->fX.resize(max_points);
+        kNN(int maxPoints, int dim, int k) {
+            mDim = dim;
+            mNumPoints = 0;
+            mMaxPoints = maxPoints;
+            mk = k;
+            mX.resize(dim, maxPoints);
+            mfX.resize(maxPoints);
         }
-        int npts() {
-            return num_points;
+        int dim() const {
+            return mDim;
         }
-        vec X(int i) const {
-            return Xmat.col(i);
+        
+        int numPoints() const {
+            return mNumPoints;
         }
+        
         mat X() const {
-            return Xmat.cols(0, num_points-1);
+            return mX.cols(0, mNumPoints-1);
         }
-        void add_point(const vec &point, double fun_val) {
-            Xmat.col(num_points) = point;
-            fX(num_points) = fun_val;
-            num_points++;
+        
+        vec X(int i) const {
+            return mX.col(i);
         }
-        void add_points(const mat &points, const vec &fun_vals) {
-            int npts = points.n_cols;
-            Xmat.cols(num_points, num_points+npts-1) = points;
-            fX.rows(num_points, num_points+npts-1) = fun_vals;
-            num_points += npts;
+        
+        vec fX() const {
+            return mfX.rows(0, mNumPoints-1);
         }
+        
+        double fX(int i) const {
+            return mfX(i);
+        }
+        
+        void addPoint(const vec &point, double funVal) {
+            mX.col(mNumPoints) = point;
+            mfX(mNumPoints) = funVal;
+            mNumPoints++;
+        }
+        
+        void addPoints(const mat &points, const vec &funVals) {
+            int n = points.n_cols;
+            mX.cols(mNumPoints, mNumPoints + n - 1) = points;
+            mfX.rows(mNumPoints, mNumPoints + n - 1) = funVals;
+            mNumPoints += n;
+        }
+        
         double eval(const vec &point) const {
             vec dists = squaredPointSetDistance(point, X());
             uvec indices = sort_index(dists);
-            return arma::mean(fX(indices.rows(0, k-1)));
+            return arma::mean(mfX(indices.rows(0, mk - 1)));
         }
-        vec evals(const mat &points, const mat &dists) const {
+        
+        vec evals(const mat &points) const {
             vec vals = arma::zeros<vec>(points.n_cols);
             for(int i=0; i < points.n_cols; i++) {
                 vals(i) = eval(points.col(i));
             }
             return vals;
+        }
+        
+        vec deriv(const vec& point) const {
+            throw std::logic_error("No derivatives for kNN");
+        }
+        
+        void reset() {
+            mNumPoints = 0;
+        }
+        
+        void fit() {
+            return;
         }
     };
 }

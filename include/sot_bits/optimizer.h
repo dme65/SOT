@@ -10,7 +10,6 @@
 #ifndef Surrogate_Optimization_optimizer_h
 #define Surrogate_Optimization_optimizer_h
 
-#include <iostream>
 #include "common.h"
 #include "utils.h"
 
@@ -79,7 +78,6 @@ namespace sot {
         */
         
         Result run() {   
-            arma::arma_rng::set_seed_random();
             Result res(mMaxEvals, mDim);
             mNumEvals = 0;
             

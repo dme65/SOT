@@ -1,5 +1,5 @@
 /* 
- * File:   test_rbf.cpp
+ * File:   test_shepard.cpp
  * Author: David Eriksson
  *
  * Created on July 19, 2016, 12:44 PM
@@ -8,7 +8,7 @@
 #include <sot.h>
 using namespace sot;
 
-int test_rbf() {
+int test_shepard() {    
     int dim = 2;
     int n = 500;
     int m = 10;
@@ -19,41 +19,30 @@ int test_rbf() {
     }
     mat y = arma::randu<mat>(dim, m);;
 
-    CubicRBF rbf(n, dim, arma::zeros(dim), arma::ones(dim), 0.0);
-    rbf.addPoints(x, fx);
-    rbf.fit();
+    Shepard surf(n, dim, 2);
+    surf.addPoints(x, fx);
+    surf.fit();
 
     // Evaluate at the center to see that we are interpolating
-    vec vals = rbf.evals(x);
+    vec vals = surf.evals(x);
     for(int i=0; i < x.n_cols; i++) {
-        if (fabs(vals(i) - fx(i)) >= 1e-10) {
+        if (fabs(vals(i) - fx(i)) >= 1e-1) {
             return (EXIT_FAILURE);
         }
     }
     
     // Evaluate at some other points
-    vals = rbf.evals(y);
+    vals = surf.evals(y);
     for(int i=0; i < y.n_cols; i++) {
         double fval = y(1, i) * sin(y(0, i)) + y(0, i) * cos(y(1, i));
-        if (fabs(vals(i) - fval) >= 1e-3) {
+        if (fabs(vals(i) - fval) >= 2e-1) {
             return (EXIT_FAILURE);
         }
     }
-    
-    // Look at derivatives
-    vec pred = arma::zeros<vec>(2);
-    for(int i=0; i < y.n_cols; i++) {
-        vec deriv = rbf.deriv(y.col(i));
-        pred(0) = y(1, i) * cos(y(0, i)) + cos(y(1,i));
-        pred(1) = sin(y(0, i)) - y(0, i) * sin(y(1, i));
-        if (arma::norm(deriv - pred) >= 1e-2) {
-            return (EXIT_FAILURE);
-        }
-    }
-    
+        
     return (EXIT_SUCCESS);
 }
 
 int main(int argc, char** argv) {
-    return test_rbf();
+    return test_shepard();
 }

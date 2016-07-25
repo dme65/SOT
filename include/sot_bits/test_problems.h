@@ -37,7 +37,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return arma::sum(x % x);
         }
     };
@@ -64,7 +64,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return arma::dot(arma::linspace(1, mDim, mDim), x % x);
         }
     };
@@ -91,7 +91,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return arma::sum(arma::abs(x)) + arma::prod(arma::abs(x));
         }
     };
@@ -118,7 +118,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return - exp(-0.5 * arma::sum(x % x));
         }
     };
@@ -145,7 +145,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return 1e6 * (x(0) * x(0)) + arma::sum(x.rows(1, mDim-1) %  x.rows(1, mDim-1));
         }
     };
@@ -172,7 +172,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec x) const {
+        double eval(const vec &x) const {
             return arma::sum((arma::floor(x + 0.5)) % (arma::floor(x + 0.5)));
         }
     };
@@ -199,7 +199,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             double term1 = arma::sum(x % x);
             double term2 = arma::sum(0.5 * arma::dot(arma::linspace(1, mDim, mDim), x));
             return term1 + (term2 * term2) + (term2 * term2 * term2 * term2);
@@ -228,7 +228,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim-1; i++) {
                 total += 100.0 * (x(i)*x(i) - x(i+1))*(x(i)*x(i) - x(i+1))  + (x(i) - 1) * (x(i) - 1);
@@ -259,7 +259,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return 1.0 + (1.0/4000) * arma::sum(x % x) - 
                     arma::prod(arma::cos(x / sqrt(arma::linspace(1, mDim, mDim))));
         }
@@ -287,7 +287,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim - 1; i++) {
                 total += pow(x(i)*x(i) + x(i+1)*x(i+1), 0.25) * 
@@ -321,7 +321,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return - arma::dot(x, arma::sin(arma::sqrt(arma::abs(x))));
         }
     };
@@ -348,7 +348,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return (1.0/mDim) * arma::sum( (x % x % x % x) - 16*(x % x) + 5 * x);
         }
     };
@@ -375,7 +375,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return -20.0 * exp(-0.2 * sqrt(arma::sum(x % x)/double(mDim))) - 
                     exp(arma::sum(arma::cos(2.0 * __pi__ * x))/double(mDim));
         }
@@ -404,7 +404,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec x) const {
+        double eval(const vec &x) const {
             return arma::sum(x % x - 1 * arma::cos(2 * __pi__ * x));
         }
     };
@@ -432,7 +432,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return - arma::sum(arma::sin(x) % arma::pow(arma::sin(
                     ((arma::linspace(1, mDim, mDim) % x % x)/__pi__)), 20));
         }
@@ -460,7 +460,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             double y1 = 0.0;
             double y2 = 1.0;
             double y3 = 0.0;
@@ -497,7 +497,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {            
+        double eval(const vec &x) const {
             vec w = arma::zeros<vec>(mDim);
             for(int i=0; i < mDim; i++) {
                 w(i) = 1 + (x(i) - 1)/4;
@@ -536,7 +536,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             return 1 - cos(2*__pi__*sqrt(arma::sum(x%x))) + 0.1*sqrt(arma::sum(x % x));
         }
     };
@@ -562,7 +562,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec x) const {
+        double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim; i++) {
                 for(int j=1; j < 6; j++) {
@@ -595,7 +595,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {
+        double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim-1; i++) {
                 total += (pow(sin(sqrt(x(i)*x(i)+x(i+1)*x(i+1))-0.5),2))/
@@ -638,7 +638,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec &x) const {            
+        double eval(const vec &x) const {
             long double num = 0, den = 0, prodval = 0;
             for(int i=0; i < mk; i++) {
                 prodval = pow(sqrt(arma::sum(arma::square(mz.col(i) - x))), mAlpha(i));
@@ -672,7 +672,7 @@ namespace sot {
         double min() const { return mMinimum; }
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
-        double eval(vec x) const {
+        double eval(const vec &x) const {
             return -0.1*arma::sum(arma::cos(5*__pi__*x)) + arma::sum(x % x);
         }
     };
@@ -689,6 +689,7 @@ namespace sot {
      * can also see that g isn't separable as long as Q isn't.
      */
     
+    template<class OptProb> 
     class RotatedProblem : public Problem {
     protected:
         std::shared_ptr<Problem> mProblem;
@@ -714,19 +715,20 @@ namespace sot {
             mRotation = Q;
         }
     public:
-        RotatedProblem(std::shared_ptr<Problem>& problem) {
-            if (problem->optimum().n_elem != problem->dim()) {
-                throw std::logic_error("Optimum not specified for: " + problem->name() + " so can't create a rotated version");
+        RotatedProblem(int dim) {
+            mProblem = std::make_shared<OptProb>(dim);
+            if (mProblem->optimum().n_elem != mProblem->dim()) {
+                throw std::logic_error("Optimum not specified for: " + 
+                        mProblem->name() + " so can't create a rotated version");
             }
-            mProblem = std::shared_ptr<Problem>(problem);
-            mDim = problem->dim();
-            mxLow = problem->lBounds();
-            mxUp = problem->uBounds();
-            mMinimum = problem->min();
+            mDim = mProblem->dim();
+            mxLow = mProblem->lBounds();
+            mxUp = mProblem->uBounds();
+            mMinimum = mProblem->min();
             createTranslation();
             createRotation();
             mOptimum = mTranslation;
-            mName = "Rotated + Translated " + problem->name();
+            mName = "Rotated + Translated " + mProblem->name();
         }
         mat roatation() const { return mRotation; }
         vec translation() const { return mTranslation; }
@@ -737,9 +739,9 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         
-        double eval(vec &x) const {
-            x = mProblem->optimum() + mRotation * (x - mTranslation);
-            return mProblem->eval(x);
+        double eval(const vec &x) const {
+            vec xx = mProblem->optimum() + mRotation * (x - mTranslation);
+            return mProblem->eval(xx);
         }
     };
 }

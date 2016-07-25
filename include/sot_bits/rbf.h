@@ -12,7 +12,6 @@
 #ifndef Surrogate_Optimization_rbf_h
 #define Surrogate_Optimization_rbf_h
 
-#include <iostream>
 #include "common.h"
 #include "utils.h"
 #include "surrogate.h"
@@ -104,6 +103,47 @@ namespace sot {
         double mEta = 1e-6;
         int mDim;
         
+        
+        // Set points
+        void setPoints(const mat &ppoints, const vec &funVals) {
+            
+            // Map point to be in the unit box
+            mat points = toUnitBox(ppoints, mxLow, mxUp);
+            
+            mNumPoints = (int)points.n_cols;
+            int n = mNumPoints + mnTail;
+            if(mNumPoints < mnTail) { 
+                throw std::logic_error("Not enough points"); 
+            }
+            mat px = mTail.eval(points);
+            mat phi = mKernel.eval(arma::sqrt(squaredPairwiseDistance(points, points)));
+                    
+            mat A = arma::zeros<mat>(n, n);
+            A(arma::span(mnTail, n - 1), arma::span(0, mnTail - 1)) = px.t();
+            A(arma::span(0, mnTail - 1), arma::span(mnTail, n - 1)) = px;
+            A(arma::span(mnTail, n - 1), arma::span(mnTail, n - 1)) = phi;
+            mfX.rows(mnTail, n - 1) = funVals;
+            
+            // REGULARIZATION
+            A += mEta*arma::eye(n, n);
+            
+            // Compute the initial LU factorization of A
+            mat L, U, P;
+            arma::lu(L, U, P, A);
+            
+            mL(arma::span(0, n - 1), arma::span(0, n - 1)) = L;
+            mU(arma::span(0, n - 1), arma::span(0, n - 1)) = U;
+            
+            // Convert P to a permutation vector
+            for(int i = 0; i < n; i++) {
+                uvec temp = find(P.row(i) > 0.5);
+                mp(i) = temp(0);
+            }
+            
+            mCenters.cols(0, mNumPoints - 1) = points;
+            mDirty = true;
+        }
+        
     public:
         
         RBFInterpolant(int max_points, int d, vec xlow, vec xup, double eta) :
@@ -179,46 +219,6 @@ namespace sot {
                 mCoeffs = arma::solve(arma::trimatu(mU(arma::span(0, n - 1), arma::span(0, n - 1))), mCoeffs);
                 mDirty = false;
             }
-        }
-        
-        // Set points
-        void setPoints(const mat &ppoints, const vec &funVals) {
-            
-            // Map point to be in the unit box
-            mat points = toUnitBox(ppoints, mxLow, mxUp);
-            
-            mNumPoints = (int)points.n_cols;
-            int n = mNumPoints + mnTail;
-            if(mNumPoints < mnTail) { 
-                throw std::logic_error("Not enough points"); 
-            }
-            mat px = mTail.eval(points);
-            mat phi = mKernel.eval(arma::sqrt(squaredPairwiseDistance(points, points)));
-                    
-            mat A = arma::zeros<mat>(n, n);
-            A(arma::span(mnTail, n - 1), arma::span(0, mnTail - 1)) = px.t();
-            A(arma::span(0, mnTail - 1), arma::span(mnTail, n - 1)) = px;
-            A(arma::span(mnTail, n - 1), arma::span(mnTail, n - 1)) = phi;
-            mfX.rows(mnTail, n - 1) = funVals;
-            
-            // REGULARIZATION
-            A += mEta*arma::eye(n, n);
-            
-            // Compute the initial LU factorization of A
-            mat L, U, P;
-            arma::lu(L, U, P, A);
-            
-            mL(arma::span(0, n - 1), arma::span(0, n - 1)) = L;
-            mU(arma::span(0, n - 1), arma::span(0, n - 1)) = U;
-            
-            // Convert P to a permutation vector
-            for(int i = 0; i < n; i++) {
-                uvec temp = find(P.row(i) > 0.5);
-                mp(i) = temp(0);
-            }
-            
-            mCenters.cols(0, mNumPoints - 1) = points;
-            mDirty = true;
         }
         
         // Add one point

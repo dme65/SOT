@@ -67,7 +67,6 @@ namespace sot {
         }
 
         Result run() {
-            arma::arma_rng::set_seed_random();
             int maxEvals = mNumIndividuals * mNumGenerations;
             Result res(mNumIndividuals * mNumGenerations, mDim);
             

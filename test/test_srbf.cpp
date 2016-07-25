@@ -6,7 +6,6 @@
  */
 
 #include <sot.h>
-
 using namespace sot;
 
 int test_srbf() {
@@ -19,6 +18,7 @@ int test_srbf() {
     std::shared_ptr<Surrogate> rbf(std::make_shared<TPSRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
     std::shared_ptr<Sampling> dycors(std::make_shared<SRBF<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
     
+    set_seed_random();
     Optimizer opt(data, slhd, rbf, dycors, maxEvals);
     Result res = opt.run();
     
