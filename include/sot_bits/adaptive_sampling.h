@@ -296,7 +296,7 @@ namespace sot {
             // Update counter
             mNumEvals += newPoints;
             
-            return mMerit.pick_points(cand, mSurf, points, newPoints, mDistTol);
+            return mMerit.pickPoints(cand, mSurf, points, newPoints, mDistTol);
         }
     };
 }
