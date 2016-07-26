@@ -1,2 +1,3 @@
 FILE_PATTERNS = *.h *.cpp *.md
 USE_MDFILE_AS_MAINPAGE = doc/INDEX.md
+HAVE_DOT = YES
