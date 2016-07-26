@@ -1,33 +1,29 @@
-//
-//  common.h
-//  Surrogate Optimization
-//
-//  Created by David Eriksson on 2/2/16.
-//  Copyright © 2016 David Eriksson. All rights reserved.
-//
+/*!
+ * File:   adaptive_sampling.h
+ * Author: David Eriksson, dme65@cornell.edu
+ *
+ * Created on 7/18/16.
+ */
 
-#ifndef Surrogate_Optimization_common_h
-#define Surrogate_Optimization_common_h
+#ifndef SOT_COMMON_H
+#define SOT_COMMON_H
 
 #include <armadillo>
 #include <random>
 
+//!SOT namespace
 namespace sot {
+    typedef arma::mat mat; /**< Default matrix class */
+    typedef arma::vec vec; /**< Default (column) vector class */
+    typedef arma::rowvec rowvec; /**< Default (row) vector class */
+    typedef arma::fmat fmat; /**< Default single precision matrix class */
+    typedef arma::fvec fvec; /**< Default single precision (column) vector class */
+    typedef arma::Col<int> ivec; /**< Default index (column) vector class */
+    typedef arma::uvec uvec; /**< Default unsigned (column) vector class */
     
-    #define ARMA_USE_BLAS
-    #define __pi__ 3.14159265358979323846
-
-    typedef arma::mat mat;
-    typedef arma::vec vec;
-    typedef arma::rowvec rowvec;
-    typedef arma::fmat fmat;
-    typedef arma::fvec fvec;
-    typedef arma::Col<int> ivec;
-    typedef arma::uvec uvec;
-    
-    // Set seeds
+    //! Namespace for the random number generator 
     namespace rng {
-        std::mt19937 mt(0);                                     
+        std::mt19937 mt(0); /**< The global random number generator */                                
     }
 }
 
