@@ -1,8 +1,8 @@
 /* 
- * File:   test_dycors.cpp
+ * File:   test_ga.cpp
  * Author: David Eriksson
  *
- * Created on July 19, 2016, 12:44 PM
+ * Created on July 25, 2016, 12:44 PM
  */
 
 #include <sot.h>
@@ -11,20 +11,19 @@ using namespace sot;
 int test_dycors() {
 
     int dim = 10;
-    int maxEvals = 500;
+    int numIndivuduals = 50;
+    int numGenerations = 10;
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
-    std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
-    std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
-    std::shared_ptr<Sampling> dycors(std::make_shared<DYCORS<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
-    
+    std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(numIndivuduals, dim));
+
     setSeedRandom();
-    Optimizer opt(data, slhd, rbf, dycors, maxEvals);
+    GeneticAlgorithm opt(data, slhd, numIndivuduals, numGenerations);
     Result res = opt.run();    
     
     std::cout << res.fBest() << std::endl;
     // Check that we made enough progress and that we are feasible
-    if (res.fBest() > -20.0) {
+    if (res.fBest() > -15.0) {
         return (EXIT_FAILURE);
     }
     if (not arma::all(res.xBest() >= data->lBounds())) {

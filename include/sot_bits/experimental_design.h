@@ -1,48 +1,110 @@
-//
-//  experimental_design.h
-//  Surrogate Optimization
-//
-//  Created by David Eriksson on 7/30/15.
-//  Copyright (c) 2015 David Eriksson. All rights reserved.
-//
+/*!
+ * File:   experimental_design.h
+ * Author: David Eriksson, dme65@cornell.edu
+ *
+ * Created on 7/18/16.
+ */
 
-#ifndef Surrogate_Optimization_experimental_design_h
-#define Surrogate_Optimization_experimental_design_h
+#ifndef SOT_EXPERIMENTAL_DESIGN_H
+#define SOT_EXPERIMENTAL_DESIGN_H
 
-#include <iostream>
 #include "common.h"
 #include "utils.h"
+#include "merit_functions.h"
 
+//!SOT namespace
 namespace sot {
+    
+    //!  Abstract class for a SOT experimental design class
+    /*!
+     * This is the abstract class that should be used as a Base class for all
+     * experimental design objects in SOT. The experimental design generates an
+     * initial set of points that are first evaluated and then used to fit the
+     * initial surrogate model. All experimental design should be generated for
+     * the hypercube [0, 1]^dim.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
     
     class ExpDesign {
     public:
-        virtual int dim() const = 0;
-        virtual int numPoints() const = 0;
-        virtual mat generatePoints() const = 0;
+        //! Virtual method for getting the number of dimensions
+        virtual int dim() const = 0; /*!< \returns The number of dimensions */
+        //! Virtual method for getting the number of points in the experimental design
+        virtual int numPoints() const = 0; /*!< \returns The number of points */
+        //! Virtual method for generating an experimental design
+        virtual mat generatePoints() const = 0; /*!< \returns An experimental design */
     };
+    
+    //!  Fixed experimental design
+    /*!
+     * This is a simple class that always returns the experimental design points
+     * that were supplied by the user when the object was constructed. This
+     * object is handy in order to compare different algorithms for the same
+     * experimental design points.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
     
     class FixedDesign : public ExpDesign {
     protected:
-        int mDim;
-        int mNumPoints;
-        mat mPoints;
+        int mDim; /*!< Number of dimensions */
+        int mNumPoints; /*!< Number of points in the experimental design */
+        mat mPoints; /*!< The experimental design points supplied by the user */
     public:
+        //! Constructor
+        /*!
+          * \param points Experimental design points
+          */
         FixedDesign(mat& points) { 
             mPoints = points; 
             mDim = points.n_rows; 
             mNumPoints = points.n_cols; 
         }
-        int dim() const { return mDim; }
-        int numPoints() const { return mNumPoints; }
-        mat generatePoints() const { return mPoints; }
+        //! Method for getting the number of dimensions
+        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        //! Method for getting the number of points in the experimental design
+        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        //! Method that returns the user supplied experimental design
+        mat generatePoints() const { return mPoints; } /*!< \returns The fixed experimental design */
     };
+        
+    //!  Symmetric Latin hypercube design
+    /*!
+     * Symmetric Latin hypercube sampling are popular for generating near-random
+     * samples of parameter values from a multidimensional distribution. The
+     * Symmetric Latin hypercube does better than the original Latin hypercube
+     * when it comes to entropy and maximin and is the experimental design of
+     * choice for surrogate optimization. Due to rank-deficiencies it's 
+     * recommended to use 2*dim points to ensure that the sample has rank dim.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
     
     class SymmetricLatinHypercube : public ExpDesign {
     protected:
-        int mDim;
-        int mNumPoints;
-        mat createDesign() const {
+        int mDim; /*!< Number of dimensions */
+        int mNumPoints; /*!< Number of points in the experimental design */
+
+    public:
+        //! Constructor
+        /*!
+         * \param numPoints Number of points in the experimental design
+         * \param dim Number of dimensions 
+         */
+        SymmetricLatinHypercube(int numPoints, int dim) {
+            mNumPoints = numPoints;
+            mDim = dim;
+        }
+        //! Method for getting the number of dimensions
+        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        //! Method for getting the number of points in the experimental design
+        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        //! Method that generates a symmetric Latin hypercube design
+        /*!
+         *  \returns A symmetric Latin hypercube design
+         */ 
+        mat generatePoints() const { 
             mat points = arma::zeros<mat>(mDim, mNumPoints);
             points.row(0) = arma::linspace<vec>(1, mNumPoints, mNumPoints).t();
 
@@ -73,37 +135,40 @@ namespace sot {
 
             return points/double(mNumPoints);
         }
-    public:
-        SymmetricLatinHypercube(int numPoints, int dim) {
-            mNumPoints = numPoints;
-            mDim = dim;
-        }
-        int dim() const { return mDim; }
-        int numPoints() const { return mNumPoints; }
-        mat generatePoints() const {
-            arma::uword rankPmat = 0;
-            mat pMat = arma::ones<mat>(mDim + 1, mNumPoints);
-            mat xSample;
-            do {
-                xSample = createDesign();
-                pMat.rows(1, mDim) = xSample;
-                rankPmat = arma::rank(pMat);
-            } while(rankPmat != mDim + 1);
-            return xSample;
-        }
     };
+    
+    //!  Latin hypercube design
+    /*!
+     * This is a simple class that always returns the experimental design points
+     * that were supplied by the user when the object was constructed. This
+     * object is handy in order to compare different algorithms for the same
+     * experimental design points.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
     
     class LatinHypercube : public ExpDesign {
     protected:
-        int mDim;
-        int mNumPoints;
+        int mDim; /*!< Number of dimensions */
+        int mNumPoints; /*!< Number of points in the experimental design */
     public:
+        //! Constructor
+        /*!
+         * \param numPoints Number of points in the experimental design
+         * \param dim Number of dimensions 
+         */
         LatinHypercube(int numPoints, int dim) {
             mNumPoints = numPoints;
             mDim = dim;
         }
-        int dim() const { return mDim; }        
-        int numPoints() const { return mNumPoints; }
+        //! Method for getting the number of dimensions
+        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        //! Method for getting the number of points in the experimental design
+        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        //! Method that generates a symmetric Latin hypercube design
+        /*!
+         *  \returns A symmetric Latin hypercube design
+         */ 
         mat generatePoints() const {
             mat XBest;
             mat X;
@@ -131,18 +196,37 @@ namespace sot {
         }   
     };
     
+    //!  2-Factorial design
+    /*!
+     * The 2-Factorial design is the corners of the hypercube [0,1]^dim and
+     * therefore consists of exactly 2^dim. It's a popular experimental design
+     * for low-dimensional problems.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
+    
     class TwoFactorial : public ExpDesign {
     protected:
-        int mNumPoints;
-        int mDim;
+        int mDim; /*!< Number of dimensions */
+        int mNumPoints; /*!< Number of points in the experimental design */
     public:
+        //! Constructor
+        /*!
+         * \param dim Number of dimensions 
+         */
         TwoFactorial(int dim) {
             mNumPoints = pow(2, dim);
             mDim = dim;
             if(dim >= 15) {throw std::logic_error("Using 2-Factorial for dim >= 15 is a bad idea"); }
         }
-        int dim() const { return mDim; }
-        int numPoints() const { return mNumPoints; }
+        //! Method for getting the number of dimensions
+        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        //! Method for getting the number of points in the experimental design
+        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        //! Method that generates a symmetric Latin hypercube design
+        /*!
+         *  \returns A 2-Factorial design
+         */ 
         mat generatePoints() const {
             mat xSample = arma::zeros<mat>(mDim, mNumPoints);
             for(int i=0; i < mDim; i++) {
@@ -157,18 +241,36 @@ namespace sot {
         }
     };
     
+    //!  Corners + Midpoint
+    /*!
+     * This is an experimental design that consists of the 2-Factorial design 
+     * plus the midpoint of the [0,1]^dim hypercube.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
+    
     class CornersMid : public ExpDesign {
     protected:
-        int mNumPoints;
-        int mDim;
+        int mDim; /*!< Number of dimensions */
+        int mNumPoints; /*!< Number of points in the experimental design */
     public:
+       //! Constructor
+        /*!
+         * \param dim Number of dimensions 
+         */
         CornersMid(int dim) {
             mNumPoints = 1 + pow(2, dim);
             mDim = dim;
             if(dim >= 15) {throw std::logic_error("Using Corners + Mid for dim >= 15 is a bad idea"); }
         }
-        int dim() const { return mDim; }
-        int numPoints() const { return mNumPoints; }
+        //! Method for getting the number of dimensions
+        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        //! Method for getting the number of points in the experimental design
+        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        //! Method that generates a symmetric Latin hypercube design
+        /*!
+         *  \returns A 2-Factorial design
+         */ 
         mat generatePoints() const {
             mat xSample = arma::zeros<mat>(mDim, mNumPoints);
 
@@ -186,4 +288,5 @@ namespace sot {
         }
     };
 }
+
 #endif

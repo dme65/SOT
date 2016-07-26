@@ -1,49 +1,52 @@
-//
-//  genetic_algorithm.h
-//  Surrogate Optimization
-//
-//  Created by David Eriksson on 8/3/15.
-//  Copyright (c) 2015 David Eriksson. All rights reserved.
-//
+/*!
+ * File:   genetic_algorithm.h
+ * Author: David Eriksson, dme65@cornell.edu
+ *
+ * Created on 7/18/16.
+ */
 
-#ifndef Surrogate_Optimization_genetic_algorithm_h
-#define Surrogate_Optimization_genetic_algorithm_h
+#ifndef SOT_GENETIC_ALGORITHM_H
+#define SOT_GENETIC_ALGORITHM_H
 
 #include "common.h"
 #include "utils.h"
 
+//!SOT namespace
 namespace sot {
+    
+    //!  Genetic Algorithm
+    /*!
+     * This is an implementation of the popular Genetic Algorithm. The 
+     * implementation is of a real-valued GA and the mutation operator used
+     * is a normally distributed perturbation. The number of evaluations carried
+     * out by the method is mNumIndividuals * mNumGenerations.
+     * 
+     * \author David Eriksson, dme65@cornell.edu
+     */
     
     class GeneticAlgorithm  {
     protected:
-        std::shared_ptr<Problem> mData;
-        std::shared_ptr<ExpDesign> mExpDes;
-        
-        double mSigma = 0.2;
-        int mTournamentSize = 5;
-        double mpCross = 0.9;
-        double mpMutation;
-        int mDim;
-        vec mxLow;
-        vec mxUp;
-        int mNumVariables;
-        int mNumIndividuals;
-        int mNumGenerations;
-        std::string mName = "Genetic Algorithm";
-        bool mRandomInit;
-    
-    public:   
-        GeneticAlgorithm(Problem *data, int numIndividuals, int numGenerations) {
-            mData = std::shared_ptr<Problem>(data);
-            mDim = data->dim();
-            mNumVariables = mDim;
-            mpMutation = 1.0/mDim;
-            mNumIndividuals = numIndividuals;
-            mNumGenerations = numGenerations;
-            mRandomInit = true;
-            mxLow = data->lBounds();
-            mxUp= data->uBounds();
-        }
+        std::shared_ptr<Problem> mData; /*!< A shared pointer to the optimization problem */
+        std::shared_ptr<ExpDesign> mExpDes; /*!< A shared pointer to the experimental design (if used) */
+        double mSigma = 0.2; /*!< Standard deviation for the mutatio w.r.t. the unit box */
+        int mTournamentSize = 5; /*!< Tournament size */
+        double mpCross = 0.9; /*!< Crossover probability */
+        double mpMutation; /*!< Mutation probability */
+        int mDim; /*!< Number of dimensions (extracted from mData) */
+        vec mxLow; /*!< Lower variable bounds (extracted from mData) */
+        vec mxUp; /*!< Upper variable bounds (extracted from mData) */
+        int mNumVariables; /*!< Number of variables (extracted from mData) */
+        int mNumIndividuals; /*!< Number of individuals in the population */
+        int mNumGenerations; /*!< Number of generations */
+        std::string mName = "Genetic Algorithm"; /*!< Strategy name */
+        bool mRandomInit; /*!< True if the initial population is uniformly random */
+    public: 
+        //! Constructor
+        /*!
+         * \param data A shared pointer to the optimization problem
+         * \param numIndividuals Number of individuals in the population
+         * \param numGenerations Number of generations
+         */
         GeneticAlgorithm(std::shared_ptr<Problem>& data, int numIndividuals, int numGenerations) {
             mData = std::shared_ptr<Problem>(data);
             mDim = data->dim();
@@ -55,19 +58,31 @@ namespace sot {
             mxLow = data->lBounds();
             mxUp= data->uBounds();
         }
+        //! Constructor
+        /*!
+         * \param data A shared pointer to the optimization problem
+         * \param expDes Experimental design used to generate the initial population
+         * \param numIndividuals Number of individuals in the population
+         * \param numGenerations Number of generations
+         * 
+         * \throws std::logic_error if the size of the experimental design doesn't match
+         */
         GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
         int numIndividuals, int numGenerations) : GeneticAlgorithm(data, numIndividuals, numGenerations) {
             mExpDes = std::shared_ptr<ExpDesign>(expDes);
+            if(expDes->numPoints() != mNumIndividuals) {
+                throw std::logic_error("Experimental design doesn't match the population size");
+            }
+            if(expDes->dim() != mNumVariables) {
+                throw std::logic_error("Experimental design has incorrect dimensionality");
+            } 
             mRandomInit = false;
         }
-        GeneticAlgorithm(Problem *data, ExpDesign *expDes,  int numIndividuals, int numGenerations) : 
-        GeneticAlgorithm(data, numIndividuals, numGenerations) {
-            mExpDes = std::shared_ptr<ExpDesign>(expDes);
-            mRandomInit = false;
-        }
-
+        //! Runs the optimization algorithm
+        /*!
+         * \return A Result object with the results from the run
+         */
         Result run() {
-            int maxEvals = mNumIndividuals * mNumGenerations;
             Result res(mNumIndividuals * mNumGenerations, mDim);
             
             mat population;
@@ -92,7 +107,8 @@ namespace sot {
             for(int gen = 0; gen < mNumGenerations - 1; gen++) {
                 
                 ////////////////// Tournament selection and crossover ////////////////////
-                arma::imat tournament = arma::randi<arma::imat>(mTournamentSize, mNumIndividuals, arma::distr_param(0, mNumIndividuals - 1));
+                arma::imat tournament = arma::randi<arma::imat>(mTournamentSize, mNumIndividuals, 
+                        arma::distr_param(0, mNumIndividuals - 1));
                 for(int i = 0; i < mNumIndividuals/2; i++) {
                     double minval1 = std::numeric_limits<double>::max();
                     double minval2 = std::numeric_limits<double>::max();

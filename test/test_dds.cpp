@@ -15,7 +15,7 @@ int test_dycors() {
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
 
-    set_seed_random();
+    setSeedRandom();
     DDS opt(data, slhd, maxEvals);
     Result res = opt.run();    
     

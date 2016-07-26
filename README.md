@@ -33,6 +33,9 @@ The SOT tests seem to build without any issues on both Ubuntu and OSX. I would a
 
 SOT currently only depends on the Armadillo library, which should be linked with a fast BLAS library for maximum speed. More information can be found in the Armadillo documentation.
 
+## Source code documentation
+The Doxygen generated source code documentation can be accessed at: [https://codedocs.xyz/dme65/SOT/](https://codedocs.xyz/dme65/SOT/)
+
 ## Examples
 
 The following example code shows how to run SOT with the default methods:
@@ -44,7 +47,8 @@ using namespace sot;
 
 int main(int argc, char** argv) {
     int dim = 10;
-    int maxEvals = 500;
+    int maxEvals = 500; // Evaluation budget
+    setSeedRandom(); // Set the SOT seed ramdomly
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
@@ -53,6 +57,9 @@ int main(int argc, char** argv) {
     
     Optimizer opt(data, slhd, rbf, dycors, maxeval);
     Result res = opt.run();
+    
+    std::cout << "Best value found: << res.fBest() << std::endl;
+    std::cout << "Best solution found: << res.xBest().t() << std::endl;
 } 
 ```
 
@@ -60,13 +67,11 @@ SOT expects shared pointers for the base class objects that point to implementat
 
 ## Next features to be added
 
-* Documentation + comments in code
 * Support for evaluating the objective function in synchronous parallel
 * More surrogate models
 * Support for integer variables
 * Support for combining adaptive sampling methods
 * Support for ensemble surrogate models
-* More CMake tests
 
 ## References
 
