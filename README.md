@@ -58,8 +58,8 @@ int main(int argc, char** argv) {
     Optimizer opt(data, slhd, rbf, dycors, maxeval);
     Result res = opt.run();
     
-    std::cout << "Best value found: << res.fBest() << std::endl;
-    std::cout << "Best solution found: << res.xBest().t() << std::endl;
+    std::cout << "Best value found: " << res.fBest() << std::endl;
+    std::cout << "Best solution found: " << res.xBest().t() << std::endl;
 } 
 ```
 
