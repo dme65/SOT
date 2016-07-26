@@ -1,3 +1,7 @@
-# SOT
+SOT source documentation {#mainpage}
+=================
 
-This is the official documentation for the GitHub repository SOT: [https://github.com/dme65/SOT](https://github.com/dme65/SOT)
+Introduction
+------------
+
+This is the official source documentation for the GitHub repository SOT that is hosted on [https://github.com/dme65/SOT](https://github.com/dme65/SOT).
