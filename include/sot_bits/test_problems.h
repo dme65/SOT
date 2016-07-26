@@ -854,7 +854,7 @@ namespace sot {
      * Function: \f$f(x) = \displaystyle\frac{\displaystyle\sum_{i=1}^k f_i \displaystyle\prod_{j \neq i} \|x - z_j\|^{\alpha}}{
      *           \displaystyle\sum_{i=1}^k \displaystyle\prod_{j \neq i} \|x - z_j\|^{\alpha}} \f$ <br>
      * Domain: \f$ 0 \leq x_i \leq 1 \f$ <br>
-     * Minimum value: 0 <br>
+     * Minimum value: \f$0\f$ <br>
      * Minimizer: Randomly generated$ <br> <br>  
      * 
      * Here \f$z_j \in [0,1]^d\f$ for \f$j=1,\dots,k\f$ are the locations of the stationary points and
@@ -921,7 +921,7 @@ namespace sot {
     /*!
      * Function: \f$f(x) = -0.1 \displaystyle\sum_{i=1}^d [\cos(5\pi x_i) + x_i^2]\f$ <br>
      * Domain: \f$ -1 \leq x_i \leq 1 \f$ <br>         
-     * Minimum value: -0.1d <br>
+     * Minimum value: \f$-0.1d\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
      * 
      * \author David Eriksson, dme65@cornell.edu   
