@@ -8,7 +8,7 @@ add_subdirectory (test)
 
 # The version number.
 set (SOT_VERSION_MAJOR 0)
-set (SOT_VERSION_MINOR 6)
+set (SOT_VERSION_MINOR 7)
 
 include_directories(include)
 
@@ -27,3 +27,4 @@ add_test (NAME test_dds COMMAND test_dds)
 add_test (NAME test_dycors COMMAND test_dycors)
 add_test (NAME test_ga COMMAND test_ga)
 add_test (NAME test_srbf COMMAND test_srbf)
+add_test (NAME test_sync COMMAND test_sync)

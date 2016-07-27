@@ -267,7 +267,7 @@ namespace sot {
         bool mDirty; /*!< True if the coefficients need to be recomputed */
         vec mxLow; /*!< Lower variable bounds */
         vec mxUp; /*!< Upper variable bounds */
-        double mEta = 1e-6; /*!< Damping added to the kernel to avoid ill-conditioning */
+        double mEta = 1e-8; /*!< Damping added to the kernel to avoid ill-conditioning */
         int mDim; /*!< Number of dimensions */
         
         //! Computes the initial LU decomposition

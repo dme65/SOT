@@ -77,7 +77,8 @@ namespace sot {
             while (mNumEvals < mMaxEvals) {
                 
                 ////////////////////////// Select a new evaluations //////////////////////////
-                double ddsProb = 1 - log(mNumEvals - mInitPoints)/log(mMaxEvals - mInitPoints);
+                double ddsProb = 1 - std::log((double)mNumEvals - mInitPoints)/
+                    std::log((double)mMaxEvals - mInitPoints);
                 ddsProb = fmax(ddsProb, 1.0/mDim);
                 
                 vec cand = res.xBest();

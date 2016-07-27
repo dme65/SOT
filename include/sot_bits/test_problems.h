@@ -90,11 +90,11 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return arma::dot(arma::linspace(1, mDim, mDim), x % x);
+            return arma::dot(arma::linspace(1, mDim, mDim), arma::square(x));
         }
     };
     
-    //! %Schwefel2_22 function
+    //! %Schwefel22 function
     /*!
      * Function: \f$f(x) = \displaystyle\prod_{i=1}^d |x_i| + \displaystyle\sum_{i=1}^d |x_i|\f$ <br>
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
@@ -103,20 +103,20 @@ namespace sot {
      * 
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class Schwefel2_22 : public Problem {
+    class Schwefel22 : public Problem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
         vec mxUp; /*!< Upper variable bounds */     
         vec mOptimum; /*!< Global minimizer */     
         double mMinimum = 0; /*!< Global minimum value */   
-        std::string mName = "Schwefel2_22"; /*!< Optimization problem name */   
+        std::string mName = "Schwefel22"; /*!< Optimization problem name */   
     public:
         //! Constructor
         /*!
          * \param dim Number of dimensions
          */
-        Schwefel2_22(int dim) {
+        Schwefel22(int dim) {
             mDim = dim;
             mOptimum = arma::zeros<vec>(dim);
             mxLow = -10.0 * arma::ones<vec>(dim);
@@ -207,7 +207,7 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return 1e6 * (x(0) * x(0)) + arma::sum(x.rows(1, mDim-1) %  x.rows(1, mDim-1));
+            return 1e6 * (x(0) * x(0)) + arma::sum(arma::square(x.rows(1, mDim-1)));
         }
     };
     
@@ -246,7 +246,7 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return arma::sum((arma::floor(x + 0.5)) % (arma::floor(x + 0.5)));
+            return arma::sum(arma::square(arma::floor(x + 0.5)));
         }
     };
     
@@ -287,9 +287,9 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            double term1 = arma::sum(x % x);
+            double term1 = arma::sum(arma::square(x));
             double term2 = arma::sum(0.5 * arma::dot(arma::linspace(1, mDim, mDim), x));
-            return term1 + (term2 * term2) + (term2 * term2 * term2 * term2);
+            return term1 + std::pow(term2, 2) + std::pow(term2, 4);
         }
     };
     
@@ -330,7 +330,7 @@ namespace sot {
         double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim-1; i++) {
-                total += 100.0 * (x(i)*x(i) - x(i+1))*(x(i)*x(i) - x(i+1))  + (x(i) - 1) * (x(i) - 1);
+                total += 100.0 * std::pow(x(i)*x(i) - x(i+1), 2)  + std::pow(x(i) - 1, 2);
             }
             return total;
         }
@@ -415,41 +415,41 @@ namespace sot {
         double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim - 1; i++) {
-                total += pow(x(i)*x(i) + x(i+1)*x(i+1), 0.25) * 
-                        (pow(sin(50*pow(x(i)*x(i) + x(i+1)*x(i+1), 0.1)), 2.0) + 1);
+                total += std::pow(x(i)*x(i) + x(i+1)*x(i+1), 0.25) * 
+                        (std::pow(std::sin(50*std::pow(x(i)*x(i) + x(i+1)*x(i+1), 0.1)), 2.0) + 1);
             }
             return total;
         }
     };
     
     
-    //! %Schwefel2_26 function
+    //! %Schwefel26 function
     /*!
      * Function: \f$f(x) = -\displaystyle\sum_{i=1}^{d}x_i \sin(\sqrt{|x_i|}) \f$ <br>
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$-418.9829d\f$ <br>
-     * Minimizer: \f$ [0,\ldots,0]\f$
+     * Minimizer: \f$ [420.97,\ldots,420.97]\f$
      * 
      * \author David Eriksson, dme65@cornell.edu            
      */        
-    class Schwefel2_26 : public Problem {
+    class Schwefel26 : public Problem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
         vec mxUp; /*!< Upper variable bounds */     
         vec mOptimum; /*!< Global minimizer */     
         double mMinimum; /*!< Global minimum value */   
-        std::string mName = "Schwefel2_26"; /*!< Optimization problem name */   
+        std::string mName = "Schwefel26"; /*!< Optimization problem name */   
     public:
         //! Constructor
         /*!
          * \param dim Number of dimensions
          */
-        Schwefel2_26(int dim) {
+        Schwefel26(int dim) {
             mDim = dim;
-            mOptimum = arma::zeros<vec>(dim);
-            mxLow = -10.0 * arma::ones<vec>(dim);
-            mxUp = 10.0 * arma::ones<vec>(dim);
+            mOptimum = 420.968746 * arma::ones<vec>(dim);
+            mxLow = -500.0 * arma::ones<vec>(dim);
+            mxUp = 500.0 * arma::ones<vec>(dim);
             mMinimum = - 418.9829 * dim;
         }
         vec lBounds() const { return mxLow; }
@@ -465,7 +465,8 @@ namespace sot {
     
     //! %Himmelblau function
     /*!
-     * Function: \f$f(x) = \displaystyle\frac{1}{d}\displaystyle\sum_{i=1}^d \left[x_i^4 - 16x_i^2 + 5x_i \right] \f$ <br>
+     * Function: \f$f(x) = \displaystyle\frac{1}{d}\displaystyle\sum_{i=1}^d 
+     *           \left[x_i^4 - 16x_i^2 + 5x_i \right] \f$ <br>
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$-78.33\f$ <br>
      * Minimizer: \f$ [-2.90,\ldots,-2.90]\f$
@@ -498,7 +499,7 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return (1.0/mDim) * arma::sum( (x % x % x % x) - 16*(x % x) + 5 * x);
+            return (1.0/mDim) * arma::sum( arma::pow(x, 4) - 16*arma::square(x) + 5*x);
         }
     };
     
@@ -511,7 +512,7 @@ namespace sot {
      * Minimizer: \f$ [0,\ldots,0]\f$
      * 
      * \author David Eriksson, dme65@cornell.edu         
-     */              
+     */
     class Ackley : public Problem {
     protected:
         int mDim; /*!< Number of dimensions */      
@@ -538,7 +539,7 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return -20.0 * exp(-0.2 * sqrt(arma::sum(x % x)/double(mDim))) - 
+            return -20.0 * exp(-0.2 * sqrt(arma::sum(arma::square(x))/double(mDim))) - 
                     exp(arma::sum(arma::cos(2.0 * arma::datum::pi * x))/double(mDim));
         }
     };
@@ -579,13 +580,14 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return arma::sum(x % x - 1 * arma::cos(2 * arma::datum::pi * x));
+            return arma::sum(arma::square(x) - arma::cos(2 * arma::datum::pi * x));
         }
     };
     
     //! %Michalewicz function
     /*!
-     * Function: \f$f(x) = -\displaystyle\sum_{i=1}^d \sin(x_i)\left[\sin\left(\displaystyle\frac{i x_i^2}{\pi}\right)\right]^{20} \f$ <br>
+     * Function: \f$f(x) = -\displaystyle\sum_{i=1}^d \sin(x_i)
+     *           \left[\sin\left(\displaystyle\frac{i x_i^2}{\pi}\right)\right]^{20} \f$ <br>
      * Domain: \f$ 0 \leq x_i \leq \pi \f$ <br> 
      * Minimum value: \f$-0.966d\f$ <br>
      * Minimizer: ???
@@ -620,14 +622,15 @@ namespace sot {
         std::string name() const { return mName; }
         double eval(const vec &x) const {
             return - arma::sum(arma::sin(x) % arma::pow(arma::sin(
-                    ((arma::linspace(1, mDim, mDim) % x % x)/arma::datum::pi)), 20));
+                    ((arma::linspace(1, mDim, mDim) % arma::square(x))/arma::datum::pi)), 20));
         }
     };
     
     //! %Keane function
     /*!
-     * Function: \f$f(x) = -\,\displaystyle\frac{\displaystyle\sum_{i=1}^d \left[ \cos(x_i)^4 - 2\cos(x_i)^2\right]}
-     *            {\sqrt{\displaystyle\sum_{i=1}^d ix_i^2}} \f$ <br>
+     * Function: \f$f(x) = -\,\displaystyle\frac{\displaystyle\sum_{i=1}^d 
+     *           \left[ \cos(x_i)^4 - 2\cos(x_i)^2\right]}
+     *           {\sqrt{\displaystyle\sum_{i=1}^d ix_i^2}} \f$ <br>
      * Domain: \f$ 1 \leq x_i \leq 10 \f$ <br>
      * Minimum value: ???  <br>
      * Minimizer: ???
@@ -660,16 +663,9 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            double y1 = 0.0;
-            double y2 = 1.0;
-            double y3 = 0.0;
-            
-            for(int i=0; i < mDim; i++) {
-                y1 += (cos(x(i)) * cos(x(i)) * cos(x(i)) * cos(x(i)));
-                y2 *= (cos(x[i]) * cos(x(i)));
-                y3 += (i+1) * (x(i) * x(i));
-            }
-            
+            double y1 = arma::sum((vec)arma::pow(arma::cos(x), 4.0));
+            double y2 = arma::prod((vec)arma::pow(arma::cos(x), 2.0));
+            double y3 = arma::sum(arma::linspace(1, mDim, mDim) % arma::square(x));
             return -fabs((y1 - 2.0 * y2) / sqrt(y3));
         }
     };
@@ -681,7 +677,7 @@ namespace sot {
      * where \f$w_i = 1 + \displaystyle\frac{x_i - 1}{4}\f$ <br>
      * Domain: \f$ -5 \leq x_i \leq 5 \f$ <br>
      * Minimum value: \f$0\f$  <br>
-     * Minimizer: \f$ [0,\ldots,0]\f$
+     * Minimizer: \f$ [1,\ldots,1]\f$
      * 
      * \author David Eriksson, dme65@cornell.edu       
      */ 
@@ -700,7 +696,7 @@ namespace sot {
          */
         Levy(int dim) {
             mDim = dim;
-            mOptimum = arma::zeros<vec>(dim);
+            mOptimum = arma::ones<vec>(dim);
             mxLow = -5.0 * arma::ones<vec>(dim);
             mxUp = 5.0 * arma::ones<vec>(dim);
         }
@@ -712,10 +708,11 @@ namespace sot {
         std::string name() const { return mName; }
         double eval(const vec &x) const {
             vec w = 1 + (x - 1)/4.0;
-            double term1 = pow(sin(arma::datum::pi*w(0)), 2);
-            double term3 = pow(w(mDim-1)-1, 2) * (1 + pow(sin(2*arma::datum::pi*w(mDim-1)), 2));
+            double term1 = std::pow(std::sin(arma::datum::pi*w(0)), 2);
+            double term3 = std::pow(w(mDim-1)-1, 2) * (1 + std::pow(std::sin(2*arma::datum::pi*w(mDim-1)), 2));
             vec wMid = w.rows(1, mDim-2);
-            double term2 = arma::sum(arma::square(wMid-1) % (1 + 10*arma::square(arma::sin(arma::datum::pi*wMid+1))));
+            double term2 = arma::sum(arma::square(wMid-1) % 
+                (1 + 10*arma::square(arma::sin(arma::datum::pi*wMid+1))));
             return  term1 + term2 + term3;
         }
     };
@@ -756,13 +753,15 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return 1 - cos(2*arma::datum::pi*sqrt(arma::sum(x%x))) + 0.1*sqrt(arma::sum(x % x));
+            return 1 - cos(2*arma::datum::pi*sqrt(arma::sum(arma::square(x)))) + 
+                    0.1*sqrt(arma::sum(arma::square(x)));
         }
     };
     
     //! %Schubert3 function
     /*!
-     * Function: \f$f(x) = \displaystyle\sum_{i=1}^d \displaystyle\sum_{j=1}^6 \,[j\sin((j+1)\,x_i) + j] \f$ <br>
+     * Function: \f$f(x) = \displaystyle\sum_{i=1}^d \displaystyle\sum_{j=1}^6 
+     *           \,[j\sin((j+1)\,x_i) + j] \f$ <br>
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>     
      * Minimum value: \f$-24.06\f$  <br>
      * Minimizer: ???
@@ -842,8 +841,8 @@ namespace sot {
         double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim-1; i++) {
-                total += (pow(sin(sqrt(x(i)*x(i)+x(i+1)*x(i+1))-0.5),2))/
-                        (pow(0.001*(x(i)*x(i)+x(i+1)*x(i+1))+1,2))+0.5;
+                total += (std::pow(std::sin(std::sqrt(x(i)*x(i) + x(i+1)*x(i+1))), 2.0)  - 0.5)/
+                        (std::pow(0.001*(x(i)*x(i) + x(i+1)*x(i+1))+1, 2.0)) + 0.5;
             }
             return total;
         }
@@ -855,7 +854,7 @@ namespace sot {
      *           \displaystyle\sum_{i=1}^k \displaystyle\prod_{j \neq i} \|x - z_j\|^{\alpha}} \f$ <br>
      * Domain: \f$ 0 \leq x_i \leq 1 \f$ <br>
      * Minimum value: \f$0\f$ <br>
-     * Minimizer: Randomly generated$ <br> <br>  
+     * Minimizer: Randomly generated <br> <br>  
      * 
      * Here \f$z_j \in [0,1]^d\f$ for \f$j=1,\dots,k\f$ are the locations of the stationary points and
      * \f$f_j \in \mathbf{R}\f$ are the values at these stationary points. The locations of \f$z_j\f$
@@ -876,7 +875,8 @@ namespace sot {
         int mk; /*!< Number of stationary points */   
         vec mf; /*!< Values at the stationary points */   
         vec mAlpha; /*!< Exponents */   
-        mat mz; /*!< Locations of the stationary points */   
+        mat mZ; /*!< Locations of the stationary points */  
+        double mDistTol = 1e-10; /*!< Distance tolerance for distinguishing points */
     public:
         //! Constructor with k = max(2^dim, 500)
         /*!
@@ -897,8 +897,8 @@ namespace sot {
             mf = 100 * arma::randu<vec>(k);
             mf(0) = 0;
             mAlpha = 2 + arma::randu<vec>(k);
-            mz = arma::randu<mat>(dim, k);
-            mOptimum = this->mz.col(0);
+            mZ = arma::randu<mat>(dim, k);
+            mOptimum = this->mZ.col(0);
         }
         vec lBounds() const { return mxLow; }
         vec uBounds() const { return mxUp; }
@@ -907,13 +907,21 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            long double num = 0, den = 0, prodval = 0;
-            for(int i=0; i < mk; i++) {
-                prodval = pow(sqrt(arma::sum(arma::square(mz.col(i) - x))), mAlpha(i));
-                num += mf(i) / prodval;
-                den += 1 / prodval;
+            vec dists = squaredPointSetDistance<mat,vec>(x, mZ);
+            if (arma::min(dists) < mDistTol) { // Just return the closest point
+                arma::uword closest;
+                double scores = dists.min(closest);
+                return mf(closest);
             }
-            return num/den;
+            else { 
+                long double num = 0, den = 0, prodval = 0;
+                for(int i=0; i < mk; i++) {
+                    prodval = std::pow(std::sqrt(arma::sum(arma::square(mZ.col(i) - x))), mAlpha(i));
+                    num += mf(i) / prodval;
+                    den += 1 / prodval;
+                }
+                return num/den;
+            }
         }
     };
     
@@ -953,7 +961,7 @@ namespace sot {
         vec optimum() const { return mOptimum; }
         std::string name() const { return mName; }
         double eval(const vec &x) const {
-            return -0.1*arma::sum(arma::cos(5*arma::datum::pi*x)) + arma::sum(x % x);
+            return -0.1*arma::sum(arma::cos(5*arma::datum::pi*x)) + arma::sum(arma::square(x));
         }
     };
     

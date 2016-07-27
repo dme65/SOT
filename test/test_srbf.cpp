@@ -15,7 +15,7 @@ int test_srbf() {
     
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
-    std::shared_ptr<Surrogate> rbf(std::make_shared<TPSRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
+    std::shared_ptr<Surrogate> rbf(std::make_shared<TpsRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
     std::shared_ptr<Sampling> dycors(std::make_shared<SRBF<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
     
     setSeedRandom();
