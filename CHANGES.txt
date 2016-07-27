@@ -18,3 +18,12 @@ v0.5
   - SOT uses seed 0 by default for reproducibility
   - The seed can be set as random or the user can specify a given seed
   - Minor bugfixes
+
+v0.6
+  - Improved documentation
+  - Doxygen source documentation is here: https://codedocs.xyz/dme65/SOT/
+
+v0.7
+  - The surrogate optimization strategy supports evaluations in synchronous parallel
+  - Changed the CMake setup so that SOT builds on Windows with Cygwin
+  - Added a test for synchronous parallel

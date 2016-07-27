@@ -27,7 +27,7 @@ The first line generates the necessary makefiles and finds all of the SOT depend
 
 Note that the fact that SOT is a header-only library makes it possible to include the headers directly into your project.
 
-The SOT tests seem to build without any issues on both Ubuntu and OSX. I would appreciate some feedback from Windows users as well.
+The SOT tests seem to build without any issues on both Ubuntu, OS X, and under Windows under Cygwin.
 
 ## Dependencies
 
@@ -49,25 +49,24 @@ int main(int argc, char** argv) {
     int dim = 10;
     int maxEvals = 500; // Evaluation budget
     setSeedRandom(); // Set the SOT seed ramdomly
-    
+
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
     std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
     std::shared_ptr<Sampling> dycors(std::make_shared<DYCORS<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
-    
+
     Optimizer opt(data, slhd, rbf, dycors, maxeval);
     Result res = opt.run();
-    
+
     std::cout << "Best value found: " << res.fBest() << std::endl;
     std::cout << "Best solution found: " << res.xBest().t() << std::endl;
-} 
+}
 ```
 
 SOT expects shared pointers for the base class objects that point to implementations of these base classes. Ackley is a popular test problem and Ackley implements the base class Problem. The SLHD (symmetric Latin hypercube design) is one of the most popular experimental designs, the Cubic RBF is a very popular surrogate model, and DYCORS is a popular adaptive sampling method. In addition to these four objects SOT only needs to know the evaluation budget in order to run the optimization strategy. The results from the run are returned in a separate result class.
 
 ## Next features to be added
 
-* Support for evaluating the objective function in synchronous parallel
 * More surrogate models
 * Support for integer variables
 * Support for combining adaptive sampling methods
