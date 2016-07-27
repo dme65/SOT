@@ -106,7 +106,6 @@ namespace sot {
 
             mat cand = arma::repmat(xBest, 1, mNumCand);
 
-            // Perturbs one randomly chosen coordinate
             for(int i=0; i < mNumCand; i++) {
                 for(int j=0; j < mDim; j++) {
                     cand(j, i) += sigma * randn();
@@ -162,7 +161,8 @@ namespace sot {
          * \param numCand Number of candidate points that are generated in makePoints
          * \param budget Evaluation budget for the adaptive sampling phase
          */
-        DYCORS(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, int numCand, int budget) {
+        DYCORS(const std::shared_ptr<Problem>& data, const std::shared_ptr<Surrogate>& surf, 
+                int numCand, int budget) {
             mData = std::shared_ptr<Problem>(data);
             mSurf = std::shared_ptr<Surrogate>(surf);
             mBudget = budget;
@@ -191,7 +191,8 @@ namespace sot {
          * \return The proposed points
          */
         mat makePoints(const vec &xBest, const mat &points, double sigma, int newPoints) {                
-            double dds_prob = fmin(20.0/mDim, 1.0) * (1.0 - (log(mNumEvals + 1.0) / log(mBudget)));
+            double dds_prob = std::min(20.0/mDim, 1.0) * 
+                (1.0 - (std::log(mNumEvals + 1.0) / std::log(double(mBudget))));
             mat cand = arma::repmat(xBest, 1, mNumCand);
             for(int i=0; i < mNumCand; i++) {
 
