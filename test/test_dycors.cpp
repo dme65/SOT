@@ -23,6 +23,7 @@ int test_dycors() {
     Result res = opt.run();    
     
     std::cout << res.fBest() << std::endl;
+
     // Check that we made enough progress and that we are feasible
     if (res.fBest() > -20.0) {
         return (EXIT_FAILURE);
@@ -40,4 +41,3 @@ int test_dycors() {
 int main(int argc, char** argv) {
     return test_dycors();
 }
-

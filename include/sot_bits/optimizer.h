@@ -11,6 +11,7 @@
 #include "common.h"
 #include "utils.h"
 #include <thread>
+#include <mutex>
 
 //!SOT namespace
 namespace sot {  
