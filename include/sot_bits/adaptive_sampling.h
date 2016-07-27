@@ -237,7 +237,8 @@ namespace sot {
      * \todo Should use SRBF as a Base class
      * 
      * \author David Eriksson, dme65@cornell.edu
-     */    template<class MeritFunction = MeritWeightedDistance>
+     */    
+    template<class MeritFunction = MeritWeightedDistance>
     class Uniform : public Sampling {
     protected:
         std::shared_ptr<Problem> mData; /*!< A shared pointer to the optimization problem */

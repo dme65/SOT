@@ -511,7 +511,7 @@ namespace sot {
      * Minimizer: \f$ [0,\ldots,0]\f$
      * 
      * \author David Eriksson, dme65@cornell.edu         
-     */              
+     */
     class Ackley : public Problem {
     protected:
         int mDim; /*!< Number of dimensions */      
@@ -855,7 +855,7 @@ namespace sot {
      *           \displaystyle\sum_{i=1}^k \displaystyle\prod_{j \neq i} \|x - z_j\|^{\alpha}} \f$ <br>
      * Domain: \f$ 0 \leq x_i \leq 1 \f$ <br>
      * Minimum value: \f$0\f$ <br>
-     * Minimizer: Randomly generated$ <br> <br>  
+     * Minimizer: Randomly generated <br> <br>  
      * 
      * Here \f$z_j \in [0,1]^d\f$ for \f$j=1,\dots,k\f$ are the locations of the stationary points and
      * \f$f_j \in \mathbf{R}\f$ are the values at these stationary points. The locations of \f$z_j\f$
