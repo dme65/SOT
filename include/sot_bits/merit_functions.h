@@ -57,9 +57,12 @@ namespace sot {
         inline mat pickPoints(const mat &cand, const std::shared_ptr<Surrogate>& surf, const mat &points, int newPoints, double distTol) {
             int dim = cand.n_rows; 
 
+            // Compute the distances in single precision
+            //mat dists = arma::sqrt(arma::conv_to<mat>::from(squaredPairwiseDistance<fmat>(
+            //        arma::conv_to<fmat>::from(points), arma::conv_to<fmat>::from(cand))));
+            mat dists = arma::sqrt(squaredPairwiseDistance<mat>(points, cand));
             // Evaluate the RBF at the candidate points
-            const mat dists = arma::sqrt(squaredPairwiseDistance<mat>(points, cand));
-            vec surfVals = surf->evals(cand);
+            vec surfVals = surf->evals(cand, dists);
             vec valScores = unitRescale(surfVals);
             vec minDists = arma::min(dists).t();
             vec distScores = 1.0 - unitRescale(minDists);

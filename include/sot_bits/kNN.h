@@ -69,12 +69,18 @@ namespace sot {
             uvec indices = sort_index(dists);
             return arma::mean(mfX(indices.rows(0, mk - 1)));
         }
+        double eval(const vec &point, const vec &dists) const {
+            return eval(point);
+        }
         vec evals(const mat &points) const {
             vec vals = arma::zeros<vec>(points.n_cols);
             for(int i=0; i < points.n_cols; i++) {
                 vals(i) = eval(points.col(i));
             }
             return vals;
+        }
+        vec evals(const mat &points, const mat &dists) const {
+            return evals(points);
         }
         //! Method for evaluating the kNN derivative at one point (not implemented)
         /*!

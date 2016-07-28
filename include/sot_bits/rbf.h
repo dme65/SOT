@@ -535,6 +535,26 @@ namespace sot {
             return arma::dot(c.head(mDimTail), px) + arma::dot(c.tail(mNumPoints), phi);
         }
         
+        //! Method for evaluating the surrogate model at a point with known distances
+        /*!
+         * \param ppoint Point for which to evaluate the surrogate model
+         * \param dists Distances between the interpolation nodes and the point
+         * \returns Value of the surrogate model at the point
+         * 
+         * \throws std::logic_error if coefficients aren't updated
+         */
+        double eval(const vec &ppoint, const vec &dists) const {
+            if(mDirty) { throw std::logic_error("RBF not updated. You need to call fit() first"); }       
+
+            // Map point to be in the unit box
+            vec point = toUnitBox(ppoint, mxLow, mxUp);
+            
+            vec px = mTail.eval(point);
+            vec phi = mKernel.eval(dists);
+            vec c = mCoeffs.head(mNumPoints + mDimTail);
+            return arma::dot(c.head(mDimTail), px) + arma::dot(c.tail(mNumPoints), phi);
+        }
+        
         //! Method for evaluating the surrogate model at multiple points
         /*!
          * \param ppoints Points for which to evaluate the surrogate model
@@ -551,6 +571,26 @@ namespace sot {
             mat px = mTail.eval(points);
             mat phi = mKernel.eval(arma::sqrt(squaredPairwiseDistance(
                     (mat)mCenters.cols(0, mNumPoints - 1), points)));
+            vec c = mCoeffs.head(mNumPoints + mDimTail);
+            return px.t() * c.head(mDimTail) + phi.t() * c.tail(mNumPoints);
+        }
+        
+        //! Method for evaluating the surrogate model at multiple points with known distances
+        /*!
+         * \param ppoints Points for which to evaluate the surrogate model
+         * \param dists Distances between the interpolation nodes and the points
+         * \returns Value of the surrogate model at the point
+         * 
+         * \throws std::logic_error if coefficients aren't updated
+         */
+        vec evals(const mat &ppoints, const mat &dists) const {
+            if(mDirty) { throw std::logic_error("RBF not updated. You need to call fit() first"); }       
+
+            // Map point to be in the unit box
+            mat points = toUnitBox(ppoints, mxLow, mxUp);
+            
+            mat px = mTail.eval(points);
+            mat phi = mKernel.eval(dists);
             vec c = mCoeffs.head(mNumPoints + mDimTail);
             return px.t() * c.head(mDimTail) + phi.t() * c.tail(mNumPoints);
         }

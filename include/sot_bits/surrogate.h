@@ -56,10 +56,24 @@ namespace sot {
         virtual double eval(const vec &point) const = 0;
         //! Method for evaluating the surrogate at multiple points
         /*!
+         * \param point Points for which to evaluate the surrogate model
+         * \param dists Distances between the interpolation nodes and point
+         * \returns Values of the surrogate model at the points
+         */
+        virtual double eval(const vec &point, const vec &dists) const = 0;
+        //! Method for evaluating the surrogate at multiple points
+        /*!
          * \param points Points for which to evaluate the surrogate model
          * \returns Values of the surrogate model at the points
          */
         virtual vec evals(const mat &points) const = 0;
+        //! Method for evaluating the surrogate at multiple points
+        /*!
+         * \param points Points for which to evaluate the surrogate model
+         * \param dists Distances between the interpolation nodes and the points
+         * \returns Values of the surrogate model at the points
+         */
+        virtual vec evals(const mat &points, const mat &dists) const = 0;
         //! Method for evaluating the derivative of the surrogate model at a point
         /*!
          * \param point Point for which to evaluate the surrogate model

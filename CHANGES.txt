@@ -27,3 +27,6 @@ v0.7
   - The surrogate optimization strategy supports evaluations in synchronous parallel
   - Changed the CMake setup so that SOT builds on Windows with Cygwin
   - Added a test for synchronous parallel
+
+  v0.8
+    - Made it possible to supply the distances to the interpolation nodes when evaluating the surrogate
