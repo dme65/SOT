@@ -37,8 +37,8 @@ SOT currently only depends on the Armadillo library, which should be linked with
 ## Developers
 
 * Build Status: <a href="https://travis-ci.org/dme65/SOT"><img src="https://travis-ci.org/dme65/SOT.svg?branch=master"/></a>
-* Coverage Status: [![Coverage Status](https://coveralls.io/repos/github/dme65/SOT/badge.svg?branch=master)](https://coveralls.io/github/dme65/SOT?branch=master)
 * Doxygen documentation: [https://codedocs.xyz/dme65/SOT/](https://codedocs.xyz/dme65/SOT/)
+<!--- * Coverage Status: [![Coverage Status](https://coveralls.io/repos/github/dme65/SOT/badge.svg?branch=master)](https://coveralls.io/github/dme65/SOT?branch=master) --> 
 
 ## Examples
 
@@ -79,4 +79,9 @@ SOT expects shared pointers for the base class objects that point to implementat
 ## References
 
 [1] Rommel G Regis and Christine A Shoemaker. A stochastic radial basis function method for the global optimization of expensive functions. INFORMS Journal on Computing, 19(4): 497–509, 2007.
-[2] Rommel G Regis and Christine A Shoemaker. Combining radial basis function surrogates and dynamic coordinate search in high-dimensional expensive black-box optimization. Engineering Optimization, 45(5): 529–555, 2013.[3] Tolson, Bryan A., and Christine A. Shoemaker. Dynamically dimensioned search algorithm for computationally efficient watershed model calibration. Water Resources Research 43.1 (2007).
+
+
+[2] Rommel G Regis and Christine A Shoemaker. Combining radial basis function surrogates and dynamic coordinate search in high-dimensional expensive black-box optimization. Engineering Optimization, 45(5): 529–555, 2013.
+
+
+[3] Tolson, Bryan A., and Christine A. Shoemaker. Dynamically dimensioned search algorithm for computationally efficient watershed model calibration. Water Resources Research 43.1 (2007).
