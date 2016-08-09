@@ -19,6 +19,7 @@ The easiest way to install SOT is using CMake. SOT is a header-only library so n
 ``` bash
 cmake .
 make
+make doc
 make install
 make test
 ```

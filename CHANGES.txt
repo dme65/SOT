@@ -28,5 +28,10 @@ v0.7
   - Changed the CMake setup so that SOT builds on Windows with Cygwin
   - Added a test for synchronous parallel
 
-  v0.8
+v0.8
     - Made it possible to supply the distances to the interpolation nodes when evaluating the surrogate
+
+v0.9
+  - Added a Genetic Algorithm to minimize on the surrogate
+  - All optimization algorithms now support synchronous parallel
+  - Added a Travis CI build test
