@@ -10,12 +10,6 @@ compiler:
   - gcc
   - clang
 
-# Clang doesn't play well with Armadillo on Linux
-#matrix:
-#  exclude:
-#  - os: linux
-#    compiler: clang
-
 before_install:
 
   # Update repo
