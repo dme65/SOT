@@ -30,10 +30,11 @@ before_install:
 
   # Install modern compilers with C++11 support for Linux
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install -qq g++-6; fi
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install -qq lcov; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then export CXX="g++-6" CC="gcc-6"; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6; fi
-  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install libstdc++-6-dev; fi
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install -qq libstdc++-6-dev; fi
 
   #- if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ '$CXX' == 'clang++' ]]; then sudo apt-get install --allow-unauthenticated -qq clang-3.8; fi
   #- if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ '$CXX' == 'clang++' ]]; then export CXX='clang++-3.8'; fi
@@ -41,6 +42,7 @@ before_install:
   # Install dependencies
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install doxygen; fi
   - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install homebrew/science/armadillo; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then brew install lcov; fi
 
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo apt-get install -y cmake doxygen libblas-dev liblapack-dev; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then wget http://sourceforge.net/projects/arma/files/armadillo-7.300.1.tar.xz; fi
@@ -58,7 +60,7 @@ before_script:
 
 script:
   - cmake -DCMAKE_USE_LCOV=ON .
-  - make
+  - make -j5
   - make test
   - cd test
   - lcov --no-external --directory ../include -c -d . -b . -o cov.info
