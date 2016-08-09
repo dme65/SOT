@@ -83,6 +83,8 @@ Armadillo documentation.
 
 * Build Status: <a href="https://travis-ci.org/dme65/SOT">
 <img src="https://travis-ci.org/dme65/SOT.svg?branch=master"/></a>
+* Code Coverage: 
+[![codecov](https://codecov.io/gh/dme65/SOT/branch/master/graph/badge.svg)](https://codecov.io/gh/dme65/SOT)
 * Doxygen documentation: 
 [https://codedocs.xyz/dme65/SOT/](https://codedocs.xyz/dme65/SOT/)
 
