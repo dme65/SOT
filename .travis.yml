@@ -17,7 +17,6 @@ matrix:
     compiler: clang
 
 before_install:
-  - gem install -qq coveralls-lcov
 
   # Update repo
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo apt-get update -qq; fi
@@ -62,13 +61,15 @@ before_install:
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then sudo make install; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then cd ..; fi
 
+  # Coveralls
+  - gem install -qq coveralls-lcov
+
 script:
   - cmake -DCMAKE_USE_LCOV=ON .
-  - make -j5
+  - make
   - make test
   - cd test
 
 after_success:
   - lcov --no-external --directory ../include -c -d . -b . -o cov.info
   - bash <(curl -s https://codecov.io/bash)
-  - coveralls-lcov --repo-token "AOB7fxB507l1pDRrDdtiFVVwCX3pJC0G2" cov.info
