@@ -19,6 +19,7 @@ The easiest way to install SOT is using CMake. SOT is a header-only library so n
 ``` bash
 cmake .
 make
+make doc
 make install
 make test
 ```
@@ -33,8 +34,11 @@ The SOT tests seem to build without any issues on both Ubuntu, OS X, and under W
 
 SOT currently only depends on the Armadillo library, which should be linked with a fast BLAS library for maximum speed. More information can be found in the Armadillo documentation.
 
-## Source code documentation
-The Doxygen generated source code documentation can be accessed at: [https://codedocs.xyz/dme65/SOT/](https://codedocs.xyz/dme65/SOT/)
+## Developers
+
+* Build Status: <a href="https://travis-ci.org/dme65/SOT"><img src="https://travis-ci.org/dme65/SOT.svg?branch=master"/></a>
+
+* Doxygen documentation: [https://codedocs.xyz/dme65/SOT/](https://codedocs.xyz/dme65/SOT/)
 
 ## Examples
 

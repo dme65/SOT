@@ -20,7 +20,9 @@ namespace sot {
     /*!
      * This is the abstract class that should be used as a Base class for all
      * RBF kernels
-     * 
+     *
+     * \class Kernel
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class Kernel {
@@ -58,7 +60,9 @@ namespace sot {
     /*!
      * This is an implementation of the popular cubic kernel 
      * \f$\varphi(r)=r^3\f$ which is of order 2.
-     * 
+     *
+     * \class CubicKernel
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class CubicKernel : public Kernel {
@@ -78,7 +82,9 @@ namespace sot {
     /*!
      * This is an implementation of the popular thin-plate spline kernel 
      * \f$\varphi(r)=r^2\,\log(r)\f$ which is of order 2.
-     * 
+     *
+     * \class ThinPlateKernel
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class ThinPlateKernel : public Kernel {
@@ -98,7 +104,9 @@ namespace sot {
     /*!
      * This is an implementation of the linear kernel 
      * \f$\varphi(r)=r\,\log(r)\f$ which is of order 1.
-     * 
+     *
+     * \class LinearKernel
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class LinearKernel : public Kernel {
@@ -120,7 +128,9 @@ namespace sot {
     /*!
      * This is the abstract class that should be used as a Base class for all
      * Polynomial tails 
-     * 
+     *
+     * \class Tail
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class Tail {
@@ -157,7 +167,9 @@ namespace sot {
      * This is an implementation of the linear polynomial tail with basis 
      * \f$\{1,x_1,x_2,\dots,x_d\}\f$ of degree 1. Popular to use with the
      * Cubic or the TPS kernel.
-     * 
+     *
+     * \class LinearTail
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class LinearTail : public Tail {
@@ -180,7 +192,9 @@ namespace sot {
     /*!
      * This is an implementation of the constant polynomial tail with basis 
      * \f$\{1\}\f$ of degree 0. Popular to use with the linear kernel.
-     * 
+     *
+     * \class ConstantTail
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class ConstantTail : public Tail {
@@ -243,7 +257,9 @@ namespace sot {
      * 
      * The domain is automatically scaled to the unit box to avoid scaling
      * issues since the kernel and polynomial tail scale differently.
-     * 
+     *
+     * \class RBFInterpolant
+     *
      * \tparam RBFKernel Radial kernel (Cubic is default)
      * \tparam PolyTail Polynomial tail (Linear is default)
      * 
@@ -317,7 +333,23 @@ namespace sot {
         }
         
     public:
-         //! Constructor
+        //! Constructor
+        /*!
+         * \param maxPoints Capacity
+         * \param dim Number of dimensions
+         */
+        RBFInterpolant(int maxPoints, int dim) :
+                RBFInterpolant(maxPoints, dim, arma::zeros(dim), arma::ones(dim)) {}
+        //! Constructor
+        /*!
+         * \param maxPoints Capacity
+         * \param dim Number of dimensions
+         * \param eta Damping coefficient (non-negative)
+         */
+        RBFInterpolant(int maxPoints, int dim, double eta) :
+                RBFInterpolant(maxPoints, dim, arma::zeros(dim), arma::ones(dim), eta) {}
+        
+        //! Constructor
         /*!
          * \param maxPoints Capacity
          * \param dim Number of dimensions
@@ -326,7 +358,7 @@ namespace sot {
          * \param eta Damping coefficient (non-negative)
          */
         RBFInterpolant(int maxPoints, int dim, vec xLow, vec xUp, double eta) :
-            RBFInterpolant(maxPoints, dim, xLow, xUp) {
+                RBFInterpolant(maxPoints, dim, xLow, xUp) {
             mEta = eta;
         }
         //! Constructor with default eta
@@ -353,7 +385,7 @@ namespace sot {
             mxLow = xLow;
             mxUp = xUp;
             
-            if (not (mKernel.order() - 1 <= mTail.degree())) {
+            if ((mKernel.order() - 1) > mTail.degree()) {
                 throw std::logic_error("Kernel and tail mismatch");
             }
         }
@@ -545,7 +577,11 @@ namespace sot {
          */
         double eval(const vec &ppoint, const vec &dists) const {
             if(mDirty) { throw std::logic_error("RBF not updated. You need to call fit() first"); }       
-
+            if(not (arma::all(mxLow == 0) and arma::all(mxUp == 1))) { 
+                std::cout << "RBF uses internal scaling so distances have to be recomputed" << std::endl;
+                return eval(ppoint);
+            }     
+            
             // Map point to be in the unit box
             vec point = toUnitBox(ppoint, mxLow, mxUp);
             
@@ -585,6 +621,10 @@ namespace sot {
          */
         vec evals(const mat &ppoints, const mat &dists) const {
             if(mDirty) { throw std::logic_error("RBF not updated. You need to call fit() first"); }       
+            if(not (arma::all(mxLow == 0) and arma::all(mxUp == 1))) { 
+                std::cout << "RBF uses internal scaling so distances have to be recomputed" << std::endl;
+                return evals(ppoints);
+            }       
 
             // Map point to be in the unit box
             mat points = toUnitBox(ppoints, mxLow, mxUp);

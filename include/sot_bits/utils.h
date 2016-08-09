@@ -130,7 +130,9 @@ namespace sot {
      * This is a class that stores the result from the optimization runs and
      * is returned from all of the strategies. It stores the values from all
      * of the evaluations and the best solution and function value.
-     * 
+     *
+     * \class Result
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class Result {
@@ -174,7 +176,7 @@ namespace sot {
          * \param x Evaluated point
          * \param funVal Value of the evaluated point
          */
-        void addEval(vec &x, double funVal) { 
+        void addEval(const vec &x, double funVal) { 
             mX.col(mNumEvals) = x;
             mfX(mNumEvals) = funVal;
             if (funVal < mfBest) {
@@ -183,6 +185,18 @@ namespace sot {
             }
             mNumEvals++;
         }
+        //! Method for adding a finished evaluations
+        /*!
+         * \param X Evaluated points
+         * \param funVals Values of the evaluated points
+         */
+        void addEvals(const mat &X, const vec &funVals) {
+            for(int i=0; i < X.n_cols; i++) {
+                vec x = X.col(i);
+                addEval(x, funVals(i));
+            }
+        }
+        
         //! Method for resetting the object
         void reset() {
             mNumEvals = 0;
@@ -251,7 +265,9 @@ namespace sot {
     /*!
      * This class can be used to measure the elapsed time (in seconds) for different strategies
      * or other functions. It is a wrapper around std::chrono.
-     * 
+     *
+     * \class StopWatch
+     *
      * \author David Eriksson, dme65@cornell.edu
      */    
     class StopWatch {

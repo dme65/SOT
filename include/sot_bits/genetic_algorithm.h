@@ -8,8 +8,11 @@
 #ifndef SOT_GENETIC_ALGORITHM_H
 #define SOT_GENETIC_ALGORITHM_H
 
+#include "experimental_design.h"
 #include "common.h"
 #include "utils.h"
+#include <thread>
+#include <mutex>
 
 //!SOT namespace
 namespace sot {
@@ -20,7 +23,9 @@ namespace sot {
      * implementation is of a real-valued GA and the mutation operator used
      * is a normally distributed perturbation. The number of evaluations carried
      * out by the method is mNumIndividuals * mNumGenerations.
-     * 
+     *
+     * \class GeneticAlgorithm
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     
@@ -40,6 +45,31 @@ namespace sot {
         int mNumGenerations; /*!< Number of generations */
         std::string mName = "Genetic Algorithm"; /*!< Strategy name */
         bool mRandomInit; /*!< True if the initial population is uniformly random */
+        int mNumThreads; /*!< Number of threads */
+        int mEvalCount = 0; /*!< Evaluation counter for evalauting batches */
+        std::mutex mMutex; /*!< Mutex for assigning evaluations to the threads */
+        
+        //! Evalaute a batch of points in parallel
+        /*!
+         * \param batch Batch of points to be evaluated
+         * \param funVals Vector to write the function values to
+         */        
+        void evalBatch(const mat &batch, vec &funVals) {
+            mMutex.lock();
+            int myEval = mEvalCount;
+            mEvalCount++;
+            mMutex.unlock();
+            
+            while(myEval < batch.n_cols) {
+                vec x = batch.col(myEval);
+                funVals[myEval] = mData->eval(x);
+                
+                mMutex.lock();
+                myEval = mEvalCount;
+                mEvalCount++;
+                mMutex.unlock();
+            }
+        }
     public: 
         //! Constructor
         /*!
@@ -57,6 +87,19 @@ namespace sot {
             mRandomInit = true;
             mxLow = data->lBounds();
             mxUp= data->uBounds();
+            mNumThreads = 1;
+        }
+        //! Constructor
+        /*!
+         * \param data A shared pointer to the optimization problem
+         * \param numIndividuals Number of individuals in the population
+         * \param numGenerations Number of generations
+         * \param numThreads Number of threads
+         */
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, int numIndividuals, int numGenerations, int numThreads) :
+            GeneticAlgorithm(data, numIndividuals, numGenerations) 
+        {
+           mNumThreads = numThreads;
         }
         //! Constructor
         /*!
@@ -78,11 +121,27 @@ namespace sot {
             } 
             mRandomInit = false;
         }
+        //! Constructor
+        /*!
+         * \param data A shared pointer to the optimization problem
+         * \param expDes A shared pointer to the experimental design
+         * \param numIndividuals Number of individuals in the population
+         * \param numGenerations Number of generations
+         * \param numThreads Number of threads
+         */
+        GeneticAlgorithm(std::shared_ptr<Problem>& data, std::shared_ptr<ExpDesign>& expDes, 
+            int numIndividuals, int numGenerations, int numThreads) : 
+            GeneticAlgorithm(data, expDes, numIndividuals, numGenerations) 
+        {
+            mNumThreads = numThreads;
+        }
+        
         //! Runs the optimization algorithm
         /*!
          * \return A Result object with the results from the run
          */
         Result run() {
+            std::vector<std::thread> threads(mNumThreads);
             Result res(mNumIndividuals * mNumGenerations, mDim);
             
             mat population;
@@ -96,7 +155,21 @@ namespace sot {
             population = fromUnitBox(population, mxLow, mxUp);
 
             //  Evaluate all individuals
-            vec functionValues = mData->evals(population);
+            vec functionValues = arma::zeros(mNumIndividuals);
+            if(mNumThreads > 1) {
+                mEvalCount = 0;            
+                for(int i=0; i < mNumThreads; i++) {
+                    threads[i] = std::thread(&sot::GeneticAlgorithm::evalBatch, this, 
+                            std::ref(population), std::ref(functionValues));
+                }
+
+                for(int i=0; i < mNumThreads; i++) {
+                    threads[i].join();
+                }
+            }
+            else {
+                functionValues = mData->evals(population);
+            } 
             
             //Save the best individual
             arma::uword ind;
@@ -154,7 +227,20 @@ namespace sot {
                 newPopulation.col(mNumIndividuals - 1) = bestIndividual;
                 
                 //  Evaluate all individuals
-                functionValues = mData->evals(newPopulation);
+                if(mNumThreads > 1) {
+                    mEvalCount = 0;            
+                    for(int i=0; i < mNumThreads; i++) {
+                        threads[i] = std::thread(&sot::GeneticAlgorithm::evalBatch, this, 
+                                std::ref(newPopulation), std::ref(functionValues));
+                    }
+
+                    for(int i=0; i < mNumThreads; i++) {
+                        threads[i].join();
+                    }
+                }
+                else {
+                    functionValues = mData->evals(newPopulation);
+                } 
                 
                 // Save the results
                 for(int i=0; i < mNumIndividuals; i++) {

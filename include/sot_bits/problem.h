@@ -16,7 +16,9 @@ namespace sot {
     /*!
      * This is the abstract class that should be used as a Base class for all
      * optimization problems in SOT.
-     * 
+     *
+     * \class Problem
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class Problem {
@@ -39,10 +41,30 @@ namespace sot {
          * \return The value of the objective function at the input
          */
         virtual double eval(const vec &point) const = 0;
-        //! Method for evaluating the objective functions at multiple points
+        //! Method for evaluating the objective function at multiple points
         /*!
-         * \param points The points for which to evaluate the objective function
-         * \return The values of the objective function at the inputs
+         * \param points The next points for which to evaluate the objective function
+         * \return The values of the objective function at the input
+         */
+        virtual vec evals(const mat &points) const = 0;
+    };
+
+
+    //! Abstract class for a SOT test problem
+    /*!
+     * This is the abstract class that should be used as a Base class for all
+     * test problems in SOT.
+     *
+     * \class TestProblem
+     *
+     * \author David Eriksson, dme65@cornell.edu
+     */
+    class TestProblem : public Problem {
+    public:
+        //! Method for evaluating the objective function at multiple points
+        /*!
+         * \param points Is the next points for which to evaluate the objective function
+         * \return The values of the objective function at the input
          */
         vec evals(const mat &points) const {
             vec fvals = arma::zeros<vec>(points.n_cols);

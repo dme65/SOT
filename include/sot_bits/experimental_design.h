@@ -22,7 +22,9 @@ namespace sot {
      * initial set of points that are first evaluated and then used to fit the
      * initial surrogate model. All experimental design should be generated for
      * the hypercube [0, 1]^dim.
-     * 
+     *
+     * \class ExpDesign
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     
@@ -42,7 +44,9 @@ namespace sot {
      * that were supplied by the user when the object was constructed. This
      * object is handy in order to compare different algorithms for the same
      * experimental design points.
-     * 
+     *
+     * \class FixedDesign
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     
@@ -77,10 +81,11 @@ namespace sot {
      * when it comes to entropy and maximin and is the experimental design of
      * choice for surrogate optimization. Due to rank-deficiencies it's 
      * recommended to use 2*dim points to ensure that the sample has rank dim.
-     * 
+     *
+     * \class SymmetricLatinHypercube
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
-    
     class SymmetricLatinHypercube : public ExpDesign {
     protected:
         int mDim; /*!< Number of dimensions */
@@ -143,10 +148,11 @@ namespace sot {
      * that were supplied by the user when the object was constructed. This
      * object is handy in order to compare different algorithms for the same
      * experimental design points.
-     * 
+     *
+     * \class LatinHypercube
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
-    
     class LatinHypercube : public ExpDesign {
     protected:
         int mDim; /*!< Number of dimensions */
@@ -201,10 +207,11 @@ namespace sot {
      * The 2-Factorial design is the corners of the hypercube [0,1]^dim and
      * therefore consists of exactly 2^dim. It's a popular experimental design
      * for low-dimensional problems.
-     * 
+     *
+     * \class TwoFactorial
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
-    
     class TwoFactorial : public ExpDesign {
     protected:
         int mDim; /*!< Number of dimensions */
@@ -245,10 +252,11 @@ namespace sot {
     /*!
      * This is an experimental design that consists of the 2-Factorial design 
      * plus the midpoint of the [0,1]^dim hypercube.
-     * 
+     *
+     * \class CornersMid
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
-    
     class CornersMid : public ExpDesign {
     protected:
         int mDim; /*!< Number of dimensions */
