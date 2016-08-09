@@ -1,5 +1,3 @@
-
-
 # Find dependencies
 find_package(Armadillo REQUIRED)
 find_package(BLAS REQUIRED)
@@ -28,7 +26,7 @@ else()
 endif()
 
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if(UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lpthread ")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lpthread ")
 endif()
