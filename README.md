@@ -38,7 +38,6 @@ SOT currently only depends on the Armadillo library, which should be linked with
 
 * Build Status: <a href="https://travis-ci.org/dme65/SOT"><img src="https://travis-ci.org/dme65/SOT.svg?branch=master"/></a>
 * Doxygen documentation: [https://codedocs.xyz/dme65/SOT/](https://codedocs.xyz/dme65/SOT/)
-<!--- * Coverage Status: [![Coverage Status](https://coveralls.io/repos/github/dme65/SOT/badge.svg?branch=master)](https://coveralls.io/github/dme65/SOT?branch=master) --> 
 
 ## Examples
 
