@@ -1,5 +1,4 @@
-# Experimental
-#SET(CMAKE_CXX_COMPILER "icpc")
+# cmake -DCMAKE_USE_LCOV=ON .
 
 # Find dependencies
 find_package(Armadillo REQUIRED)
@@ -35,6 +34,12 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse4 -DARMA_NO_
 if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lpthread ")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lpthread ")
+endif()
+
+if(CMAKE_USE_LCOV)
+    message(STATUS "Adding support for lcov")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -fprofile-arcs -ftest-coverage")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -fprofile-arcs -ftest-coverage")
 endif()
 
 # Build tests
