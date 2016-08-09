@@ -26,7 +26,7 @@ int test_rbf() {
     // Evaluate at the center to see that we are interpolating
     vec vals = rbf.evals(x);
     for(int i=0; i < x.n_cols; i++) {
-        if (fabs(vals(i) - fx(i)) >= 1e-10) {
+        if (fabs(vals(i) - fx(i)) >= 1e-10) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
@@ -35,7 +35,7 @@ int test_rbf() {
     vals = rbf.evals(y);
     for(int i=0; i < y.n_cols; i++) {
         double fval = y(1, i) * sin(y(0, i)) + y(0, i) * cos(y(1, i));
-        if (fabs(vals(i) - fval) >= 1e-3) {
+        if (fabs(vals(i) - fval) >= 1e-3) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
@@ -46,7 +46,7 @@ int test_rbf() {
         vec deriv = rbf.deriv(y.col(i));
         pred(0) = y(1, i) * cos(y(0, i)) + cos(y(1,i));
         pred(1) = sin(y(0, i)) - y(0, i) * sin(y(1, i));
-        if (arma::norm(deriv - pred) >= 1e-2) {
+        if (arma::norm(deriv - pred) >= 1e-2) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }

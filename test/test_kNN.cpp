@@ -26,7 +26,7 @@ int test_kNN() {
     // Evaluate at the center to see that we are interpolating
     vec vals = surf.evals(x);
     for(int i=0; i < x.n_cols; i++) {
-        if (fabs(vals(i) - fx(i)) >= 1e-1) {
+        if (fabs(vals(i) - fx(i)) >= 1e-1) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
@@ -35,7 +35,7 @@ int test_kNN() {
     vals = surf.evals(y);
     for(int i=0; i < y.n_cols; i++) {
         double fval = y(1, i) * sin(y(0, i)) + y(0, i) * cos(y(1, i));
-        if (fabs(vals(i) - fval) >= 1e-1) {
+        if (fabs(vals(i) - fval) >= 1e-1) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
