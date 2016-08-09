@@ -34,13 +34,13 @@ int test_sync() {
 
     // Check that we made enough progress and that we are feasible
     if (res.fBest() > -20.0) {
-        return (EXIT_FAILURE);
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
     if (not arma::all(res.xBest() >= data->lBounds())) {
-        return (EXIT_FAILURE);
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }    
     if (not arma::all(res.xBest() <= data->uBounds())) {
-        return (EXIT_FAILURE);
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
     
     return EXIT_SUCCESS;

@@ -27,7 +27,7 @@ int test_rbf() {
     vec vals = rbf.evals(x);
     for(int i=0; i < x.n_cols; i++) {
         if (fabs(vals(i) - fx(i)) >= 1e-10) {
-            return (EXIT_FAILURE);
+            return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
     
@@ -36,7 +36,7 @@ int test_rbf() {
     for(int i=0; i < y.n_cols; i++) {
         double fval = y(1, i) * sin(y(0, i)) + y(0, i) * cos(y(1, i));
         if (fabs(vals(i) - fval) >= 1e-3) {
-            return (EXIT_FAILURE);
+            return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
     
@@ -47,7 +47,7 @@ int test_rbf() {
         pred(0) = y(1, i) * cos(y(0, i)) + cos(y(1,i));
         pred(1) = sin(y(0, i)) - y(0, i) * sin(y(1, i));
         if (arma::norm(deriv - pred) >= 1e-2) {
-            return (EXIT_FAILURE);
+            return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
     

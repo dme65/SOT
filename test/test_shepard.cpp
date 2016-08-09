@@ -27,7 +27,7 @@ int test_shepard() {
     vec vals = surf.evals(x);
     for(int i=0; i < x.n_cols; i++) {
         if (fabs(vals(i) - fx(i)) >= 1e-1) {
-            return (EXIT_FAILURE);
+            return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
     
@@ -36,7 +36,7 @@ int test_shepard() {
     for(int i=0; i < y.n_cols; i++) {
         double fval = y(1, i) * sin(y(0, i)) + y(0, i) * cos(y(1, i));
         if (fabs(vals(i) - fval) >= 2e-1) {
-            return (EXIT_FAILURE);
+            return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
         
