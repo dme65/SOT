@@ -23,7 +23,9 @@ namespace sot {
      * available at the known points. The weights are given by 
      * \f$ w_i(x) = \|x-x_i\|^{-p/2}\f$ which makes it clear that points close 
      * to \f$x\f$ are weighted higher.
-     * 
+     *
+     * \class Shepard
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class Shepard : public Surrogate {

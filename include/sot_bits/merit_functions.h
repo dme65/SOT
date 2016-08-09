@@ -21,6 +21,8 @@ namespace sot {
      * merit functions in SOT. A merit function is used to select the most
      * promising points to evaluate from a set of candidate points.
      *
+     * \class MeritFunction
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class MeritFunction {
@@ -45,6 +47,8 @@ namespace sot {
      * evaluation from a set of candidate point as the one that minimizes a
      * criterion based on the Surrogate model prediction and the minimum
      * distance to previously evaluated points.
+     *
+     * \class MeritWeightedDistance
      *
      * \author David Eriksson, dme65@cornell.edu
      */

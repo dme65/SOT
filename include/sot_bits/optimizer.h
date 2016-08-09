@@ -25,7 +25,9 @@ namespace sot {
      * and closer to the best solution found so far when not enough improvement
      * is made. The algorithm restarts with a new experimental design when the
      * search radius gets too small.
-     * 
+     *
+     * \class Optimizer
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     
@@ -159,13 +161,14 @@ namespace sot {
                     initFunVal(i) = mData->eval(x);
                 }
             }
+            
+            res.addEvals(initDes, initFunVal);
 
             int iStart = mNumEvals;
             int iEnd = std::min<int>(mNumEvals + mInitPoints - 1, mMaxEvals - 1);
             for(int i=mNumEvals; i <= iEnd ; i++) {
                 vec x = initDes.col(i - iStart);
                 double fx = initFunVal[i - iStart];
-                res.addEval(x, fx);
                 if(fx < fBestLoc) {
                     xBestLoc = x;
                     fBestLoc = fx;
@@ -185,7 +188,7 @@ namespace sot {
                 // Find new points to evaluate
                 mat X = res.X().cols(iStart, mNumEvals - 1);
                 int newEvals = std::min<int>(mNumThreads, mMaxEvals - mNumEvals);
-                mat batch = mSampling->makePoints(xBestLoc, X, sigma*(mxUp(0) - mxLow(0)), newEvals);
+                mat batch = mSampling->makePoints(xBestLoc, X, sigma*(mxUp - mxLow), newEvals);
                 vec batchVals = arma::zeros(newEvals);  
                                
                 if(newEvals > 1) { // Evaluate in synchronous parallel
@@ -207,10 +210,7 @@ namespace sot {
                 mNumEvals += newEvals;
 
                 // Add to results
-                for(int i=0; i < newEvals; i++) {
-                    vec x = batch.col(i);
-                    res.addEval(x, batchVals(i));
-                }
+                res.addEvals(batch, batchVals);
               
                 // Process evaluations
                 for(int i=0; i < newEvals; i++) {

@@ -22,10 +22,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Sphere
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class Sphere : public Problem {
+    class Sphere : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -61,10 +63,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class SumSquares
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class SumSquares : public Problem {
+    class SumSquares : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -100,10 +104,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Schwefel22
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class Schwefel22 : public Problem {
+    class Schwefel22 : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -139,10 +145,12 @@ namespace sot {
      * Domain: \f$ -1 \leq x_i \leq 1 \f$ <br>
      * Minimum value: \f$-1\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Exponential
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class Exponential : public Problem {
+    class Exponential : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -178,10 +186,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Tablet
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class Tablet : public Problem {
+    class Tablet : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -217,10 +227,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Step
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */
-    class Step : public Problem {
+    class Step : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -258,10 +270,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Zakharov
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */    
-    class Zakharov : public Problem {
+    class Zakharov : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -299,10 +313,12 @@ namespace sot {
      * Domain: \f$ -2 \leq x_i \leq 2 \f$ <br>       
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [1,\ldots,1]\f$
-     * 
+     *
+     * \class Rosenbrock
+     *
      * \author David Eriksson, dme65@cornell.edu        
      */    
-    class Rosenbrock : public Problem {
+    class Rosenbrock : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -343,10 +359,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Griewank
+     *
      * \author David Eriksson, dme65@cornell.edu            
      */      
-        class Griewank : public Problem {
+        class Griewank : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -384,10 +402,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br> 
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Schaffer2
+     *
      * \author David Eriksson, dme65@cornell.edu            
      */       
-    class Schaffer2 : public Problem {
+    class Schaffer2 : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -429,10 +449,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$-418.9829d\f$ <br>
      * Minimizer: \f$ [420.97,\ldots,420.97]\f$
-     * 
+     *
+     * \class Schwefel26
+     *
      * \author David Eriksson, dme65@cornell.edu            
      */        
-    class Schwefel26 : public Problem {
+    class Schwefel26 : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -470,10 +492,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>
      * Minimum value: \f$-78.33\f$ <br>
      * Minimizer: \f$ [-2.90,\ldots,-2.90]\f$
-     * 
+     *
+     * \class Himmelblau
+     *
      * \author David Eriksson, dme65@cornell.edu           
      */       
-    class Himmelblau : public Problem {
+    class Himmelblau : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -510,10 +534,12 @@ namespace sot {
      * Domain: \f$ -15 \leq x_i \leq 20 \f$ <br>     
      * Minimum value: \f$-20-e\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Ackley
+     *
      * \author David Eriksson, dme65@cornell.edu         
      */
-    class Ackley : public Problem {
+    class Ackley : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -550,10 +576,12 @@ namespace sot {
      * Domain: \f$ -4 \leq x_i \leq 5 \f$ <br>
      * Minimum value: \f$-d\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Rastrigin
+     *
      * \author David Eriksson, dme65@cornell.edu              
      */       
-    class Rastrigin : public Problem {
+    class Rastrigin : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -591,10 +619,12 @@ namespace sot {
      * Domain: \f$ 0 \leq x_i \leq \pi \f$ <br> 
      * Minimum value: \f$-0.966d\f$ <br>
      * Minimizer: ???
-     * 
+     *
+     * \class Michalewicz
+     *
      * \author David Eriksson, dme65@cornell.edu          
      */  
-    class Michalewicz : public Problem {
+    class Michalewicz : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -612,7 +642,6 @@ namespace sot {
             mxLow = arma::zeros<vec>(dim);
             mxUp = arma::datum::pi * arma::ones<vec>(dim);
             mMinimum = -0.966 * dim;
-            
         }
         vec lBounds() const { return mxLow; }
         vec uBounds() const { return mxUp; }
@@ -635,9 +664,11 @@ namespace sot {
      * Minimum value: ???  <br>
      * Minimizer: ???
      *
+     * \class Keane
+     *
      * \author David Eriksson, dme65@cornell.edu             
      */ 
-    class Keane : public Problem {
+    class Keane : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -678,10 +709,12 @@ namespace sot {
      * Domain: \f$ -5 \leq x_i \leq 5 \f$ <br>
      * Minimum value: \f$0\f$  <br>
      * Minimizer: \f$ [1,\ldots,1]\f$
-     * 
+     *
+     * \class Levy
+     *
      * \author David Eriksson, dme65@cornell.edu       
      */ 
-    class Levy : public Problem {
+    class Levy : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -724,10 +757,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>   
      * Minimum value: \f$0\f$  <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class Salomon
+     *
      * \author David Eriksson, dme65@cornell.edu          
      */ 
-    class Salomon : public Problem {
+    class Salomon : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -765,10 +800,12 @@ namespace sot {
      * Domain: \f$ -10 \leq x_i \leq 10 \f$ <br>     
      * Minimum value: \f$-24.06\f$  <br>
      * Minimizer: ???
-     * 
+     *
+     * \class Schubert3
+     *
      * \author David Eriksson, dme65@cornell.edu         
      */ 
-    class Schubert3 : public Problem {
+    class Schubert3 : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -810,10 +847,12 @@ namespace sot {
      * Domain: \f$ -20 \leq x_i \leq 20 \f$ <br>      
      * Minimum value: \f$0\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class SineEnvelope
+     *
      * \author David Eriksson, dme65@cornell.edu   
      */ 
-    class SineEnvelope : public Problem {
+    class SineEnvelope : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -861,10 +900,12 @@ namespace sot {
      * are generated uniformly and \f$f_j\f$ are drawn from at \f$U[0,100]\f$ distribution. We
      * force \f$f_1 = 0\f$ so the global minimum value is always 0 and is located at \f$z_1\f$.
      * The exponents \f$\alpha\f$ are drawn from a \f$U[2,3]\f$ distribution.
-     * 
+     *
+     * \class Schoen
+     *
      * \author David Eriksson, dme65@cornell.edu 
      */ 
-    class Schoen : public Problem {
+    class Schoen : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */ 
         vec mxLow; /*!< Lower variable bounds */     
@@ -931,10 +972,12 @@ namespace sot {
      * Domain: \f$ -1 \leq x_i \leq 1 \f$ <br>         
      * Minimum value: \f$-0.1d\f$ <br>
      * Minimizer: \f$ [0,\ldots,0]\f$
-     * 
+     *
+     * \class CosineMixture
+     *
      * \author David Eriksson, dme65@cornell.edu   
      */ 
-    class CosineMixture : public Problem {
+    class CosineMixture : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */
         vec mxLow; /*!< Lower variable bounds */     
@@ -965,7 +1008,6 @@ namespace sot {
         }
     };
     
-    
     //! Rotated and translated problem
     /*!
      * Turns a possibly separable problem into a non-separable one. This is done 
@@ -976,14 +1018,16 @@ namespace sot {
      * 
      * We can see that \f$g(t) = f(x_{opt})\f$ so t is the global minimum of \f$ g\f$, 
      * and we can also see that \f$ g\f$ isn't separable as long as \f$ Q\f$ isn't.
-     * 
+     *
+     * \class RotatedProblem
+     *
      * \tparam OptProblem The optimization problem (with Problem as a base class)
      * that is rotated and translated into a non-separable optimization problem.
      * 
      * \author David Eriksson, dme65@cornell.edu
      */
     template<class OptProb> 
-    class RotatedProblem : public Problem {
+    class RotatedProblem : public TestProblem {
     protected:
         std::shared_ptr<Problem> mProblem; /*!< Shared pointer to the original optimization problem */ 
         vec mTranslation; /*!< Randomly generated translation */ 
@@ -1038,6 +1082,57 @@ namespace sot {
         std::string name() const { return mName; }
         double eval(const vec &x) const {
             vec xx = mProblem->optimum() + mRotation * (x - mTranslation);
+            return mProblem->eval(xx);
+        }
+    };
+
+    //! Problem scaled to the unit box
+    /*!
+     * Turns a box constrained problem into a problem on the unit box. This is convenient
+     * when using RBFs since they don't scale well.
+     *
+     * \class UnitBoxProblem
+     *
+     * \tparam OptProblem The optimization problem (with Problem as a base class)
+     * that is rotated and translated into a non-separable optimization problem.
+     *
+     * \author David Eriksson, dme65@cornell.edu
+     */
+    template<class OptProb> 
+    class UnitBoxProblem : public TestProblem {
+    protected:
+        std::shared_ptr<Problem> mProblem; /*!< Shared pointer to the original optimization problem */ 
+        int mDim; /*!< Number of dimensions (extracted from mProblem) */ 
+        vec mxLow; /*!< Lower variable bounds (extracted from mProblem) */ 
+        vec mxUp; /*!< Upper variable bounds (extracted from mProblem) */ 
+        vec mOptimum; /*!< Global minimizer (same as mTranslation) */ 
+        double mMinimum; /*!< Global minimum value */
+        std::string mName;  /*!< Optimization problem name */
+        
+    public:
+        //! Constructor
+        /*!
+         * \param dim Number of dimensions
+         */
+        UnitBoxProblem(int dim) {
+            mProblem = std::make_shared<OptProb>(dim);
+            mDim = dim;
+            mxLow = mProblem->lBounds();
+            mxUp = mProblem->uBounds();
+            mMinimum = mProblem->min();
+            if(mProblem->optimum().n_elem == dim) {
+                mOptimum = toUnitBox(mProblem->optimum(), mxLow, mxUp);
+            }
+            mName = mProblem->name() + " scaled to the unit box";
+        }
+        vec lBounds() const { return arma::zeros(mDim); }
+        vec uBounds() const { return arma::ones(mDim); }
+        int dim() const { return mDim; }
+        double min() const { return mMinimum; }
+        vec optimum() const { return mOptimum; }
+        std::string name() const { return mName; }
+        double eval(const vec &x) const {
+            vec xx = fromUnitBox(x, mxLow, mxUp);
             return mProblem->eval(xx);
         }
     };

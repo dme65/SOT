@@ -20,7 +20,9 @@ namespace sot {
     /*!
      * The kNN method is a robust regression method that approximates the value
      * at a given point as the average of the k closest points.
-     * 
+     *
+     * \class kNN
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class kNN : public Surrogate {

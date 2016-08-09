@@ -3,24 +3,24 @@
  * Author: David Eriksson
  *
  * Created on July 19, 2016, 12:44 PM
- */
+ */ 
 
 #include <sot.h>
 using namespace sot;
 
-int test_dycors() {
+int test_ga_sampling() {
 
     int dim = 10;
-    int maxEvals = 500; 
-
+    int maxEvals = 500;  
+     
     std::shared_ptr<Problem> data(std::make_shared<UnitBoxProblem<Ackley>>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
-    std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim));
-    std::shared_ptr<Sampling> dycors(std::make_shared<DYCORS<>>(data, rbf, 100*dim, maxEvals - slhd->numPoints()));
+    std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
+    std::shared_ptr<Sampling> gaSampling(std::make_shared<GASampling>(data, rbf, 50, 100));
     
     setSeedRandom();
-    Optimizer opt(data, slhd, rbf, dycors, maxEvals);
-    Result res = opt.run();    
+    Optimizer opt(data, slhd, rbf, gaSampling, maxEvals);
+    Result res = opt.run();
 
     // Best value found
     std::cout << res.fBest() << std::endl;
@@ -46,5 +46,5 @@ int test_dycors() {
 }
 
 int main(int argc, char** argv) {
-    return test_dycors();
+    return test_ga_sampling();
 }

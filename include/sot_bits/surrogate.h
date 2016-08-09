@@ -17,7 +17,9 @@ namespace sot {
     /*!
      * This is the abstract class that should be used as a Base class for all
      * surrogate models in SOT.
-     * 
+     *
+     * \class Surrogate
+     *
      * \author David Eriksson, dme65@cornell.edu
      */
     class Surrogate {
