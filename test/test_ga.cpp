@@ -2,7 +2,7 @@
  * File:   test_ga.cpp
  * Author: David Eriksson
  *
- * Created on July 25, 2016, 12:44 PM
+ * Created on July 25, 2016
  */
 
 #include <sot.h>

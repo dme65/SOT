@@ -2,7 +2,7 @@
  * File:   test_shepard.cpp
  * Author: David Eriksson
  *
- * Created on July 19, 2016, 12:44 PM
+ * Created on July 19, 2016
  */
 
 #include <sot.h>
@@ -13,11 +13,9 @@ int test_shepard() {
     int n = 500;
     int m = 10;
     mat x = arma::randu<mat>(dim, n);
-    vec fx = arma::zeros<vec>(n);
-    for(int i=0; i<n; i++) {
-        fx(i) = x(1, i) * sin(x(0, i)) + x(0, i) * cos(x(1, i));
-    }
+    vec fx = (x.row(1) % arma::sin(x.row(0)) + x.row(0) % arma::cos(x.row(1))).t();
     mat y = arma::randu<mat>(dim, m);;
+    vec fy = (y.row(1) % arma::sin(y.row(0)) + y.row(0) % arma::cos(y.row(1))).t();
 
     Shepard surf(n, dim, 2);
     surf.addPoints(x, fx);
@@ -25,19 +23,14 @@ int test_shepard() {
 
     // Evaluate at the center to see that we are interpolating
     vec vals = surf.evals(x);
-    for(int i=0; i < x.n_cols; i++) { // LCOV_EXCL_LINE
-        if (fabs(vals(i) - fx(i)) >= 1e-1) { // LCOV_EXCL_LINE
-            return (EXIT_FAILURE); // LCOV_EXCL_LINE
-        }
+    if (arma::max(arma::abs(vals - fx)) >= 1e-1) { // LCOV_EXCL_LINE
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
     
     // Evaluate at some other points
     vals = surf.evals(y);
-    for(int i=0; i < y.n_cols; i++) {
-        double fval = y(1, i) * sin(y(0, i)) + y(0, i) * cos(y(1, i));
-        if (fabs(vals(i) - fval) >= 2e-1) { // LCOV_EXCL_LINE
-            return (EXIT_FAILURE); // LCOV_EXCL_LINE
-        }
+    if (arma::max(arma::abs(vals - fy)) >= 2e-1) { // LCOV_EXCL_LINE
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
         
     return (EXIT_SUCCESS);

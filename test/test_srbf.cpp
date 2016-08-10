@@ -2,7 +2,7 @@
  * File:   test_srbf.cpp
  * Author: David Eriksson
  *
- * Created on July 19, 2016, 12:44 PM
+ * Created on July 19, 2016
  */
 
 #include <sot.h>

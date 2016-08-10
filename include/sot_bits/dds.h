@@ -161,7 +161,7 @@ namespace sot {
                     }
                     // If no index was perturbed we force one
                     if(count == 0) {
-                        int ind = randi(mDim);
+                        int ind = randi(mDim-1);
                         cand(ind) += sigma(ind) * randn();
                         if(cand(ind) > mxUp(ind)) { 
                             cand(ind) = fmax(2*mxUp(ind) - cand(ind), mxLow(ind)); 

@@ -215,7 +215,7 @@ namespace sot {
                 }
                 // If no index was perturbed we force one
                 if(count == 0) {
-                    int ind = randi(mDim);
+                    int ind = randi(mDim-1);
                     cand(ind, i) += sigma(ind)*randn();
                 }
 

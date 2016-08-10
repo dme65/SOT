@@ -1,8 +1,8 @@
 /* 
- * File:   test_sync.h
+ * File:   test_sync.cpp
  * Author: David Eriksson
  *
- * Created on July 26, 2016, 10:30 PM
+ * Created on July 26, 2016
  */
 
 #include <sot.h>
