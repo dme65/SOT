@@ -160,10 +160,20 @@ namespace sot {
             mxBest = std::numeric_limits<double>::max() * arma::ones<mat>(dim);
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns Number of dimensions */
+        /*!
+         * \returns Number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
 
         //! Method for getting the number of finished evaluations
-        int numEvals() const { return mNumEvals; } /*!< \returns Number of finished evaluations */
+        /*!
+         * \returns Number of finished evaluations
+         */
+        int numEvals() const {
+            return mNumEvals;
+        }
 
         //! Method for getting the values of the finished evaluations
         /*!

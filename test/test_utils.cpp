@@ -60,9 +60,24 @@ int test_scaling() {
         return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
 
+    // Do the same for a column
+    vec x = X.col(0);
+    vec y = toUnitBox(x, arma::zeros(dim), 10*arma::ones(dim));
+
+    // Check that points are mapped to the unit box
+    if(arma::max(y) > 1.0 || arma::min(y) < 0.0) { // LCOV_EXCL_LINE
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
+    }
+
+    // Check that points are mapped back to the original points
+    vec z = fromUnitBox(y, arma::zeros(dim), 10*arma::ones(dim));
+    if( arma::norm(x - z) > 1e-10) { // LCOV_EXCL_LINE
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
+    }
+
     // Test scaling a vector
-    vec x = arma::randu(n);
-    vec y = unitRescale(x);
+    x = arma::randu(n);
+    y = unitRescale(x);
     if( std::abs(1 - arma::max(y)) > 1e-10 || std::abs(arma::min(y)) > 1e-10) { // LCOV_EXCL_LINE
         return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
@@ -106,10 +121,48 @@ int test_result() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-
     if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
+    // Reset the object
     res.reset();
+
+    // Make sure an exception is thrown is we use any get method
+    exceptionThrown = false;
+    try {
+        vec y = res.fX();
+    }
+    catch (const std::logic_error& e) {
+        exceptionThrown = true;
+    }
+    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+
+    exceptionThrown = false;
+    try {
+        mat y = res.X();
+    }
+    catch (const std::logic_error& e) {
+        exceptionThrown = true;
+    }
+    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+
+    exceptionThrown = false;
+    try {
+        double y = res.fBest();
+    }
+    catch (const std::logic_error& e) {
+        exceptionThrown = true;
+    }
+    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+
+    exceptionThrown = false;
+    try {
+        vec y = res.xBest();
+    }
+    catch (const std::logic_error& e) {
+        exceptionThrown = true;
+    }
+    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+
 
     return EXIT_SUCCESS;
 }
