@@ -25,7 +25,7 @@ int test_shepard() {
 
     // Evaluate at the center to see that we are interpolating
     vec vals = surf.evals(x);
-    for(int i=0; i < x.n_cols; i++) {
+    for(int i=0; i < x.n_cols; i++) { // LCOV_EXCL_LINE
         if (fabs(vals(i) - fx(i)) >= 1e-1) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
