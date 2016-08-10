@@ -170,7 +170,9 @@ namespace sot {
          * \returns Values of finished evluations
          */
         vec fX() const {
-            if(mNumEvals == 0) { throw std::logic_error("No evaluations have been added!"); }
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
             return mfX.rows(0, mNumEvals-1);
         }
 
@@ -179,7 +181,9 @@ namespace sot {
          * \returns Evaluated points
          */
         mat X() const {
-            if(mNumEvals == 0) { throw std::logic_error("No evaluations have been added!"); }
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
             return mX.cols(0, mNumEvals-1);
         }
 
@@ -188,7 +192,9 @@ namespace sot {
          * \returns Best solution found so far
          */
         vec xBest() const {
-            if(mNumEvals == 0) { throw std::logic_error("No evaluations have been added!"); }
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
             return mxBest;
         }
 
@@ -197,7 +203,9 @@ namespace sot {
          * \returns Value of best solution found so far
          */
         double fBest() const {
-            if(mNumEvals == 0) { throw std::logic_error("No evaluations have been added!"); }
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
             return mfBest;
         }
 
@@ -207,7 +215,9 @@ namespace sot {
          * \param funVal Value of the evaluated point
          */
         void addEval(const vec &x, double funVal) {
-            if(mNumEvals >= mMaxEvals) { throw std::logic_error("Capacity exceeded"); }
+            if(mNumEvals >= mMaxEvals) {
+                throw std::logic_error("Capacity exceeded");
+            }
 
             mX.col(mNumEvals) = x;
             mfX(mNumEvals) = funVal;
@@ -253,7 +263,6 @@ namespace sot {
         if(x.n_rows != y.n_rows) { 
             throw std::logic_error("paretoFront: x and y need to have the same length"); 
         }
-        double tol = 1e-10;
         uvec isort = sort_index(x);
         vec x2 = x(isort);
         vec y2 = y(isort);
@@ -263,7 +272,7 @@ namespace sot {
         double ycur = y2(0);
         
         for(int i=1; i < x.n_rows; i++) {
-            if (y2(i) <= ycur + tol) {
+            if (y2(i) <= ycur) {
                 indvec(indcur) = isort(i);
                 ycur = y2(i);
                 indcur++;
@@ -282,13 +291,9 @@ namespace sot {
      */     
     inline vec cumMin(const vec& x) {
         vec out(x.n_elem);
-        auto minVal = x(0);
-        out(0) = minVal;
+        out(0) = x(0);
         for(int i=1; i < x.n_elem; i++) {
-            if (x(i) < minVal) {
-                minVal = x(i);
-            }
-            out(i) = minVal;
+            out(i) = std::min(x(i), out(i-1));
         }
         return out;
     };

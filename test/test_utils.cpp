@@ -63,7 +63,7 @@ int test_scaling() {
     // Test scaling a vector
     vec x = arma::randu(n);
     vec y = unitRescale(x);
-    if( std::abs(1 - arma::max(y)) > 1e-10 || std::abs(arma::min(y)) > 1e-10) {
+    if( std::abs(1 - arma::max(y)) > 1e-10 || std::abs(arma::min(y)) > 1e-10) { // LCOV_EXCL_LINE
         return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
 
@@ -127,7 +127,7 @@ int test_pareto() {
         bool dominated = false;
         for(int j=0; j < n;j ++) {
             // Check if i is dominated by j
-            if(i != j && x(j) <= x(i) && y(j) <= y(i)) {
+            if(i != j && x(j) <= x(i) && y(j) <= y(i)) { // LCOV_EXCL_LINE
                 dominated = true;
                 break;
             }
@@ -213,22 +213,22 @@ int main(int argc, char** argv) {
     int exit = EXIT_SUCCESS;
 
     int result = test_dists();
-    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; }
+    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     result = test_scaling();
-    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; }
+    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     result = test_result();
-    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; }
+    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     result = test_pareto();
-    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; }
+    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     result = test_cumMin();
-    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; }
+    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     result = test_seed();
-    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; }
+    if(result != EXIT_SUCCESS) { exit = EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     return exit;
 }
