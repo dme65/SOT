@@ -1,5 +1,6 @@
 # Find dependencies
 find_package(Armadillo REQUIRED)
+find_package(Threads REQUIRED)
 find_package(BLAS REQUIRED)
 message(STATUS "Found BLAS: " ${BLAS_LIBRARIES})
 find_package(LAPACK REQUIRED)
@@ -8,7 +9,7 @@ message(STATUS "Found LAPACK: " ${LAPACK_LIBRARIES})
 # Set the library and include directories
 SET(libdirs ${ARMADILLO_SOURCE_DIR} ${BLAS_SOURCE_DIR} ${LAPACK_SOURCE_DIR})
 SET(includes ${ARMADILLO_INCLUDE_DIRS} ${BLAS_INCLUDE_DIRS} ${LAPACK_INCLUDE_DIRS})
-SET(libs ${ARMADILLO_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+SET(libs ${ARMADILLO_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 LINK_DIRECTORIES(${libdirs})
 include_directories(${includes} "../include")
 
@@ -25,12 +26,6 @@ else()
         C++11 support. Please use a different C++ compiler.")
 endif()
 
-
-if(UNIX AND NOT APPLE)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -lpthread ")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -lpthread ")
-endif()
-
 if(CMAKE_USE_LCOV)
     message(STATUS "Adding support for lcov")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O0 -g -fprofile-arcs -ftest-coverage")
@@ -39,9 +34,6 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -msse4")
 endif()
-
-message(STATUS ${CMAKE_CXX_FLAGS_RELEASE})
-message(STATUS ${CMAKE_CXX_FLAGS_DEBUG})
 
 #  -DARMA_NO_DEBUG -DNDEBUG -DHAVE_INLINE -DGSL_RANGE_CHECK_OFF
 
