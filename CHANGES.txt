@@ -35,3 +35,11 @@ v0.9
   - Added a Genetic Algorithm to minimize on the surrogate
   - All optimization algorithms now support synchronous parallel
   - Added a Travis CI build test
+
+v0.10
+  - Added more tests and improved code coverage to 98%
+  - Fixed a bug in the GA in case all function values are inf, in which case a random tournament winner is selected
+  - Taking care of the Pthread dependency correctly
+  - CMake builds with Release mode if no build is specified
+  - Fixed a bug in the ConstantTail and in the Capped RBF
+  - Fixed a bug for the GA Sampling when running in parallel

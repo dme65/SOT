@@ -205,13 +205,13 @@ namespace sot {
                 else { // Evaluate in serial
                     batchVals(0) = mData->eval((vec)batch);
                 }
-                      
+
                 // Update evaluation counter
                 mNumEvals += newEvals;
 
                 // Add to results
                 res.addEvals(batch, batchVals);
-              
+
                 // Process evaluations
                 for(int i=0; i < newEvals; i++) {
                     vec newx = batch.col(i);
@@ -255,7 +255,7 @@ namespace sot {
                         sigma = fmin(sigma * 2.0, mSigmaMax);
                     }
                 }
-                                
+
                 // Add to surface
                 if (batch.n_cols > 1) {
                     mSurf->addPoints(batch, batchVals);

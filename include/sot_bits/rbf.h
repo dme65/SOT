@@ -70,12 +70,22 @@ namespace sot {
         int mPhiZero = 0; /*!< Value of the cubic kernel at 0 */
         int mOrder = 2; /*!< Order of the cubic kernel */
     public:
-        inline int order() const { return mOrder; }  
-        inline int phiZero() const { return mPhiZero; } 
-        inline double eval(double dist) const { return dist * dist * dist; }
-        inline double deriv(double dist) const { return 3 * dist * dist; }
-        inline mat eval(const mat &dists) const { return dists % dists % dists; }
-        inline mat deriv(const mat &dists) const { return 3 * dists % dists; }
+        inline int order() const {
+            return mOrder; }
+        inline int phiZero() const { return mPhiZero;
+        }
+        inline double eval(double dist) const {
+            return dist * dist * dist;
+        }
+        inline double deriv(double dist) const {
+            return 3 * dist * dist;
+        }
+        inline mat eval(const mat &dists) const {
+            return dists % dists % dists;
+        }
+        inline mat deriv(const mat &dists) const {
+            return 3 * dists % dists;
+        }
     };
     
     //! TPS kernel
@@ -92,12 +102,24 @@ namespace sot {
         int mPhiZero = 0; /*!< Value of the kernel at 0 */
         int mOrder = 2; /*!< Order of the kernel */
     public:
-        inline int order() const { return mOrder; } 
-        inline int phiZero() const { return mPhiZero; }
-        inline double eval(double dist) const { return dist * dist * log(dist + 1e-10);}
-        inline double deriv(double dist) const { return dist * (1.0 + 2.0 * log(dist + 1e-10)); }
-        inline mat eval(const mat &dists) const { return dists % dists % arma::log(dists + 1e-10); }
-        inline mat deriv(const mat &dists) const { return dists % (1 + 2.0 * arma::log(dists + 1e-10)); }
+        inline int order() const {
+            return mOrder;
+        }
+        inline int phiZero() const {
+            return mPhiZero;
+        }
+        inline double eval(double dist) const {
+            return dist * dist * std::log(dist + 1e-12);
+        }
+        inline double deriv(double dist) const {
+            return dist * (1.0 + 2.0 * std::log(dist + 1e-12));
+        }
+        inline mat eval(const mat &dists) const {
+            return dists % dists % arma::log(dists + 1e-12);
+        }
+        inline mat deriv(const mat &dists) const {
+            return dists % (1 + 2.0 * arma::log(dists + 1e-12));
+        }
     };
     
     //! Linear kernel
@@ -114,11 +136,21 @@ namespace sot {
         int mPhiZero = 0; /*!< Value of the linear kernel at 0 */
         int mOrder = 1; /*!< Order of the linear kernel */
     public:
-        inline int order() const { return mOrder; } 
-        inline int phiZero() const { return mPhiZero; } 
-        inline double eval(double dist) const { return dist; }
-        inline double deriv(double dist) const { return 1.0; }
-        inline mat eval(const mat &dists) const { return dists; }
+        inline int order() const {
+            return mOrder;
+        }
+        inline int phiZero() const {
+            return mPhiZero;
+        }
+        inline double eval(double dist) const {
+            return dist;
+        }
+        inline double deriv(double dist) const {
+            return 1.0;
+        }
+        inline mat eval(const mat &dists) const {
+            return dists;
+        }
         inline mat deriv(const mat &dists) const { 
             return arma::ones<mat>(dists.n_rows, dists.n_cols); 
         }
@@ -145,7 +177,7 @@ namespace sot {
         //! Method for evaluating the monomial basis function for a given point
         /*!
          * \param point Point for which to evaluate the monomial basis function of the tail
-         * \returns Values of the monomial basis functions at the point
+         * \returns Value of the monomial basis functions at the point
          */
         virtual inline vec eval(const vec &point) const = 0;
         //! Method for evaluating the monomial basis function for multiple points
@@ -154,12 +186,12 @@ namespace sot {
          * \returns Values of the monomial basis functions at the points
          */
         virtual inline mat eval(const mat &points) const = 0;
-        //! Method for evaluating the derivative of the monomial basis function for multiple points
+        //! Method for evaluating the derivative of the monomial basis function for a given point
         /*!
-         * \param points Points for which to evaluate the derivative of the monomial basis function of the tail
-         * \returns Values of the derivative of the monomial basis functions at the points
+         * \param point Point for which to evaluate the derivative of the monomial basis function of the tail
+         * \returns Values of the derivative of the monomial basis functions at the point
          */
-        virtual inline mat deriv(const mat &points) const = 0;
+        virtual inline mat deriv(const vec &point) const = 0;
     };
     
    //! Linear polynomial tail
@@ -176,16 +208,24 @@ namespace sot {
     private:
         int mDegree = 1; /*!< Degree of the polynomial tail */
     public:
-        inline int degree() const { return mDegree; }
-        inline mat eval(const mat &x) const { return arma::join_vert(arma::ones<mat>(1, x.n_cols), x); }
+        inline int degree() const {
+            return mDegree;
+        }
+        inline mat eval(const mat &X) const {
+            return arma::join_vert(arma::ones<mat>(1, X.n_cols), X);
+        }
         inline vec eval(const vec &x) const {
-            vec tail = arma::zeros<vec>(x.n_rows + 1);
-            tail(0) = 1;
+            vec tail = arma::ones<vec>(x.n_rows + 1);
             tail.tail(x.n_rows) = x;
             return tail;
         }
-        inline mat deriv(const mat &x) const { return arma::join_vert(arma::zeros<mat>(1, x.n_rows), arma::eye<mat>(x.n_rows, x.n_rows)); }
-        inline int dimTail(int dim) const { return 1 + dim; }
+        inline mat deriv(const vec &x) const {
+            return arma::join_vert(arma::zeros<mat>(1, x.n_rows),
+                                   arma::eye<mat>(x.n_rows, x.n_rows));
+        }
+        inline int dimTail(int dim) const {
+            return 1 + dim;
+        }
     };
     
     //! Constant polynomial tail
@@ -201,11 +241,21 @@ namespace sot {
     private:
         int mDegree = 0; /*!< Degree of the polynomial tail */
     public:
-        inline int degree() const { return mDegree; }
-        inline mat eval(const mat &x) const { return arma::ones<mat>(x.n_rows, 1); }
-        inline vec eval(const vec &x) const { return arma::ones<mat>(1, 1); }
-        inline mat deriv(const mat &x) const { return arma::zeros<mat>(x.n_rows, 1); }
-        inline int dimTail(int dim) const { return 1; }
+        inline int degree() const {
+            return mDegree;
+        }
+        inline mat eval(const mat &X) const {
+            return arma::ones<mat>(1, X.n_cols);
+        }
+        inline vec eval(const vec &x) const {
+            return arma::ones<mat>(1, 1);
+        }
+        inline mat deriv(const vec &x) const {
+            return arma::zeros<mat>(1, x.n_rows);
+        }
+        inline int dimTail(int dim) const {
+            return 1;
+        }
     };
     
     //! Radial basis function
@@ -437,7 +487,9 @@ namespace sot {
        
         // Fit the RBF
         void fit() {
-            if(mNumPoints < mDimTail) { throw std::logic_error("Not enough points"); }       
+            if(mNumPoints < mDimTail) {
+                throw std::logic_error("Not enough points");
+            }
             if (mDirty) {
                 int n = mNumPoints + mDimTail;
                 mCoeffs = arma::solve(arma::trimatl(mL(arma::span(0, n - 1), arma::span(0, n - 1))), mfX(mp(arma::span(0, n - 1))));
@@ -505,8 +557,12 @@ namespace sot {
             
             int nAct = mDimTail + mNumPoints;
             int n = (int)funVals.n_rows;
-            if(n < 2) { throw std::logic_error("Use add_point instead"); }
-            if(mNumPoints + n > mMaxPoints) { throw std::logic_error("Capacity exceeded"); }
+            if(n < 2) {
+                throw std::logic_error("Use add_point instead");
+            }
+            if(mNumPoints + n > mMaxPoints) {
+                throw std::logic_error("Capacity exceeded");
+            }
             
             auto px = mTail.eval(points);
             mat B = arma::zeros(nAct, n);
@@ -684,7 +740,7 @@ namespace sot {
          * \param eta Damping coefficient (non-negative)
          */
         RBFInterpolantCap(int maxPoints, int dim, vec xLow, vec xUp, double eta) :
-            RBFInterpolant<Kernel,Tail>(maxPoints, dim, xLow, xUp, eta) {}
+            RBFInterpolant<RBFKernel,PolyTail>(maxPoints, dim, xLow, xUp, eta) {}
         //! Constructor with default eta
         /*!
          * \param maxPoints Capacity
@@ -694,21 +750,26 @@ namespace sot {
          */
         RBFInterpolantCap(int maxPoints, int dim, vec xLow, vec xUp) :
             RBFInterpolant<Kernel,Tail>(maxPoints, dim, xLow, xUp) {}
+
         void fit() {
-            if(this->mNumPoints < this->mDimTail) { throw std::logic_error("Not enough points"); }
+            if(this->mNumPoints < this->mDimTail) {
+                throw std::logic_error("Not enough points");
+            }
             if (this->mDirty) {
                 int n = this->mNumPoints + this->mDimTail;
-                vec ff = this->fX();
+                vec ff = this->mfX;
                 double medf = arma::median(ff.rows(this->mDimTail, n-1)); // Computes the median
-                for(int i=this->mDimTail; i<n; i++) { // Apply the capping
-                    if (ff(i) > medf) { ff(i) = medf; }
+                for(int i=this->mDimTail; i < n; i++) { // Apply the capping
+                    if (ff(i) > medf) {
+                        ff(i) = medf;
+                    }
                 }
                 
                 // Solve for the coefficients
-                this->coeffs = arma::solve(arma::trimatl(
-                        this->mL(arma::span(0, n - 1), arma::span(0, n - 1))), ff(this->mp));
-                this->coeffs = arma::solve(arma::trimatu(
-                        this->mU(arma::span(0, n - 1), arma::span(0, n - 1))), this->coeffs);
+                this->mCoeffs = arma::solve(arma::trimatl(
+                        this->mL(arma::span(0, n - 1), arma::span(0, n - 1))), ff(this->mp(arma::span(0, n - 1))));
+                this->mCoeffs = arma::solve(arma::trimatu(
+                        this->mU(arma::span(0, n - 1), arma::span(0, n - 1))), this->mCoeffs );
                 this->mDirty = false;
             }
         }

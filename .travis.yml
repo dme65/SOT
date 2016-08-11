@@ -59,5 +59,5 @@ script:
   - cd test
 
 after_success:
-  - lcov --no-external --directory ../include -c -d . -b . -o cov.info
-  - bash <(curl -s https://codecov.io/bash)
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]] && [[ "$CXX" = "clang++" ]]; then lcov --no-external --directory ../include -c -d . -b . -o coverage.info; fi
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]] && [[ "$CXX" = "clang++" ]]; then bash <(curl -s https://codecov.io/bash); fi

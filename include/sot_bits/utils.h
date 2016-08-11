@@ -160,23 +160,75 @@ namespace sot {
             mxBest = std::numeric_limits<double>::max() * arma::ones<mat>(dim);
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns Number of dimensions */
+        /*!
+         * \returns Number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
+
         //! Method for getting the number of finished evaluations
-        int numEvals() const { return mNumEvals; } /*!< \returns Number of finished evaluations */
+        /*!
+         * \returns Number of finished evaluations
+         */
+        int numEvals() const {
+            return mNumEvals;
+        }
+
         //! Method for getting the values of the finished evaluations
-        vec fX() const { return mfX.rows(0, mNumEvals-1); } /*!< \returns Values of finished evluations */
+        /*!
+         * \returns Values of finished evluations
+         */
+        vec fX() const {
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
+            return mfX.rows(0, mNumEvals-1);
+        }
+
         //! Method for getting the evaluated points
-        mat X() const { return mX.cols(0, mNumEvals-1); } /*!< \returns Evaluated points */
+        /*!
+         * \returns Evaluated points
+         */
+        mat X() const {
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
+            return mX.cols(0, mNumEvals-1);
+        }
+
         //! Method for getting the best solution found so far
-        vec xBest() const { return mxBest; } /*!< \returns best solution found so far */
+        /*!
+         * \returns Best solution found so far
+         */
+        vec xBest() const {
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
+            return mxBest;
+        }
+
         //! Method for getting the value of the best solution found so far
-        double fBest() const { return mfBest; } /*!< \returns Value of best solution found so far */
+        /*!
+         * \returns Value of best solution found so far
+         */
+        double fBest() const {
+            if(mNumEvals == 0) {
+                throw std::logic_error("No evaluations have been added!");
+            }
+            return mfBest;
+        }
+
         //! Method for adding a finished evaluation
         /*!
          * \param x Evaluated point
          * \param funVal Value of the evaluated point
          */
-        void addEval(const vec &x, double funVal) { 
+        void addEval(const vec &x, double funVal) {
+            if(mNumEvals >= mMaxEvals) {
+                throw std::logic_error("Capacity exceeded");
+            }
+
             mX.col(mNumEvals) = x;
             mfX(mNumEvals) = funVal;
             if (funVal < mfBest) {
@@ -221,7 +273,6 @@ namespace sot {
         if(x.n_rows != y.n_rows) { 
             throw std::logic_error("paretoFront: x and y need to have the same length"); 
         }
-        double tol = 1e-10;
         uvec isort = sort_index(x);
         vec x2 = x(isort);
         vec y2 = y(isort);
@@ -231,7 +282,7 @@ namespace sot {
         double ycur = y2(0);
         
         for(int i=1; i < x.n_rows; i++) {
-            if (y2(i) <= ycur + tol) {
+            if (y2(i) <= ycur) {
                 indvec(indcur) = isort(i);
                 ycur = y2(i);
                 indcur++;
@@ -250,13 +301,9 @@ namespace sot {
      */     
     inline vec cumMin(const vec& x) {
         vec out(x.n_elem);
-        auto minVal = x(0);
-        out(0) = minVal;
+        out(0) = x(0);
         for(int i=1; i < x.n_elem; i++) {
-            if (x(i) < minVal) {
-                minVal = x(i);
-            }
-            out(i) = minVal;
+            out(i) = std::min(x(i), out(i-1));
         }
         return out;
     };
@@ -281,7 +328,7 @@ namespace sot {
          * Initializes a watch that isn't started
          */
         StopWatch() {
-            this->mStarted = false;
+            mStarted = false;
         }
         //! Starts the watch
         /*!
@@ -289,8 +336,8 @@ namespace sot {
          */
         void start() {
             if(mStarted) { throw std::logic_error("StopWatch: The StopWatch is already running, so can't start!"); }
-            this->mStartTime = std::chrono::system_clock::now();
-            this->mStarted = true;
+            mStartTime = std::chrono::system_clock::now();
+            mStarted = true;
         }
         //! Stops the watch and returns the time elapsed
         /*!
@@ -298,11 +345,10 @@ namespace sot {
          * \throws std::logic_error If the watch hasn't already been started
          */
         double stop() {
-            if(mStarted) { throw std::logic_error("StopWatch: The StopWatch is not running, so can't stop!"); }
-            this->mEndTime = std::chrono::system_clock::now();
-            this->mStarted = false;
-            std::chrono::duration<double> elapsedSeconds = 
-                this->mEndTime - this->mStartTime;
+            if(not mStarted) { throw std::logic_error("StopWatch: The StopWatch is not running, so can't stop!"); }
+            mEndTime = std::chrono::system_clock::now();
+            mStarted = false;
+            std::chrono::duration<double> elapsedSeconds = mEndTime - mStartTime;
             return elapsedSeconds.count();
         }
     };
@@ -310,13 +356,13 @@ namespace sot {
     
     //! Generate a random integer
     /*!
-     * \param i Specifies the upper range (i is not included)
-     * \returns Random integer in the range [0, i-1]
+     * \param i Specifies the upper range (i IS included)
+     * \returns Random integer in the range [0, i]
      * 
      * \author David Eriksson, dme65@cornell.edu
      */       
     inline double randi(int i) { 
-        std::uniform_int_distribution<int> randi(0, i-1);
+        std::uniform_int_distribution<int> randi(0, i);
         return randi(rng::mt);
     }
     
