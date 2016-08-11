@@ -66,11 +66,26 @@ namespace sot {
             mNumPoints = points.n_cols; 
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        /*!
+         * \returns The number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
         //! Method for getting the number of points in the experimental design
-        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        /*!
+         * \returns The number of points
+         */
+        int numPoints() const {
+            return mNumPoints;
+        }
         //! Method that returns the user supplied experimental design
-        mat generatePoints() const { return mPoints; } /*!< \returns The fixed experimental design */
+        /*!
+         * \returns The fixed experimental design
+         */
+        mat generatePoints() const {
+            return mPoints;
+        }
     };
         
     //!  Symmetric Latin hypercube design
@@ -102,9 +117,19 @@ namespace sot {
             mDim = dim;
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        /*!
+         * \returns The number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
         //! Method for getting the number of points in the experimental design
-        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        /*!
+         * \returns The number of points
+         */
+        int numPoints() const {
+            return mNumPoints;
+        }
         //! Method that generates a symmetric Latin hypercube design
         /*!
          *  \returns A symmetric Latin hypercube design
@@ -116,7 +141,7 @@ namespace sot {
             int middleInd = mNumPoints/2;
 
             if (mNumPoints % 2 == 1) {
-                points.row(middleInd).fill(middleInd + 1);
+                points.col(middleInd).fill(middleInd + 1);
             }
 
             // Fill upper
@@ -168,9 +193,19 @@ namespace sot {
             mDim = dim;
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        /*!
+         *  \returns The number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
         //! Method for getting the number of points in the experimental design
-        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        /*!
+         *  \returns The number of points
+         */
+        int numPoints() const {
+            return mNumPoints;
+        }
         //! Method that generates a symmetric Latin hypercube design
         /*!
          *  \returns A symmetric Latin hypercube design
@@ -227,9 +262,19 @@ namespace sot {
             if(dim >= 15) {throw std::logic_error("Using 2-Factorial for dim >= 15 is a bad idea"); }
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        /*!
+         *  \returns The number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
         //! Method for getting the number of points in the experimental design
-        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        /*!
+         *  \returns The number of points
+         */
+        int numPoints() const {
+            return mNumPoints;
+        }
         //! Method that generates a symmetric Latin hypercube design
         /*!
          *  \returns A 2-Factorial design
@@ -272,9 +317,19 @@ namespace sot {
             if(dim >= 15) {throw std::logic_error("Using Corners + Mid for dim >= 15 is a bad idea"); }
         }
         //! Method for getting the number of dimensions
-        int dim() const { return mDim; } /*!< \returns The number of dimensions */
+        /*!
+         *  \returns The number of dimensions
+         */
+        int dim() const {
+            return mDim;
+        }
         //! Method for getting the number of points in the experimental design
-        int numPoints() const { return mNumPoints; } /*!< \returns The number of points */
+        /*!
+         *  \returns The number of points
+         */
+        int numPoints() const {
+            return mNumPoints;
+        }
         //! Method that generates a symmetric Latin hypercube design
         /*!
          *  \returns A 2-Factorial design

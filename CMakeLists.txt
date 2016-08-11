@@ -45,3 +45,6 @@ add_test (NAME test_sync COMMAND test_sync)
 add_test (NAME test_ga_sampling COMMAND test_ga_sampling)
 add_test (NAME test_utils COMMAND test_utils)
 add_test (NAME test_adaptive COMMAND test_adaptive)
+add_test (NAME test_expdes COMMAND test_expdes)
+add_test (NAME test_optprobs COMMAND test_optprobs)
+

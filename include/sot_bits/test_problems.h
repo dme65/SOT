@@ -46,12 +46,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return arma::sum(x % x);
         }
@@ -87,12 +99,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return arma::dot(arma::linspace(1, mDim, mDim), arma::square(x));
         }
@@ -128,12 +152,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return arma::sum(arma::abs(x)) + arma::prod(arma::abs(x));
         }
@@ -169,12 +205,24 @@ namespace sot {
             mxLow = -1.0 * arma::ones<vec>(dim);
             mxUp = 1.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return - exp(-0.5 * arma::sum(x % x));
         }
@@ -210,12 +258,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return 1e6 * (x(0) * x(0)) + arma::sum(arma::square(x.rows(1, mDim-1)));
         }
@@ -251,12 +311,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return arma::sum(arma::square(arma::floor(x + 0.5)));
         }
@@ -294,12 +366,24 @@ namespace sot {
             mxLow = -5.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             double term1 = arma::sum(arma::square(x));
             double term2 = arma::sum(0.5 * arma::dot(arma::linspace(1, mDim, mDim), x));
@@ -337,12 +421,24 @@ namespace sot {
             mxLow = -2.0 * arma::ones<vec>(dim);
             mxUp = 2.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim-1; i++) {
@@ -364,7 +460,7 @@ namespace sot {
      *
      * \author David Eriksson, dme65@cornell.edu            
      */      
-        class Griewank : public TestProblem {
+    class Griewank : public TestProblem {
     protected:
         int mDim; /*!< Number of dimensions */      
         vec mxLow; /*!< Lower variable bounds */     
@@ -383,12 +479,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return 1.0 + (1.0/4000) * arma::sum(x % x) - 
                     arma::prod(arma::cos(x / sqrt(arma::linspace(1, mDim, mDim))));
@@ -426,12 +534,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim - 1; i++) {
@@ -441,8 +561,7 @@ namespace sot {
             return total;
         }
     };
-    
-    
+
     //! %Schwefel26 function
     /*!
      * Function: \f$f(x) = -\displaystyle\sum_{i=1}^{d}x_i \sin(\sqrt{|x_i|}) \f$ <br>
@@ -474,12 +593,24 @@ namespace sot {
             mxUp = 500.0 * arma::ones<vec>(dim);
             mMinimum = - 418.9829 * dim;
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return - arma::dot(x, arma::sin(arma::sqrt(arma::abs(x))));
         }
@@ -516,12 +647,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return (1.0/mDim) * arma::sum( arma::pow(x, 4) - 16*arma::square(x) + 5*x);
         }
@@ -558,12 +701,24 @@ namespace sot {
             mxLow = -15.0 * arma::ones<vec>(dim);
             mxUp = 20.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return -20.0 * exp(-0.2 * sqrt(arma::sum(arma::square(x))/double(mDim))) - 
                     exp(arma::sum(arma::cos(2.0 * arma::datum::pi * x))/double(mDim));
@@ -601,12 +756,24 @@ namespace sot {
             mxUp = 5.0 * arma::ones<vec>(dim);
             mMinimum = -dim;
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return arma::sum(arma::square(x) - arma::cos(2 * arma::datum::pi * x));
         }
@@ -643,12 +810,24 @@ namespace sot {
             mxUp = arma::datum::pi * arma::ones<vec>(dim);
             mMinimum = -0.966 * dim;
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return - arma::sum(arma::sin(x) % arma::pow(arma::sin(
                     ((arma::linspace(1, mDim, mDim) % arma::square(x))/arma::datum::pi)), 20));
@@ -687,12 +866,24 @@ namespace sot {
             mxUp = 10.0 * arma::ones<vec>(dim);
             mMinimum = -0.47;
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             double y1 = arma::sum((vec)arma::pow(arma::cos(x), 4.0));
             double y2 = arma::prod((vec)arma::pow(arma::cos(x), 2.0));
@@ -733,12 +924,24 @@ namespace sot {
             mxLow = -5.0 * arma::ones<vec>(dim);
             mxUp = 5.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             vec w = 1 + (x - 1)/4.0;
             double term1 = std::pow(std::sin(arma::datum::pi*w(0)), 2);
@@ -781,12 +984,24 @@ namespace sot {
             mxLow = -10.0 * arma::ones<vec>(dim);
             mxUp = 10.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return 1 - cos(2*arma::datum::pi*sqrt(arma::sum(arma::square(x)))) + 
                     0.1*sqrt(arma::sum(arma::square(x)));
@@ -871,12 +1086,24 @@ namespace sot {
             mxLow = -20.0 * arma::ones<vec>(dim);
             mxUp = 20.0 * arma::ones<vec>(dim);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             double total = 0.0;
             for(int i=0; i < mDim-1; i++) {
@@ -941,12 +1168,24 @@ namespace sot {
             mZ = arma::randu<mat>(dim, k);
             mOptimum = this->mZ.col(0);
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             vec dists = squaredPointSetDistance<mat,vec>(x, mZ);
             if (arma::min(dists) < mDistTol) { // Just return the closest point
@@ -997,12 +1236,24 @@ namespace sot {
             mxUp = 1.0 * arma::ones<vec>(dim);
             mMinimum = -0.1 * dim;
         }
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             return -0.1*arma::sum(arma::cos(5*arma::datum::pi*x)) + arma::sum(arma::square(x));
         }
@@ -1071,15 +1322,37 @@ namespace sot {
             mName = "Rotated + Translated " + mProblem->name();
         }
         //! Method that returns the rotation matrix
-        mat roatation() const { return mRotation; } /*!< \returns Rotation matrix */
+        /*!
+         * \returns Rotation matrix
+         */
+        mat rotation() const {
+            return mRotation;
+        }
         //! Method that returns the translation vector
-        vec translation() const { return mTranslation; } /*!< \returns Translation vector */
-        vec lBounds() const { return mxLow; }
-        vec uBounds() const { return mxUp; }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        /*!
+         * \returns Translation vector
+         */
+        vec translation() const {
+            return mTranslation;
+        }
+        vec lBounds() const {
+            return mxLow;
+        }
+        vec uBounds() const {
+            return mxUp;
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             vec xx = mProblem->optimum() + mRotation * (x - mTranslation);
             return mProblem->eval(xx);
@@ -1125,12 +1398,24 @@ namespace sot {
             }
             mName = mProblem->name() + " scaled to the unit box";
         }
-        vec lBounds() const { return arma::zeros(mDim); }
-        vec uBounds() const { return arma::ones(mDim); }
-        int dim() const { return mDim; }
-        double min() const { return mMinimum; }
-        vec optimum() const { return mOptimum; }
-        std::string name() const { return mName; }
+        vec lBounds() const {
+            return arma::zeros(mDim);
+        }
+        vec uBounds() const {
+            return arma::ones(mDim);
+        }
+        int dim() const {
+            return mDim;
+        }
+        double min() const {
+            return mMinimum;
+        }
+        vec optimum() const {
+            return mOptimum;
+        }
+        std::string name() const {
+            return mName;
+        }
         double eval(const vec &x) const {
             vec xx = fromUnitBox(x, mxLow, mxUp);
             return mProblem->eval(xx);

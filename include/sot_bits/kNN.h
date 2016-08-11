@@ -49,12 +49,24 @@ namespace sot {
             mfX.resize(maxPoints);
         }
 
-        int dim() const { return mDim; }
-        int numPoints() const { return mNumPoints; }
-        mat X() const { return mX.cols(0, mNumPoints-1); }
-        vec X(int i) const { return mX.col(i); }
-        vec fX() const { return mfX.rows(0, mNumPoints-1); }
-        double fX(int i) const { return mfX(i); }
+        int dim() const {
+            return mDim;
+        }
+        int numPoints() const {
+            return mNumPoints;
+        }
+        mat X() const {
+            return mX.cols(0, mNumPoints-1);
+        }
+        vec X(int i) const {
+            return mX.col(i);
+        }
+        vec fX() const {
+            return mfX.rows(0, mNumPoints-1);
+        }
+        double fX(int i) const {
+            return mfX(i);
+        }
         void addPoint(const vec &point, double funVal) {
             mX.col(mNumPoints) = point;
             mfX(mNumPoints) = funVal;
@@ -91,9 +103,13 @@ namespace sot {
         vec deriv(const vec& point) const {
             throw std::logic_error("No derivatives for kNN");
         }        
-        void reset() { mNumPoints = 0; }
+        void reset() {
+            mNumPoints = 0;
+        }
         //! Fits kNN (does nothing)
-        void fit() { return; }
+        void fit() {
+            return;
+        }
     };
 }
 
