@@ -22,7 +22,7 @@ add_subdirectory (test)
 
 # The version number.
 set (SOT_VERSION_MAJOR 0)
-set (SOT_VERSION_MINOR 9)
+set (SOT_VERSION_MINOR 10)
 
 include_directories(include)
 
