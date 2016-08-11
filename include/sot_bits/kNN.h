@@ -86,7 +86,7 @@ namespace sot {
 
         //! Method for adding multiple points with known values
         /*!
-         * \param ppoints Points to be added
+         * \param points Points to be added
          * \param funVals Function values at the points
          *
          * \throws std::logic_error if one point is supplied or if capacity is exceeded
