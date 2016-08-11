@@ -366,7 +366,13 @@ namespace sot {
         vec evals(const mat &X) const {
             mat dists = arma::sqrt(squaredPairwiseDistance<mat>(mPoints, X));
             // Evaluate the Surrogate at the points
-            vec surfVals = mSurf->evals(X, dists);
+            vec surfVals;
+            if(mSurf->numPoints() == X.n_cols) {
+                surfVals = mSurf->evals(X, dists);
+            }
+            else {
+                surfVals = mSurf->evals(X);
+            }
             vec minDists = arma::min(dists).t();
             // Set the points that are too close to something large
             surfVals.elem(arma::find(minDists < mDistTol)).fill(arma::datum::inf);
