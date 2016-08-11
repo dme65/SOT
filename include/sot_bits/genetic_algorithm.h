@@ -178,14 +178,15 @@ namespace sot {
             double bestValue = functionValues(ind);
 
             for(int gen = 0; gen < mNumGenerations - 1; gen++) {
-                
+
                 ////////////////// Tournament selection and crossover ////////////////////
                 arma::imat tournament = arma::randi<arma::imat>(mTournamentSize, mNumIndividuals, 
                         arma::distr_param(0, mNumIndividuals - 1));
                 for(int i = 0; i < mNumIndividuals/2; i++) {
                     double minval1 = std::numeric_limits<double>::max();
                     double minval2 = std::numeric_limits<double>::max();
-                    int ind1, ind2;
+                    int ind1 = randi(mNumIndividuals - 1);
+                    int ind2 = randi(mNumIndividuals - 1);
                     for(int j=0; j < mTournamentSize; j++) {
                         if (functionValues(tournament(j, 2*i)) < minval1) {
                             minval1 = functionValues(tournament(j, 2*i));
@@ -196,7 +197,6 @@ namespace sot {
                             ind2 = tournament(j, 2*i + 1);
                         }
                     }
-                    
                     double alpha = rand();
                     if( rand() < mpCross) {
                         newPopulation.col(2*i) = alpha * population.col(ind1) + (1 - alpha) * population.col(ind2);
@@ -222,10 +222,10 @@ namespace sot {
                         }
                     }
                 }
-                
+
                 // Elitism
                 newPopulation.col(mNumIndividuals - 1) = bestIndividual;
-                
+
                 //  Evaluate all individuals
                 if(mNumThreads > 1) {
                     mEvalCount = 0;            
@@ -240,8 +240,8 @@ namespace sot {
                 }
                 else {
                     functionValues = mData->evals(newPopulation);
-                } 
-                
+                }
+
                 // Save the results
                 for(int i=0; i < mNumIndividuals; i++) {
                     vec x = newPopulation.col(i);
@@ -253,11 +253,11 @@ namespace sot {
                 functionValues.min(ind);
                 bestIndividual = newPopulation.col(ind);
                 bestValue = functionValues(ind);
-                
+
                 // Kill the old population
                 population = newPopulation;
             }
-            
+
             return res;
         }
     };

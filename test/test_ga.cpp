@@ -13,7 +13,7 @@ int test_dycors() {
     int dim = 10;
     int numIndivuduals = 50;
     int numGenerations = 10;
-    
+
     std::shared_ptr<Problem> data(std::make_shared<Ackley>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(numIndivuduals, dim));
 
@@ -40,7 +40,7 @@ int test_dycors() {
     if (not arma::all(res.xBest() <= data->uBounds())) { // LCOV_EXCL_LINE
         return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
-    
+
     return EXIT_SUCCESS;
 }
 

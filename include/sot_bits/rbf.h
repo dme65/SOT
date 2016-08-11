@@ -505,8 +505,12 @@ namespace sot {
             
             int nAct = mDimTail + mNumPoints;
             int n = (int)funVals.n_rows;
-            if(n < 2) { throw std::logic_error("Use add_point instead"); }
-            if(mNumPoints + n > mMaxPoints) { throw std::logic_error("Capacity exceeded"); }
+            if(n < 2) {
+                throw std::logic_error("Use add_point instead");
+            }
+            if(mNumPoints + n > mMaxPoints) {
+                throw std::logic_error("Capacity exceeded");
+            }
             
             auto px = mTail.eval(points);
             mat B = arma::zeros(nAct, n);

@@ -11,13 +11,13 @@ using namespace sot;
 int test_ga_sampling() {
 
     int dim = 10;
-    int maxEvals = 500;  
-     
+    int maxEvals = 500;
+
     std::shared_ptr<Problem> data(std::make_shared<UnitBoxProblem<Ackley>>(dim));
     std::shared_ptr<ExpDesign> slhd(std::make_shared<SLHD>(2*(dim+1), dim));
     std::shared_ptr<Surrogate> rbf(std::make_shared<CubicRBF>(maxEvals, dim, data->lBounds(), data->uBounds()));
     std::shared_ptr<Sampling> gaSampling(std::make_shared<GASampling>(data, rbf, 50, 100));
-    
+
     setSeedRandom();
     Optimizer opt(data, slhd, rbf, gaSampling, maxEvals);
     Result res = opt.run();
@@ -41,7 +41,7 @@ int test_ga_sampling() {
     if (not arma::all(res.xBest() <= data->uBounds())) { // LCOV_EXCL_LINE
         return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
-    
+
     return EXIT_SUCCESS;
 }
 

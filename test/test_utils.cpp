@@ -40,6 +40,19 @@ int test_dists() {
         return (EXIT_FAILURE); // LCOV_EXCL_LINE
     }
 
+    // Do the same thing set to point
+    vec x = Y.col(0);
+    vec z1 = squaredPointSetDistance(x, X);
+
+    vec z2 = arma::zeros(n);
+    for(int i=0; i < n; i++) {
+        z2(i) = arma::sum(arma::square(X.col(i) - x));
+    }
+
+    if (arma::norm(z1- z2) > 1e-10) { // LCOV_EXCL_LINE
+        return (EXIT_FAILURE); // LCOV_EXCL_LINE
+    }
+
     return EXIT_SUCCESS;
 }
 
