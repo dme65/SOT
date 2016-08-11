@@ -63,6 +63,7 @@ int test_kNN() {
     for(int i=0; i < n; i++) {
         surf.addPoint(X.col(i), fX(i));
     }
+    surf.fit();
 
     // Check all of the evaluation methods
     vals = arma::zeros(n);

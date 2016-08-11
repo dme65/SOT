@@ -67,22 +67,51 @@ namespace sot {
         double fX(int i) const {
             return mfX(i);
         }
+
+        //! Method for adding a point with a known value
+        /*!
+         * \param point Point to be added
+         * \param funVal Function value at point
+         *
+         * \throws std::logic_error if one point is supplied or if capacity is exceeded
+         */
         void addPoint(const vec &point, double funVal) {
+            if(mNumPoints >= mMaxPoints) {
+                throw std::logic_error("Capacity exceeded");
+            }
             mX.col(mNumPoints) = point;
             mfX(mNumPoints) = funVal;
             mNumPoints++;
         }
+
+        //! Method for adding multiple points with known values
+        /*!
+         * \param ppoints Points to be added
+         * \param funVals Function values at the points
+         *
+         * \throws std::logic_error if one point is supplied or if capacity is exceeded
+         */
         void addPoints(const mat &points, const vec &funVals) {
             int n = points.n_cols;
+
+            if(n < 2) {
+                throw std::logic_error("Use add_point instead");
+            }
+            if(mNumPoints + n > mMaxPoints) {
+                throw std::logic_error("Capacity exceeded");
+            }
+
             mX.cols(mNumPoints, mNumPoints + n - 1) = points;
             mfX.rows(mNumPoints, mNumPoints + n - 1) = funVals;
             mNumPoints += n;
         }
+
         double eval(const vec &point) const {
             vec dists = squaredPointSetDistance(point, X());
             uvec indices = sort_index(dists);
             return arma::mean(mfX(indices.rows(0, mk - 1)));
         }
+
         double eval(const vec &point, const vec &dists) const {
             return eval(point);
         }
