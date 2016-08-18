@@ -1,5 +1,5 @@
 # SOT
-This is an experimental repository for a C++11 implementation 
+This is a repository for a C++11 implementation 
 of the surrogate based optimization algorithms in 
 [https://github.com/dme65/pySOT](https://github.com/dme65/pySOT). 
 SOT is designed for  global deterministic optimization of 
@@ -26,7 +26,7 @@ expect the implementations to use these abstract classes
 as base classes. This is an easy way to guarantee that the 
 necessary functionality exists.
 
-SOT currently supports serial versions of the algorithms 
+SOT currently supports synchronous parallel versions of the algorithms 
 given in [1], [2], [3]. Paper [1] introduces the immensely 
 popular stochastic optimization algorithm SRBF. Paper 
 [2] introduces the DYCORS algorithm that is useful for 
