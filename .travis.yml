@@ -24,8 +24,8 @@ before_install:
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install -qq g++-6; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install -qq lcov; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then export CXX="g++-6" CC="gcc-6"; fi
-  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6; fi
-  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6; fi
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 1; fi
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 1; fi
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" = "g++" ]]; then sudo apt-get install -qq libstdc++-6-dev; fi
 
   - if [[ $TRAVIS_OS_NAME == 'linux' ]] && [[ "$CXX" == "clang++" ]]; then sudo apt-get install --allow-unauthenticated -qq clang-3.8 lldb-3.8; fi

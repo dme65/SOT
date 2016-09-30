@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/57388364.svg)](https://zenodo.org/badge/latestdoi/57388364)
 # SOT
 This is a repository for a C++11 implementation 
 of the surrogate based optimization algorithms in 
