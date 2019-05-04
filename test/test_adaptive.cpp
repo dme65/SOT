@@ -38,10 +38,10 @@ int test_adaptive() {
         vec newX = adaptiveSampling[i]->makePoints(xBest, X, sigma, 1);
 
         // Check that the new point is in the domain
-        if (not arma::all(newX <= data->uBounds())) { // LCOV_EXCL_LINE
+        if (!arma::all(newX <= data->uBounds())) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
-        if (not arma::all(newX >= data->lBounds())) { // LCOV_EXCL_LINE
+        if (!arma::all(newX >= data->lBounds())) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
 
@@ -50,10 +50,10 @@ int test_adaptive() {
         mat newXmat = adaptiveSampling[i]->makePoints(xBest, X, sigma, n);
 
         for(int j=0; j < n; j++) {
-            if (not arma::all(newXmat.col(j) <= data->uBounds())) { // LCOV_EXCL_LINE
+            if (!arma::all(newXmat.col(j) <= data->uBounds())) { // LCOV_EXCL_LINE
                 return (EXIT_FAILURE); // LCOV_EXCL_LINE
             }
-            if (not arma::all(newXmat.col(j) >= data->lBounds())) { // LCOV_EXCL_LINE
+            if (!arma::all(newXmat.col(j) >= data->lBounds())) { // LCOV_EXCL_LINE
                 return (EXIT_FAILURE); // LCOV_EXCL_LINE
             }
         }

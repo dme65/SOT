@@ -242,7 +242,7 @@ namespace sot {
                         int budget = mMaxEvals - mNumEvals - 1;
                         // Restart if sigma is too small and the budget 
                         // is larger than the initial design
-                        if (sigma < mSigmaMin and budget > mInitPoints) {
+                        if (sigma < mSigmaMin && budget > mInitPoints) {
                             fBestLoc = std::numeric_limits<double>::max();
                             mSurf->reset();
                             mSampling->reset(mMaxEvals - mNumEvals - mInitPoints);

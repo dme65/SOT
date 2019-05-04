@@ -53,7 +53,7 @@ int test_optprobs() {
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
 
-        if(not arma::all(lBounds < uBounds)) { // LCOV_EXCL_LINE
+        if(!arma::all(lBounds < uBounds)) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
 
@@ -92,10 +92,10 @@ int test_optprobs() {
                 return (EXIT_FAILURE); // LCOV_EXCL_LINE
             }
             // Check that the translation is in the domain
-            if (not arma::all(translation < uBounds)) { // LCOV_EXCL_LINE
+            if (!arma::all(translation < uBounds)) { // LCOV_EXCL_LINE
                 return (EXIT_FAILURE); // LCOV_EXCL_LINE
             }
-            if (not arma::all(translation > lBounds)) { // LCOV_EXCL_LINE
+            if (!arma::all(translation > lBounds)) { // LCOV_EXCL_LINE
                 return (EXIT_FAILURE); // LCOV_EXCL_LINE
             }
         }

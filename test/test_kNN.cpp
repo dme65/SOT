@@ -97,7 +97,7 @@ int test_kNN() {
         exceptionThrown = true;
     }
 
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     return (EXIT_SUCCESS);
 }

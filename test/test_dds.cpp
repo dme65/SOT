@@ -35,10 +35,10 @@ int test_dycors() {
         if (res.fBest() > -18.0) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
-        if (not arma::all(res.xBest() >= data->lBounds())) { // LCOV_EXCL_LINE
+        if (!arma::all(res.xBest() >= data->lBounds())) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
-        if (not arma::all(res.xBest() <= data->uBounds())) { // LCOV_EXCL_LINE
+        if (!arma::all(res.xBest() <= data->uBounds())) { // LCOV_EXCL_LINE
             return (EXIT_FAILURE); // LCOV_EXCL_LINE
         }
     }
