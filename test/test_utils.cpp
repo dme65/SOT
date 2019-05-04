@@ -134,7 +134,7 @@ int test_result() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     // Reset the object
     res.reset();
@@ -147,7 +147,7 @@ int test_result() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     exceptionThrown = false;
     try {
@@ -156,7 +156,7 @@ int test_result() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     exceptionThrown = false;
     try {
@@ -165,7 +165,7 @@ int test_result() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     exceptionThrown = false;
     try {
@@ -174,7 +174,7 @@ int test_result() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
 
     return EXIT_SUCCESS;
@@ -198,14 +198,14 @@ int test_pareto() {
                 break;
             }
         }
-        if(not dominated) {
+        if(!dominated) {
             bruteInd(bruteCounter) = (arma::uword) i;
             bruteCounter++;
         }
     }
 
     bruteInd = bruteInd.rows(0, bruteCounter-1);
-    if(not arma::all(arma::sort(bruteInd) == arma::sort(frontInd))) { return (EXIT_FAILURE); } // LCOV_EXCL_LINE
+    if(!arma::all(arma::sort(bruteInd) == arma::sort(frontInd))) { return (EXIT_FAILURE); } // LCOV_EXCL_LINE
 
     // Make sure that an exception is thrown when x and y have different length
     bool exceptionThrown = false;
@@ -217,7 +217,7 @@ int test_pareto() {
         exceptionThrown = true;
     }
 
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     return EXIT_SUCCESS;
 }
@@ -232,7 +232,7 @@ int test_cumMin() {
         testCumMin(i) = std::min(x(i), testCumMin(i-1));
     }
 
-    if(not arma::all(xCumMin == testCumMin)) { return (EXIT_FAILURE); } // LCOV_EXCL_LINE
+    if(!arma::all(xCumMin == testCumMin)) { return (EXIT_FAILURE); } // LCOV_EXCL_LINE
 
     return EXIT_SUCCESS;
 }

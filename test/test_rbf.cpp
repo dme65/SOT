@@ -30,11 +30,11 @@ int test_kernels_tails() {
     // Cubic + Linear should work
     if(check_exception<CubicKernel, LinearTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
     // Cubic + Constant should NOT work
-    if(not check_exception<CubicKernel, ConstantTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!check_exception<CubicKernel, ConstantTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
     // TPS + Linear should work
     if(check_exception<ThinPlateKernel, LinearTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
     // TPS + Constant should NOT work
-    if(not check_exception<ThinPlateKernel, ConstantTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!check_exception<ThinPlateKernel, ConstantTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
     // Linear + Linear should work
     if(check_exception<LinearKernel, LinearTail>(maxPoints, dim)) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
     // Linear + Constant should work
@@ -186,7 +186,7 @@ int test_rbf() {
     catch (const std::logic_error& e) {
         exceptionThrown = true;
     }
-    if(not exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
+    if(!exceptionThrown) { return EXIT_FAILURE; } // LCOV_EXCL_LINE
 
     // Check all of the evaluation methods
     vals = arma::zeros(n);

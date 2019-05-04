@@ -633,7 +633,7 @@ namespace sot {
          */
         double eval(const vec &ppoint, const vec &dists) const {
             if(mDirty) { throw std::logic_error("RBF not updated. You need to call fit() first"); }       
-            if(not (arma::all(mxLow == 0) and arma::all(mxUp == 1))) { 
+            if(!(arma::all(mxLow == 0) && arma::all(mxUp == 1))) { 
                 std::cout << "RBF uses internal scaling so distances have to be recomputed" << std::endl;
                 return eval(ppoint);
             }     
@@ -677,7 +677,7 @@ namespace sot {
          */
         vec evals(const mat &ppoints, const mat &dists) const {
             if(mDirty) { throw std::logic_error("RBF not updated. You need to call fit() first"); }       
-            if(not (arma::all(mxLow == 0) and arma::all(mxUp == 1))) { 
+            if(!(arma::all(mxLow == 0) && arma::all(mxUp == 1))) { 
                 std::cout << "RBF uses internal scaling so distances have to be recomputed" << std::endl;
                 return evals(ppoints);
             }       

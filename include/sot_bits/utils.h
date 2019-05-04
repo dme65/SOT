@@ -345,7 +345,7 @@ namespace sot {
          * \throws std::logic_error If the watch hasn't already been started
          */
         double stop() {
-            if(not mStarted) { throw std::logic_error("StopWatch: The StopWatch is not running, so can't stop!"); }
+            if(!mStarted) { throw std::logic_error("StopWatch: The StopWatch is not running, so can't stop!"); }
             mEndTime = std::chrono::system_clock::now();
             mStarted = false;
             std::chrono::duration<double> elapsedSeconds = mEndTime - mStartTime;
